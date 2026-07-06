@@ -1,0 +1,14 @@
+{
+  "name": "vrc",
+  "description": "Ryan6-VRC's Claude Code skills for VRChat avatar/outfit work.",
+  "owner": { "name": "Ryan6-VRC", "email": "236273965+Ryan6-VRC@users.noreply.github.com" },
+  "plugins": [
+    {
+      "name": "vrc-skills",
+      "description": "Reusable skills for the VRChat avatar/outfit workflow.",
+      "version": "0.3.0",
+      "source": "./",
+      "author": { "name": "Ryan6-VRC", "email": "236273965+Ryan6-VRC@users.noreply.github.com" }
+    }
+  ]
+}
