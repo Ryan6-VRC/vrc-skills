@@ -83,8 +83,8 @@ Unity round-trip in Phase 3; this is just a gut-check.
 
 Normalize down to just the avatar:
 
-- **Drop every clothing mesh**, keeping only the underwear/base. The graph's `_OFF`/toggle membership tells you
-  which meshes are removable parts.
+- **Drop every clothing mesh**, keeping only the underwear/base. The graph's toggle membership (renderers a
+  clip drives via `m_IsActive`, often the vendor's `_OFF` meshes) tells you which meshes are removable parts.
 - **Rename so the head mesh is `Body` and the primary body mesh is `Body_Base`.** This is non-negotiable:
   third-party systems key off these two exact names. **Additional body options** (kept by the merge keep-rule)
   become `Body_Base_<Variant>` — only `Body` / `Body_Base` are load-bearing; the extras just need stable,
