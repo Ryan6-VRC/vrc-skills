@@ -92,10 +92,8 @@ frontless (passive FX, OSC contract) — adding no control is a valid outcome.
 
 ### 6. Verify
 
-**Never enter play mode without passing `verify.md`'s play-entry gate** — run its assert snippet,
-plus the one item the snippet doesn't check: VRCFury Fix Write Defaults presence (create it
-mode-Disabled if missing). A failed gate invalidates every observation the session would have
-produced.
+**The play-entry gate is enforced** (`verify.md`): a mis-set scene is refused on entry, naming the
+offender and its fix — clear it and re-enter before trusting anything the session shows.
 **Play mode is the bake**: entering play runs the non-destructive build on the transient play
 copy (removed on exit), so one play session is both the baked read and the live drive — read the
 **baked** menu tree, params, and true synced-bit count from the play copy, then drive each new
