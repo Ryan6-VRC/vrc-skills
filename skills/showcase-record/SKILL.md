@@ -1,0 +1,86 @@
+---
+name: showcase-record
+description: Use when a work session should be filmed and cut into a short showcase video — "record this demo", "film this take", "make a trailer of the session". ffmpeg screen capture + edit. Not in-scene verification stills → AvatarGrab; the filmed avatar task itself runs normally under its own skill.
+---
+
+# Showcase-record
+
+Film your own session with ffmpeg, then cut it into a short showcase: chosen grab stills
+spliced at 1×, work footage fast-forwarded between them, no narration — the terminal and
+checkpoint summaries are the text layer, and the final commit is the end card.
+
+**Roles.** You (the top-level session) own capture and do the avatar task; your terminal is
+the footage. A dispatched subagent owns the edit, so frame reads never crowd this context.
+Every step reads/writes one take manifest on disk, so any session can resume any step — if
+this session loses the thread, the operator saying "cut it" against the manifest is the same
+operation.
+
+**Dependencies.** `ffmpeg`/`ffprobe` on PATH, Python 3 (stdlib only), Windows (ddagrab).
+`showcase.py` sits beside this file; run `python showcase.py <cmd> --help` for exact flags.
+Outputs are public: nothing personal may appear on the staged monitor, and no take files
+belong inside a repo — use a scratch/output dir.
+
+## The flow
+
+1. **Stage.** The operator tiles the task windows on one monitor (Do-Not-Disturb, auto-hide
+   taskbar, neutral wallpaper) and says go. Tell them to **leave Unity as the focused window**
+   when they step away — the self-foreground below is the recovery path, not the default state. Find that monitor — ask, or discover it:
+   `showcase.py check --monitor N` for candidate N, Read each frame, pick the one showing the
+   staged layout. Never assume an index; it is machine- and cabling-specific.
+2. **Roll.** `showcase.py start --monitor N --out <take-dir> --grab-dir <dir>` — pass every
+   dir where stamped grabs will land (Unity `Application.temporaryCachePath` for AvatarGrab;
+   add others as they exist). Then `showcase.py check --manifest <path>` and **Read the frame
+   as an image**: confirm it shows the staged monitor. Wrong or black frame → stop and fix
+   before any work is spent. Always use the default GPU capture (ddagrab) — measured rock-solid
+   30fps under a fully saturated Unity; `--gdigrab` exists only for a machine where ddagrab
+   itself won't run.
+3. **Pin the tail.** Create a persistent task now — "stop capture + dispatch edit —
+   manifest=<path>" — so the obligation survives compaction. The manifest path is the only
+   handle anything downstream needs.
+4. **Work normally.** Run the avatar task under its own skill, fully autonomous: never wait
+   for input, decide everything yourself, checkpoint as usual. Do not perform for the camera —
+   grab (AvatarGrab etc.) only where the work genuinely wants a visual check; those diagnostic
+   moments *are* the hero shots. NDMF preview resolves only while Unity holds OS focus — before
+   any grab, have Unity foreground *itself* via `execute_code` (plain SetForegroundWindow is
+   blocked from background; the ALT-nudge releases the foreground lock — verified to flip
+   `isApplicationActive` true):
+
+   ```csharp
+   [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool SetForegroundWindow(System.IntPtr h);
+   [System.Runtime.InteropServices.DllImport("user32.dll")] static extern void keybd_event(byte vk, byte scan, uint flags, System.UIntPtr extra);
+   keybd_event(0xA4, 0, 0, System.UIntPtr.Zero); keybd_event(0xA4, 0, 2, System.UIntPtr.Zero); // ALT nudge
+   SetForegroundWindow(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
+   ```
+
+   If a grab's summary still carries the unresolved-preview `note=`, re-foreground and retake.
+   A failure on camera is honest; keep going — first take, no re-shoots.
+5. **Wrap.** After the final commit: `showcase.py stop --manifest <path>`, then dispatch the
+   edit subagent (below) with the manifest path and a target duration (30–120s by task
+   complexity). Relay its returned cut path and verify frame to the operator; run
+   `showcase.py teaser` if a ≤10MB embed is wanted. Done — hosting/upload is not this skill's
+   job.
+
+## The edit subagent
+
+Dispatch a general-purpose subagent with exactly this contract — inputs `(manifest path,
+target seconds)`, returns `(cut path, one verify frame path, duration)`:
+
+1. Run `showcase.py beats --manifest <path>` for every stamped artifact as a recording
+   offset, and read the take's RunLogs (filenames say which tool ran when; bodies say what it
+   did) to build a narrative timeline of the take.
+2. Choose 2–3 stills that carry the story. Heuristics: a cluster of near-simultaneous grabs is
+   one moment — keep the last; an isolated grab after a long gap earned its place. Read the
+   candidates as images and keep only frames that visibly show something (a fit check, a
+   working toggle) — visual judgment is yours, not the script's.
+3. `showcase.py cut --manifest <path> --target <s> --still <png> [--still <png> ...]` — the
+   script does all clock math, splices each still as its own 1× segment, and ramps the footage
+   between them uniformly to fit the target (clamped; its `note=` names any compromise).
+4. Read the `frames=` verify images and probe nothing by trust: a cut you haven't looked at
+   is not verified. Return the paths.
+
+## Failure discipline
+
+Every `showcase.py` line ends `=> OK | key=path` or `=> FAIL: reason (fix)` — a FAIL never
+carries a path to something not on disk. Trust the summary grammar; on FAIL do what the reason
+says, don't improvise around it. The one silent risk the script can't see is a wrong-but-valid
+monitor: only your Read of the check frame catches that, which is why step 2 is a gate.
