@@ -53,6 +53,11 @@ each decides a later branch:
 ## Phase 1 — Blender: own the geometry (+ reproportion)
 
 - **Import** the source FBX (the whole avatar, if extracting from a monolithic one).
+- **`stamp_base` the armature with the target base's canonical lineage name** (e.g. `chocolat` — the
+  base you're fitting to; if the vendor cut is a different-but-equivalent base, stamp its native base
+  and let an equivalency profile carry it across). Seed this **here, right after import — not after the
+  later `Armature.<Name>` rename below** — `apply_profile` hard-offends on an absent base stamp, so it
+  must be in place before the Reproportion step.
 - **Keep the subset's meshes, delete the rest.** For a standalone vendor mergeable nothing is dropped.
   Do **not** rename meshes or hunt for a `Body`/`Body_Base` (those are base-body conventions).
 - **Reproportion, if the target base is reshaped — before pruning.** This is `reproportion`'s
@@ -76,9 +81,12 @@ each decides a later branch:
   appended and fail loud if unscoped in a two-armature scene — but the export CLI only **warns** and
   exports the whole scene, which ships the reference body. Always pass `--armature`.
 - **Export scoped to the mergeable's armature** (`export_unity_fbx --armature Armature.<Name>`: that
-  armature + the meshes it deforms, selection-only) to `Assets/<…>/Models/`, reusing vendor materials
-  (embed textures off). The disposable reference body is a *different* armature, so it stays in the
-  `.blend`, out of the FBX — a whole-scene export would ship it.
+  armature + the meshes it deforms, selection-only) to **`Assets/Outfits/<Base>/<Outfit>/Models/`**,
+  reusing vendor materials (embed textures off). The disposable reference body is a *different*
+  armature, so it stays in the `.blend`, out of the FBX — a whole-scene export would ship it. The
+  source `.blend` lives at the mirrored **`Blender/Outfits/<Base>/<Outfit>/<Outfit>.blend`** — this
+  `Assets/` ↔ `Blender/` mirror is **load-bearing**: the compose provenance fit gate resolves the
+  `.blend` from it.
 
 ## Phase 2 — Unity: materials + dynamics
 
@@ -133,6 +141,9 @@ Structural and basic — **the real proof is a compose**, so hand off after:
 - **Reproportion coherence** — the owned mergeable's bones land on the target base's reshaped world
   positions (compare a few; the vendor piece would sit off).
 - **Clean transplant diagnostics** — flagged-missing 0 for kept hosts, anchors bound, no vendor leak.
+
+If a later compose finds the provenance stamp missing or mismatched against the base, the fix
+re-enters **this skill** (re-stamp + refile) — it is not patched in the Unity scene.
 
 Then convert to a **prefab variant** of the FBX and hand to `compose-mergeable` + the operator's
 playmode for the visual/behavioral bar. Grab in a separate call from any edit — a same-call grab shows

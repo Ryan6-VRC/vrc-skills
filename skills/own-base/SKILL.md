@@ -95,6 +95,10 @@ Normalize down to just the avatar:
   (Keeping the head as `Body` — when the vendor already uses it — avoids both.)
 - **Author at world origin** — transform (0,0,0); never bake a position offset into the owned asset
   (reproportion pivots about origin; the coherence checks compare world positions).
+- **`stamp_base` the armature with the base's own canonical identity** (e.g. `chocolat`, `shinano`,
+  `plum`) so it's baked into the authored `.blend`. This identity is the prerequisite every later
+  fit-test and compose gate resolves against — without it, no outfit for this base is checkable, and
+  `reproportion`'s later apply (once the base is built) hard-offends on an absent base stamp.
 
 After dropping meshes, run the **avatarprep prune** function to delete the now-orphaned zero-weight bone chains.
 It keeps physbone tips, attachment parents, and ancestors of weighted bones, and preserves only depth-1
