@@ -59,12 +59,22 @@ Two seams to resolve, plus the owned-side collider gap to close — all cheap, e
 failure a green console hides.
 
 - **Provenance fit gate (owned mergeables only).** For an owned mergeable (asset path under `Assets/…`,
-  not `Assets/Vendor/…`), resolve both mirrored provenance blends — the mergeable's own and the target
-  base's — and read each `(base, state)` via avatarprep **`report_stamps`** (Decision 2's mirror). If the
-  pairs mismatch, or either stamp is missing entirely: **loud may-block WARNING, write nothing** — this
-  is not a compose-side repair, it's `own-mergeable`'s re-stamp-and-refile loop (Decision 3); route back
-  to it. A vendor mergeable carries no stamp and skips this gate outright, falling through to the
-  hit-rate check below — which is why that check stays as the vendor/confirmatory fallback.
+  not `Assets/Vendor/…`), read its own mirrored `(base, state)` via avatarprep **`report_stamps`**
+  (Decision 2's mirror), then check it against the base it is landing on — which forks on whether that
+  base is owned or vendor:
+  - **Owned base** (own blend under `Assets/…`): read the base's `(base, state)` too. An exact mismatch,
+    or a genuinely-absent stamp on an owned side, is a **loud may-block WARNING — write nothing**. This is
+    not a compose-side repair: a missing/mismatched *outfit* stamp is `own-mergeable`'s re-stamp-and-refile
+    loop, a missing *base* stamp is `own-base`'s `stamp_base` seed (Decision 3) — route to whichever side is off.
+  - **Vendor base** (under `Assets/Vendor/…`, no blend and no stamp — expected, not an error): a vendor base
+    is `unproportioned` by construction. If the mergeable's **state is `unproportioned`**, the fit is
+    plausible — the blessed "own the outfit, not the base" case — so fall through to the hit-rate check to
+    confirm the base *family*. If the mergeable's state is **reshaped** (≠ `unproportioned`), that is the real
+    mismatch a stock base can't satisfy *and the hit-rate can't see* (reproportion doesn't rename bones, so
+    names still resolve while the rest pose is wrong): **loud may-block WARNING, route to `own-base`** (own +
+    reproportion the base), not `own-mergeable`.
+  A **vendor mergeable** carries no stamp and skips this gate outright, falling through to the hit-rate check
+  below — which is why that check stays as the vendor/confirmatory fallback.
 - **Armature seam — core-body-bone hit-rate.** Do the mergeable's core humanoid bones resolve by name
   against the base armature? A mergeable authored for *this* base matches by contract. A **wrong-base**
   mergeable matches only a handful and MA auto-creates the rest as phantom bones (`nondestructive.md`) —

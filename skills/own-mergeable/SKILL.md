@@ -24,10 +24,11 @@ from several FBX (`avatarprep merge_armatures` — rare, drive it from the tool;
 its result `Armature`, a base-body invariant, so Phase 1's `Armature.<Name>` rename must follow it).
 It is the **same operation regardless of what's in the set.**
 
-- **Shared base body is the enabling contract.** Extracting from one avatar to wear on another works
-  only when they share a base body (Plum/Chiffon/Chocolat) — the seam matches by name; the cross-base
-  mechanics are `reproportion`'s (*Cross-base*). A genuinely different base is a **refit** (roadmap:
-  `docs/mochifitter.md`), out of scope.
+- **Topo-equivalent bases are the enabling contract.** Extracting from one avatar to wear on another
+  works when the two bases are topo-equivalent — the same base, or distinct bases bridged by an explicit
+  equivalency profile (Plum/Chiffon/Chocolat are *distinct* bases so bridged, not one shared body) —
+  because the seam matches by name; the cross-base mechanics are `reproportion`'s (*Cross-base*). A
+  genuinely different (non-topo) base is a **refit** (roadmap: `docs/mochifitter.md`), out of scope.
 - Placing the finished mergeable on a base → `compose-mergeable`.
 - Reshaping proportions is `reproportion`'s engine — this skill *drives* it, never reimplements it.
 - Seam morph-follow (MA BlendshapeSync / VRCFury blendshape-link) is **deliberately skipped** — too
