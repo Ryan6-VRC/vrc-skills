@@ -66,14 +66,16 @@ whole-outfit edges attach to the outfit root's node, not a piece toggle.
 
 ### 4. Write
 
-MA default: one scene GO per control under the avatar's **`AvatarMenu`** node (the convention —
-create it under the avatar root if absent, like `AvatarDynamics`) — a `ModularAvatarMenuItem`
-toggle (`automaticValue`, empty parameter; set `isSynced`/`isSaved`/`isDefault` per plan —
-`isSynced` defaults **true**, so a control planned local silently costs a synced bit if unset) plus
-`ObjectToggle`/`ShapeChanger` entries on the same node — via `execute_code` +
-`SerializedObject`. **Hiding a default-visible object takes the inverted closure**
-(`Inverted=true`, entry `Active=false` — `menus.md`); the naive entry is a silent no-op.
-Submenu parents are `MenuItem` SubMenus sourcing `Children` — `MenuSource` governs only where a
+MA default (install mechanism and shape: `menus.md` §Substrate): group nodes under an
+**`AvatarMenu`** container (create it under the avatar root if absent, like `AvatarDynamics`) — but
+that container installs nothing. Each top-level category is a GO with a `ModularAvatarMenuInstaller`
+(target unset → root) + a SubMenu `MenuItem`(`Children`), its toggles as installer-less children;
+a lone root control is a GO with an installer + a Toggle `MenuItem`. A toggle `MenuItem`
+(`automaticValue`, empty parameter; set `isSynced`/`isSaved`/`isDefault` per plan — `isSynced`
+defaults **true**, so a control planned local silently costs a synced bit if unset) plus
+`ObjectToggle`/`ShapeChanger` entries on the same node — via `execute_code` + `SerializedObject`.
+**Hiding a default-visible object takes the inverted closure** (`Inverted=true`, entry
+`Active=false` — `menus.md`); the naive entry is a silent no-op. `MenuSource` governs only where a
 SubMenu gets its children; it is inert on a leaf toggle. VRCFury `Toggle`/`FullController` are
 authored via the **public `com.vrcfury.api`** (`FuryComponents.CreateToggle` /
 `CreateFullController`); reflection only for what the API doesn't surface (`VF.Model` is
@@ -107,6 +109,10 @@ result matches the plan.
 
 ## Traps
 
+- **A `MenuItem` installs nothing on its own** — its parameter generates unconditionally, but a
+  control lands only when a `Menu Installer` roots the node (on its GO, or via an installed
+  SubMenu/`Menu Group` above it). *Params present, menu empty* is a missing installer, not a bake
+  failure — there is no child-of-root auto-install. (`menus.md` §Substrate has the mechanism.)
 - **`automaticValue` names the param from the GameObject** — renaming the toggle node later is a
   param rename: remote/saved state and OSC bindings silently detach. Name nodes finally at plan
   time.
