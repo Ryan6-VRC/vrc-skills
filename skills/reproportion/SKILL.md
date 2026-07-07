@@ -178,11 +178,14 @@ not a block. This is the reshape half of `own-mergeable`, which owns the extract
 authoring around it, and routes the wear/merge to `compose-mergeable`. A later reshape of an
 **already-owned** mergeable re-enters here directly: swap the `.blend`'s appended base reference for the
 new target, apply the new edge/recipe, re-export armature-scoped — `own-mergeable`'s extraction/prune/seam
-apparatus is first-owning work, not repeated.
+apparatus is first-owning work, not repeated. A **cross-base** reshape saves into the **new target base's
+bucket** (`Blender/Outfits/<NewBase>/<Outfit>/`) — it never overwrites the original base's `.blend`; one
+outfit fitted to two bases is two buckets (the owned-outfit filing rule).
 
-Reconciling a base edge onto a mergeable needs adjustments the base itself never hits (the source guard
-itself needs none — it warns-and-assumes a `vendor`-stamped mergeable matches any named-source edge, so a
-freshly-imported piece takes the base edge without a re-stamp):
+Reconciling a base edge onto a mergeable needs adjustments the base itself never hits. The source guard
+is not one of them: a freshly-imported mergeable is **base-absent**, and the guard exact-matches both
+axes now, so absent is a hard **offender**, not an assumed pass. The mergeable must be **`stamp_base`'d
+to its target base first** — `own-mergeable` does this right after import, before this reshape:
 - **Skip base-only morphs.** The base's edge carries morphs the mergeable lacks (`Bra_Breasts_small`);
   an absent shape-key is a hard offender. Skip each with the shape-key override (`NAME=null`).
 - **Propagate name-variant morphs.** The edge drives a body morph by exact name (`Breasts_small`); a
@@ -195,11 +198,15 @@ freshly-imported piece takes the base edge without a re-stamp):
   terminal and needs **no compose-side top-up**; the *negative* baked cumulative is the signal to
   `compose-mergeable` that it's a fit-time proxy (flag-only, not a base `Breasts_big` obligation).
 
-**Cross-base only within a shared base body.** Applying one family's edge to a mergeable authored for
-another works *only* when they share the base body — the edge is then a same-body reshape (`plum→chiffon`
-is a uniform scale between two sizes of one mesh), chained as a recipe when no direct edge exists. A
-genuinely different base is a **refit** (MochiFitter — not yet integrated; roadmap in
-`docs/mochifitter.md`), not this.
+**Cross-base via an explicit equivalency profile.** plum, chiffon, and chocolat are **distinct bases**,
+not one shared body — what bridges them is an explicit `profiles/*.json` **equivalency edge**: a
+**no-op** (identity, shared-mesh bases like chiffon↔chocolat) or a **pure-scale** (e.g. plum↔chiffon).
+A base-changing equivalency profile is a valid, trusted edge kind — authored on human judgment, same
+trust as any profile, first-class rather than a hack. When the outfit's native base differs from the
+target, chain the equivalency edge *before* the reproportion edge, same as any recipe with no direct
+edge. Author it like any edge: `unproportioned` origin state, explicit `source_base`/`target_base`. Only
+a genuinely **non-topo** different base — one no scale/bone-op/shapekey transform can bridge — is a
+**refit** (MochiFitter — not yet integrated; roadmap in `docs/mochifitter.md`), not this.
 
 ## Tools
 

@@ -58,6 +58,13 @@ root, at identity local transform. A mergeable authored for this base auto-targe
 Two seams to resolve, plus the owned-side collider gap to close — all cheap, each catching a silent
 failure a green console hides.
 
+- **Provenance fit gate (owned mergeables only).** For an owned mergeable (asset path under `Assets/…`,
+  not `Assets/Vendor/…`), resolve both mirrored provenance blends — the mergeable's own and the target
+  base's — and read each `(base, state)` via avatarprep **`report_stamps`** (Decision 2's mirror). If the
+  pairs mismatch, or either stamp is missing entirely: **loud may-block WARNING, write nothing** — this
+  is not a compose-side repair, it's `own-mergeable`'s re-stamp-and-refile loop (Decision 3); route back
+  to it. A vendor mergeable carries no stamp and skips this gate outright, falling through to the
+  hit-rate check below — which is why that check stays as the vendor/confirmatory fallback.
 - **Armature seam — core-body-bone hit-rate.** Do the mergeable's core humanoid bones resolve by name
   against the base armature? A mergeable authored for *this* base matches by contract. A **wrong-base**
   mergeable matches only a handful and MA auto-creates the rest as phantom bones (`nondestructive.md`) —
@@ -111,8 +118,9 @@ shapekeys*); honor it there, don't re-derive it. The value lives in one of two f
   weight zeroed, so there is **no in-scene signal** — the provenance stamp is the only truth.
 
 **The baked read.** For each owned side (asset path under `Assets/…`, not `Assets/Vendor/…` — vendor
-sides are never baked and have no blend; skip them): resolve its co-located provenance blend
-(`Blender/<Avatars|Outfits>/<Name>/<Name>.blend`) and read it via avatarprep **`report_stamps`**
+sides are never baked and have no blend; skip them): resolve its co-located provenance blend — an
+**outfit** is base-first, `Blender/Outfits/<Base>/<Outfit>/<Outfit>.blend`; an **avatar** stays
+`Blender/Avatars/<Name>/<Name>.blend` — and read it via avatarprep **`report_stamps`**
 (`cli/report_stamps.py --in <blend>`, or `report_stamps(bpy.context.scene)` live over the Blender MCP).
 It groups each baked mesh under its owning armature (`armatures[].meshes[]`); meshes with no single
 owner fall to top-level `unbound`.
@@ -120,9 +128,9 @@ owner fall to top-level `unbound`.
 **Key the read by the side's own armature — never "every baked mesh in the blend."** A mergeable's blend
 also holds the appended fit-reference base body (`own-mergeable`), a second armature whose morphs a
 read-everything would fuse into the mergeable's. The handle: a **mergeable (Outfits)** is the entry named
-`Armature.<Name>` (the same `<Name>` token as the blend path); a **base (Avatars)** is the lone
-`Armature` entry — an `Armature.<Name>` lookup there matches nothing and silently drops the base's own
-morph.
+`Armature.<Outfit>` (the blend path's own leaf token — the `<Outfit>` name, not the `<Base>` folder
+segment it sits under); a **base (Avatars)** is the lone `Armature` entry — an `Armature.<Name>` lookup
+there matches nothing and silently drops the base's own morph.
 
 **Collapse that entry's `meshes[]` to the side's obligation** — the coherence reasoning the tool leaves
 to this skill. Reduce each same-named baked shape over the meshes that *carry* it — absence is not
@@ -189,9 +197,10 @@ Reach for these by role; open each to learn its exact entry point.
   shows the pre-edit proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the
   same-call case.
 - **avatarprep `report_stamps`** (Blender, via MCP or `cli/report_stamps.py`) — the baked-morph read in
-  step 5. Returns each bound mesh's `avatarprep_baked` map grouped **under its owning armature** (+ an
-  `unbound` bucket); step 5 keys on the side's own armature handle and does the cross-mesh collapse. The
-  provenance blend is the source of truth.
+  step 5, and also step 3's provenance fit gate: the same call returns each armature's `avatarprep_base`/
+  `avatarprep_state` pair alongside the bound-mesh `avatarprep_baked` map grouped **under its owning
+  armature** (+ an `unbound` bucket); step 5 keys on the side's own armature handle and does the
+  cross-mesh collapse. The provenance blend is the source of truth.
 - **Modular Avatar / VRCFury** — the vendors' frameworks. This skill *drives* the seam they authored; it
   never re-authors it.
 
