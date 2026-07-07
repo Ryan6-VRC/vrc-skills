@@ -53,8 +53,7 @@ each decides a later branch:
 
 ## Phase 1 — Blender: own the geometry (+ reproportion)
 
-- **Import** the source FBX (the whole avatar, if monolithic) with the **avatarprep import** function —
-  never a native import, which corrupts bone orientation.
+- **Import** the source FBX (the whole avatar, if monolithic) with the **avatarprep import** function.
 - **`stamp_base` the armature with the target base's canonical lineage name** (e.g. `chocolat` — the
   base you're fitting to; if the vendor cut is a different-but-equivalent base, stamp its native base
   and let an equivalency profile carry it across). Seed this **here, right after import — not after the
@@ -135,6 +134,21 @@ Work on the **scene instance** of the owned FBX; prefab only at the end (Phase 3
   - Two variants (MA *and* VRCFury) are a deliberate exception: build a dynamics-only base prefab and
     make each seam a thin variant of it, so the dynamics aren't grafted twice.
 
+## Phase 2C — Own the seam's clips (skip if none)
+
+Only when the seam carries its **own animator** (an MA MergeAnimator / VRCFury FullController with clips) —
+**skip the armature-link-only case, the common one.** A vendor seam's clips still bind **vendor `.anim`
+assets by GUID**, so owning the geometry without owning the clips leaves them vendor-coupled or inert. Run
+the `unity.md` **UC2** clip phase, `whatIf` first:
+
+1. **`OwnControllerClips(controller, outDir)`** — materialize owned `.anim` copies and repoint the
+   controller's motion slots (closes the CleanController GUID-coupling gap).
+2. **`RepathClips(controller, oldPaths, newPaths)`** — rewrite the owned clips' binding paths. It is
+   **frame-blind**: supply the moves in **this seam's frame** (MA `pathMode`/`relativePathRoot`; VRCFury
+   mount-relative), the one thing the tool can't infer.
+
+`compose-mergeable` invokes this same phase for the owned-outfit inline case — it is one named unit.
+
 ## Phase 3 — Verify
 
 Structural and basic — **the real proof is a compose**, so hand off after:
@@ -143,6 +157,9 @@ Structural and basic — **the real proof is a compose**, so hand off after:
 - **Reproportion coherence** — the owned mergeable's bones land on the target base's reshaped world
   positions (compare a few; the vendor piece would sit off).
 - **Clean transplant diagnostics** — flagged-missing 0 for kept hosts, anchors bound, no vendor leak.
+- **Placement proof (`AvatarLint`)** — place onto the target base and run `AvatarLint.Inspect(<root>)`; expect
+  `PASS`. A `CLASSIFY` names a seam scene-ref or a Phase-2C clip binding still unresolved against the placed
+  scene — fix it before hand-off rather than eyeballing the pairing.
 
 If a later compose finds the provenance stamp missing or mismatched against the base, the fix
 re-enters **this skill** (re-stamp + refile) — it is not patched in the Unity scene.

@@ -62,7 +62,7 @@ ask the operator for where they live).
 
 ## Phase 2 — Blender normalize (round-trip)
 
-**Single superset FBX:** import it with the **avatarprep import** function (headless or windowed).
+**Single superset FBX:** import it with the **avatarprep import** function.
 
 **No single superset (Phase-1 merge case):** build the superset first, in place of that single import. Import the
 N relevant FBX, then run **avatarprep `armature_compat`** (base vs each merge-in, read-only) and **read its
@@ -199,8 +199,10 @@ Final cleanup: produce a **clean FX** (the **CleanController** tool). It keeps o
 `keepLayerNames`; choose them with the **hand-gesture-relative heuristic** — locate the Left/Right Hand
 gesture layers, keep them plus every layer **at or above** them, drop the outfit/visibility toggles below
 (base layer 0 is always kept). The tool FAILs loud if a named layer is absent or ambiguous. If the head
-mesh was renamed, the kept facial layers stay **inert** until the deferred clip-repath tool — note it,
-don't block on it. Empty expression parameters + menu, wired into the descriptor.
+mesh was renamed, the kept facial layers' clips bind it by its old name and stay **inert** — repath them
+with the **UC2** clip phase (`OwnControllerClips → RepathClips`, `unity.md`), here or deferred to compose
+where `AvatarLint` surfaces the break; note it, don't block. Empty expression parameters + menu, wired into
+the descriptor.
 
 ## Tools
 

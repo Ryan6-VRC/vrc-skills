@@ -81,16 +81,20 @@ failure a green console hides.
   it merges with **no error** while the outfit skins to bones that never move. If the core hit-rate is catastrophic, this is
   the wrong base: **fail loud, surface, route to refit** (step "Scope"). Do not repair it — MA's own
   adjust-names + reset-position can rough-fit it, but that is a refit and out of scope.
-- **Object/scene refs — resolve every one against the avatar root.** An MA reference is either
-  **live-object** (a direct scene pointer, which follows a renamed target) or **path-encoded** (a
-  name/path string — e.g. an `AvatarObjectReference` with no target object — which silently fails on a
-  rename); only the path-encoded ones break here, so sweep them all. Not just the static carriers
-  (`BlendshapeSync.ReferenceMesh`, `BoneProxy.target`) but the whole **reactive family** (`ShapeChanger`,
-  `ObjectToggle`, `MaterialSetter`/`Swap`, `MeshDeleter`) resolves this way and breaks identically. The
-  usual cause is a **renamed seam**: `own-base` normalizes the primary body mesh to `Body_Base` (vendors
-  ship `Body_base`), so a vendor mergeable's `Body_base` reference fails against an owned base. **Repath
-  in-scene** — retarget to the renamed object; a scene edit, **no asset write** (not the F clip-repath
-  tool — clip bindings rarely break here, MA/VRCFury rewrite merged-animator paths at build).
+- **Broken refs — classify with `AvatarLint`, then route by class.** Run `AvatarLint.Inspect(<avatar root>)`
+  on the placed avatar: against the placed scene it names every MA scene ref and every clip/controller
+  binding a rename left unresolved (`PASS`/`CLASSIFY`) — the whole reactive family included (`ShapeChanger`,
+  `ObjectToggle`, `MaterialSetter`/`Swap`, `MeshDeleter`, `BlendshapeSync`, `BoneProxy`). The usual cause is
+  the **renamed seam**: `own-base` normalizes the primary body mesh to `Body_Base`, vendors ship `Body_base`.
+  AvatarLint classifies and names; you route (a deliberately-null toggle target or a portability-redundant
+  path where several point at one object is a legitimate non-offender — judge, don't blindly repath):
+  - **`MA-scene-ref`** → **repath in-scene**: retarget the reference to the renamed object — a scene edit,
+    **no asset write**; non-aborting.
+  - **`clip-binding`** → asset surgery, routed by the offender's **`clipAssetPath`** (not its scene `path`,
+    which always looks writable): an **owned/writable** `.anim` is repathed **inline** (the
+    `OwnControllerClips → RepathClips` clip phase, `unity.md` UC2); an **unowned vendor** clip (`clipAssetPath`
+    under `Assets/Vendor/`|`Packages/`) needs a geometry round-trip compose can't do — **abort the compose and
+    route to `own-mergeable`**.
 - **Physbone collider refs — relink null base-collider slots.** A placed physbone whose `colliders[]`
   holds a **null** slot collided against a *base-owned* collider the mergeable doesn't carry
   (`own-mergeable` leaves it null by design — the collider is the base's). Re-point each null at the
@@ -213,6 +217,5 @@ Reach for these by role; open each to learn its exact entry point.
   cross-mesh collapse. The provenance blend is the source of truth.
 - **Modular Avatar / VRCFury** — the vendors' frameworks. This skill *drives* the seam they authored; it
   never re-authors it.
-
-Deferred capability this skill assumes will land: a **generalized broken-seam / scene-ref linter** (the
-deep version of step 3's tripwires). Not a prerequisite.
+- **`AvatarLint`** (agent-tools, via `execute_code`) — the step-3 broken-ref classifier: `PASS`/`CLASSIFY`
+  with per-offender class + `clipAssetPath`. Inspection-only; you apply the remedy it routes to.
