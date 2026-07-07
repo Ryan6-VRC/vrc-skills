@@ -65,9 +65,11 @@ belong inside a repo — use a scratch/output dir.
 Dispatch a general-purpose subagent with exactly this contract — inputs `(manifest path,
 target seconds)`, returns `(cut path, one verify frame path, duration)`:
 
-1. Run `showcase.py beats --manifest <path>` for every stamped artifact as a recording
-   offset, and read the take's RunLogs (filenames say which tool ran when; bodies say what it
-   did) to build a narrative timeline of the take.
+1. Run `showcase.py beats --manifest <path>`. The stamped grabs, in offset order, are the
+   take's timeline — the grab dir is shared across sessions, so use only those inside the
+   recording window (beats flags the rest `[outside recording]`). Unity `execute_code` work
+   leaves no RunLogs; if the grab dirs hold any, their filenames and bodies caption the beats,
+   but the grabs you Read in step 2 carry the story on their own.
 2. Choose 2–3 stills that carry the story. Heuristics: a cluster of near-simultaneous grabs is
    one moment — keep the last; an isolated grab after a long gap earned its place. Read the
    candidates as images and keep only frames that visibly show something (a fit check, a
