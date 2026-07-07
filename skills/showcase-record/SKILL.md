@@ -28,8 +28,9 @@ belong inside a repo — use a scratch/output dir.
    `showcase.py check --monitor N` for candidate N, Read each frame, pick the one showing the
    staged layout. Never assume an index; it is machine- and cabling-specific.
 2. **Roll.** `showcase.py start --monitor N --out <take-dir> --grab-dir <dir>` — pass every
-   dir where stamped grabs will land (Unity `Application.temporaryCachePath` for AvatarGrab;
-   add others as they exist). Then `showcase.py check --manifest <path>` and **Read the frame
+   dir where stamped grabs will land (Unity `Application.temporaryCachePath` for AvatarGrab; a
+   Blender task also passes mesh_grab's `<tempfile.gettempdir()>/avatarprep_meshgrab`; add others
+   as they exist). Then `showcase.py check --manifest <path>` and **Read the frame
    as an image**: confirm it shows the staged monitor. Wrong or black frame → stop and fix
    before any work is spent. Always use the default GPU capture (ddagrab) — measured rock-solid
    30fps under a fully saturated Unity; `--gdigrab` exists only for a machine where ddagrab
