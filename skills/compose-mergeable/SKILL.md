@@ -64,12 +64,16 @@ failure a green console hides.
   it merges with **no error** while the outfit skins to bones that never move. If the core hit-rate is catastrophic, this is
   the wrong base: **fail loud, surface, route to refit** (step "Scope"). Do not repair it — MA's own
   adjust-names + reset-position can rough-fit it, but that is a refit and out of scope.
-- **Scene-refs — resolve against the avatar root.** Each MA scene-ref (`BlendshapeSync.ReferenceMesh`,
-  `BoneProxy.target`) must resolve. A broken ref means a **renamed seam**: `own-base` normalizes the
-  primary body mesh to `Body_Base` (our convention; vendors ship `Body_base`), so a vendor mergeable's
-  `Body_base` reference silently fails against an owned base. **Repath it in-scene** — retarget the
-  reference to the renamed object. This is a scene edit, **no asset write** (it is *not* the F clip-repath
-  tool; clip bindings rarely break here because MA/VRCFury rewrite merged-animator paths at build).
+- **Object/scene refs — resolve every one against the avatar root.** An MA reference is either
+  **live-object** (a direct scene pointer, which follows a renamed target) or **path-encoded** (a
+  name/path string — e.g. an `AvatarObjectReference` with no target object — which silently fails on a
+  rename); only the path-encoded ones break here, so sweep them all. Not just the static carriers
+  (`BlendshapeSync.ReferenceMesh`, `BoneProxy.target`) but the whole **reactive family** (`ShapeChanger`,
+  `ObjectToggle`, `MaterialSetter`/`Swap`, `MeshDeleter`) resolves this way and breaks identically. The
+  usual cause is a **renamed seam**: `own-base` normalizes the primary body mesh to `Body_Base` (vendors
+  ship `Body_base`), so a vendor mergeable's `Body_base` reference fails against an owned base. **Repath
+  in-scene** — retarget to the renamed object; a scene edit, **no asset write** (not the F clip-repath
+  tool — clip bindings rarely break here, MA/VRCFury rewrite merged-animator paths at build).
 - **Physbone collider refs — relink null base-collider slots.** A placed physbone whose `colliders[]`
   holds a **null** slot collided against a *base-owned* collider the mergeable doesn't carry
   (`own-mergeable` leaves it null by design — the collider is the base's). Re-point each null at the
