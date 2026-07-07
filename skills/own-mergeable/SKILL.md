@@ -53,7 +53,10 @@ each decides a later branch:
 
 ## Phase 1 — Blender: own the geometry (+ reproportion)
 
-- **Import** the source FBX (the whole avatar, if extracting from a monolithic one).
+- **Import** the source FBX with the **avatarprep import** function (headless or windowed), never a
+  native/default FBX import — the avatarprep importer sets the options that preserve bone orientation,
+  which a native import silently corrupts (`docs/nondestructive.md`). The whole avatar, if extracting
+  from a monolithic one.
 - **`stamp_base` the armature with the target base's canonical lineage name** (e.g. `chocolat` — the
   base you're fitting to; if the vendor cut is a different-but-equivalent base, stamp its native base
   and let an equivalency profile carry it across). Seed this **here, right after import — not after the
