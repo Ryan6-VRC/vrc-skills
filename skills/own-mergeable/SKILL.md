@@ -135,8 +135,8 @@ Structural and basic — **the real proof is a compose**, so hand off after:
 - **Clean transplant diagnostics** — flagged-missing 0 for kept hosts, anchors bound, no vendor leak.
 
 Then convert to a **prefab variant** of the FBX and hand to `compose-mergeable` + the operator's
-playmode for the visual/behavioral bar. Don't judge fit from an `AvatarGrab` whose summary flags an
-unresolved preview (unfocused Unity) — focus and re-grab.
+playmode for the visual/behavioral bar. Grab in a separate call from any edit — a same-call grab shows
+the pre-edit proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the same-call case.
 
 ## Tools
 

@@ -135,6 +135,7 @@ result matches the plan.
   dependency read.
 - **`GimmickReport`** — gimmick subtree digest for step 5.
 - **`AvatarGrab`** — both-states visual check for dependency closure (NDMF preview resolves
-  reactive components; needs Unity focus outside play mode).
+  reactive components). Grab in a separate call from any edit — a same-call grab shows the pre-edit
+  proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the same-call case.
 - **av3emulator** — drive the new controls live for step 6 via its runtime lists (`unity.md`
   sharp edges); Gesture Manager stays disabled per the play-entry gate.

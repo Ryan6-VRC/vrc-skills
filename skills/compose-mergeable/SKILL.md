@@ -185,8 +185,9 @@ Reach for these by role; open each to learn its exact entry point.
 - **`AvatarGrab`** (agent-tools, via `execute_code`) — drives the Scene View to render **one** avatar
   in isolation, headlight-lit, **NDMF preview-resolved** (reactive fit applied), from named axis angles
   to a temp contact-sheet PNG. The resolved-fit look for steps 4 and 6 — not a baked-upload proof, and a
-  *verification* tool, not a compose tool. Reactive fit resolves only while Unity holds OS focus; if the
-  summary flags an unfocused grab, focus Unity and re-grab.
+  *verification* tool, not a compose tool. Grab in a separate call from any edit — a same-call grab
+  shows the pre-edit proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the
+  same-call case.
 - **avatarprep `report_stamps`** (Blender, via MCP or `cli/report_stamps.py`) — the baked-morph read in
   step 5. Returns each bound mesh's `avatarprep_baked` map grouped **under its owning armature** (+ an
   `unbound` bucket); step 5 keys on the side's own armature handle and does the cross-mesh collapse. The

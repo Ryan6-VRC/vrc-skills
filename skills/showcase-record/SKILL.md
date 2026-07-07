@@ -24,7 +24,7 @@ belong inside a repo — use a scratch/output dir.
 
 1. **Stage.** The operator tiles the task windows on one monitor (Do-Not-Disturb, auto-hide
    taskbar, neutral wallpaper) and says go. Tell them to **leave Unity as the focused window**
-   when they step away — the self-foreground below is the recovery path, not the default state. Find that monitor — ask, or discover it:
+   when they step away. Find that monitor — ask, or discover it:
    `showcase.py check --monitor N` for candidate N, Read each frame, pick the one showing the
    staged layout. Never assume an index; it is machine- and cabling-specific.
 2. **Roll.** `showcase.py start --monitor N --out <take-dir> --grab-dir <dir>` — pass every
@@ -41,20 +41,8 @@ belong inside a repo — use a scratch/output dir.
 4. **Work normally.** Run the avatar task under its own skill, fully autonomous: never wait
    for input, decide everything yourself, checkpoint as usual. Do not perform for the camera —
    grab (AvatarGrab etc.) only where the work genuinely wants a visual check; those diagnostic
-   moments *are* the hero shots. NDMF preview resolves only while Unity holds OS focus — before
-   any grab, have Unity foreground *itself* via `execute_code` (plain SetForegroundWindow is
-   blocked from background; the ALT-nudge releases the foreground lock — verified to flip
-   `isApplicationActive` true):
-
-   ```csharp
-   [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool SetForegroundWindow(System.IntPtr h);
-   [System.Runtime.InteropServices.DllImport("user32.dll")] static extern void keybd_event(byte vk, byte scan, uint flags, System.UIntPtr extra);
-   keybd_event(0xA4, 0, 0, System.UIntPtr.Zero); keybd_event(0xA4, 0, 2, System.UIntPtr.Zero); // ALT nudge
-   SetForegroundWindow(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
-   ```
-
-   If a grab's summary still carries the unresolved-preview `note=`, re-foreground and retake.
-   A failure on camera is honest; keep going — first take, no re-shoots.
+   moments *are* the hero shots. A failure on camera is honest; keep going — first take, no
+   re-shoots.
 5. **Wrap.** After the final commit: `showcase.py stop --manifest <path>`, then dispatch the
    edit subagent (below) with the manifest path and a target duration (30–120s by task
    complexity). Relay its returned cut path and verify frame to the operator; run
