@@ -102,21 +102,28 @@ failure a green console hides.
   write) — left null, the physbone collides against nothing. Act on the null slot, not on provenance: a
   vendor mergeable has none, so this is a no-op for it.
 
-### 4. De-conflict the meshes
+### 4. De-conflict the meshes (quick pass)
 
-A full outfit replaces base clothing; overlapping meshes clip.
+A full outfit replaces base clothing; overlapping meshes clip. Disabling those meshes is the quick,
+in-scope pass. But a base garment is often **coupled to body blendshapes** (`outfits.md`) — disable
+the mesh alone and the pre-collapsed body region it covered stays collapsed, a missing limb you won't
+see until you look. This step commits the mesh disables only; the coupled-blendshape reconcile is the
+opt-in **`map-outfit-shapes`** skill. Flag that follow-up whenever you disable a coupled garment —
+don't run the full reconcile inline unless the operator asks, and don't silently ship a half-strip.
 
-- **Never start from a fully-clothed base.** If the base already wears a complete outfit, refuse and tell
-  the operator to compose onto a *kisekae* (dress-up) base — the underwear-only/nude variant sold to be
-  dressed, i.e. no outfit meshes to de-conflict against.
+- **Prefer the kisekae (undressed) base variant.** Many vendors ship a dedicated `<Name>_kisekae`
+  prefab — body + underwear, no costume — beside the regular clothed base (`<Name>.prefab`); compose
+  onto that and there is little to strip (`outfits.md`). If the vendor ships only a clothed base (or
+  only shader variants of it), strip it here. A base locked in a complete *fixed* outfit with no
+  toggle surface is the refuse case — ask for the kisekae variant.
 - **Disable, never delete.** A later optimizer strips unused mesh; disabling is reversible, deletion is
   not.
-- **Commit only the unambiguous disables** — underwear/bra under a full outfit. **Enumerate** the
-  uncertain overlaps (bandages, shoes, wings, creature parts) for the operator; do not disable on a
-  low-confidence spatial guess. Clipping judgment from names alone is unreliable — `AvatarGrab` the
-  composed base (default `[front,back]`, add `left`/`right` for side overlaps) and read the contact
-  sheet to see which overlaps actually clip before disabling. Anything still low-confidence is the
-  operator's call.
+- **Commit only the unambiguous disables** — underwear and costume under a full outfit, across **both
+  layers** (base stockings overlap a stockinged outfit as much as the base dress does). **Enumerate**
+  the uncertain overlaps (bandages, shoes, wings, creature parts) for the operator; do not disable on a
+  low-confidence spatial guess. Judge overlap by garment coverage and role, not names; `AvatarGrab`
+  confirms clipping where a capable model can read the sheet. A limb that **vanishes** when a base
+  garment goes is a coupled blendshape — the `map-outfit-shapes` reconcile, not a clipping call.
 
 ### 5. Shape coherence (blendshape / baked)
 
@@ -192,9 +199,14 @@ whether the resolved seam actually *sits right*.)
 ### 7. Hand off
 
 The mergeable's menu / parameters / animator merge at build, but this skill does **not** verify they
-cohere — **flag an `author-menu` follow-up pass** as required-but-out-of-scope. Then ask the operator to
-eyeball the result: the spot-check is the real verification bar. A **play-mode build** is the
-operator's call at a suitable time, **not** a gate here.
+cohere. Whether a menu pass is even needed forks on what the avatar already ships: a vendor base
+arrives **menu-complete** — menu / params / FX on the `VRCAvatarDescriptor`, where absent MA/VRCFury
+components is the normal vendor state, **not** an empty menu (`outfits.md`). If the operator only wants
+to exercise existing controls, that is a **play-mode drive of the shipped menu** (`verify.md`), not
+authoring — do not reach for `author-menu`. Flag an `author-menu` follow-up only for the **new**
+controls the operator asked for (and a `map-outfit-shapes` follow-up if step 4 left coupled blendshapes
+unreconciled). Then ask the operator to eyeball the result: the spot-check is the real verification
+bar. A **play-mode build** is the operator's call at a suitable time, **not** a gate here.
 
 ## Tools
 

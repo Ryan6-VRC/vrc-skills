@@ -1,6 +1,6 @@
 ---
 name: author-menu
-description: Use when adding expression-menu controls to a composed avatar — "add toggles for these outfits/props", "build this avatar's menu", "expose this gimmick" — or when placing a gimmick module's shipped menu. Not placing the mergeable itself (compose-mergeable), not creating a gimmick's internal logic.
+description: Use when authoring NEW expression-menu controls on a composed avatar (outfit/prop toggles, gimmick fronts) or placing a gimmick's shipped menu. Not for testing controls the avatar already ships — drive those in play mode, don't author. Not placing the mergeable (compose-mergeable) or a gimmick's internals.
 ---
 
 # Author expression menus on a composed avatar
@@ -23,12 +23,17 @@ outfit/mergeable prefabs (`menus.md`).
   a module, with or without its own menu — so the gimmick mode below is the whole interface.
 - **Custom animator logic beyond what toggle actions/reactions express** (chained drivers,
   bespoke layers) → operator/controller work; flag, don't improvise.
+- **The avatar already ships its menu and the operator only wants to test it** → **not an authoring
+  task.** A vendor base carries menu / params / FX on the `VRCAvatarDescriptor`; absent MA/VRCFury
+  components does **not** mean absent menu (`outfits.md`). Exercising shipped controls is a play-mode
+  drive (`verify.md`) — never author to "make something testable."
 
 ## The flow
 
 ### 1. Survey
 
-Read what exists before adding: the descriptor's menu/params assets, every MA menu/reactive
+Read what exists before adding: the descriptor's menu/params assets (a vendor base's shipped menu
+lives here, not in MA/VRCFury components), every MA menu/reactive
 component and VRCFury feature already on the avatar and its composed mergeables (in the **live
 scene**, not prefab YAML — `menus.md` §Reading), gimmick subtrees (`GimmickReport`), and the FX
 controller's params (`ControllerReport`) — orphaned vendor params may be re-exposable instead of
@@ -58,11 +63,11 @@ shape can skip re-confirmation for additions that match it.
 
 ### 3. Close each toggle's dependencies
 
-A toggle is a dependency closure (`menus.md`): trace edges in its authority order — existing MA
-reactions → the vendor's original toggle clips (`ClipReport`) → base blendshape naming
-conventions → ask the user or `AvatarGrab` both states. Unresolvable edges go in the plan as
-open questions, not guesses. Duplicated blendshape names across meshes are driven in lockstep;
-whole-outfit edges attach to the outfit root's node, not a piece toggle.
+A toggle is a dependency closure (`menus.md`): which body shapes the garment drives, resolved in
+authority order, is exactly the `map-outfit-shapes` read — produce or reuse that map rather than
+re-deriving the edges here. Unresolvable edges go in the plan as open questions, not guesses.
+Duplicated blendshape names across meshes are driven in lockstep; whole-outfit edges attach to the
+outfit root's node, not a piece toggle.
 
 ### 4. Write
 
