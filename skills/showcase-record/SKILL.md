@@ -22,8 +22,8 @@ belong inside a repo — use a scratch/output dir.
 
 ## The flow
 
-1. **Stage.** The operator tiles the task windows on one monitor (Do-Not-Disturb, auto-hide
-   taskbar, neutral wallpaper) and says go. Tell them to **leave Unity as the focused window**
+1. **Stage.** The operator tiles the task windows on one monitor (Do-Not-Disturb, neutral
+   wallpaper) and says go. Tell them to **leave Unity as the focused window**
    when they step away. Find that monitor — ask, or discover it:
    `showcase.py check --monitor N` for candidate N, Read each frame, pick the one showing the
    staged layout. Never assume an index; it is machine- and cabling-specific.
@@ -31,7 +31,8 @@ belong inside a repo — use a scratch/output dir.
    dir where stamped grabs will land (Unity `Application.temporaryCachePath` for AvatarGrab; a
    Blender task also passes mesh_grab's `<tempfile.gettempdir()>/avatarprep_meshgrab`; add others
    as they exist). Then `showcase.py check --manifest <path>` and **Read the frame
-   as an image**: confirm it shows the staged monitor. Wrong or black frame → stop and fix
+   as an image**: confirm it shows the staged monitor and that no taskbar is
+   intruding. Wrong frame, black frame, or a visible taskbar → stop and tell the operator
    before any work is spent. Always use the default GPU capture (ddagrab) — measured rock-solid
    30fps under a fully saturated Unity; `--gdigrab` exists only for a machine where ddagrab
    itself won't run.
@@ -39,10 +40,13 @@ belong inside a repo — use a scratch/output dir.
    manifest=<path>" — so the obligation survives compaction. The manifest path is the only
    handle anything downstream needs.
 4. **Work normally.** Run the avatar task under its own skill, fully autonomous: never wait
-   for input, decide everything yourself, checkpoint as usual. Do not perform for the camera —
-   grab (AvatarGrab etc.) only where the work genuinely wants a visual check; those diagnostic
-   moments *are* the hero shots. A failure on camera is honest; keep going — first take, no
-   re-shoots.
+   for input, decide everything yourself, checkpoint as usual. The terminal is the video's text
+   layer, so voice a little more of your real reasoning than a private run would: when a choice
+   has live alternatives, name the ones you weighed and why you picked — a sentence, in the
+   normal flow, before you act. That is externalizing thought you already had, not performing
+   for the camera — don't manufacture deliberation, slow the work, or grab (AvatarGrab etc.)
+   anywhere the work doesn't genuinely want a visual check; those diagnostic moments *are* the
+   hero shots. A failure on camera is honest; keep going — first take, no re-shoots.
 5. **Wrap.** After the final commit: `showcase.py stop --manifest <path>`, then dispatch the
    edit subagent (below) with the manifest path and a target duration (30–120s by task
    complexity). Relay its returned cut path and verify frame to the operator; run
