@@ -35,8 +35,8 @@ outfit/mergeable prefabs (`menus.md`).
 Read what exists before adding: the descriptor's menu/params assets (a vendor base's shipped menu
 lives here, not in MA/VRCFury components), every MA menu/reactive
 component and VRCFury feature already on the avatar and its composed mergeables (in the **live
-scene**, not prefab YAML — `menus.md` §Reading), gimmick subtrees (`GimmickReport`), and the FX
-controller's params (`ControllerReport`) — orphaned vendor params may be re-exposable instead of
+scene**, not prefab YAML — `menus.md` §Reading), gimmick subtrees (`ReportGimmick`), and the FX
+controller's params (`ReportController`) — orphaned vendor params may be re-exposable instead of
 new. If a recent bake exists, read the true synced-bit count from it; the authored assets
 under-count (`runtime.md`).
 
@@ -105,10 +105,10 @@ offender and its fix — clear it and re-enter before trusting anything the sess
 copy (removed on exit), so one play session is both the baked read and the live drive — read the
 **baked** menu tree, params, and true synced-bit count from the play copy, then drive each new
 control (rung 3, `verify.md`): param changes, mesh/blendshape response, dependency edges firing.
-All driving *and observation* happens inside the play session — `AvatarGrab` in play mode captures
+All driving *and observation* happens inside the play session — `RenderAvatar` in play mode captures
 the driven state; after exit the scene reverts to authoring state, where a grab can verify only
 static baseline/clipping, never a toggle.
-`AvatarGrab` both states of any toggle whose dependency closure was uncertain — clipping in the
+`RenderAvatar` both states of any toggle whose dependency closure was uncertain — clipping in the
 off state means a missed edge. Authoring components are cheap to edit; loop until the baked
 result matches the plan.
 
@@ -136,10 +136,10 @@ result matches the plan.
   is small and the formats are moving targets.
 - **`AgentInspector`** — generic JSON snapshot of any subtree (MA + VRCFury components included);
   the survey workhorse.
-- **`ControllerReport` / `ClipReport`** — animator/clip digests for step 1 and the vendor-clip
+- **`ReportController` / `ReportClip`** — animator/clip digests for step 1 and the vendor-clip
   dependency read.
-- **`GimmickReport`** — gimmick subtree digest for step 5.
-- **`AvatarGrab`** — both-states visual check for dependency closure (NDMF preview resolves
+- **`ReportGimmick`** — gimmick subtree digest for step 5.
+- **`RenderAvatar`** — both-states visual check for dependency closure (NDMF preview resolves
   reactive components). Grab in a separate call from any edit — a same-call grab shows the pre-edit
   proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the same-call case.
 - **av3emulator** — drive the new controls live for step 6 via its runtime lists (`unity.md`

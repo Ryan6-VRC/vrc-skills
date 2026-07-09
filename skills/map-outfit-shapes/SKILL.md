@@ -52,12 +52,12 @@ This is the surface you reason over.
 ### 2. Resolve each edge in the authority order
 
 Follow the base-coupling authority order (`outfits.md` §The FX controller), reading each tier with its
-tool: **FX clips** (`ControllerReport` / `ClipReport`) over **MA/VRCFury reactions** on the composed
+tool: **FX clips** (`ReportController` / `ReportClip`) over **MA/VRCFury reactions** on the composed
 pieces (`AgentInspector`) over **naming** (a hint, never acted on alone) over **asking the user**
 (first-class when the graph is silent — a garment with no declared coupling has none until confirmed;
 don't invent one).
 
-**Vision is a check, not a source.** If the graph and the user leave an edge open, `AvatarGrab`
+**Vision is a check, not a source.** If the graph and the user leave an edge open, `RenderAvatar`
 confirms it only by **before/after comparison** — the shape worn vs. zeroed, the mesh on vs. off; read
 the *difference*, never a single capture. Vision confirms a hypothesis, it doesn't originate one.
 
@@ -88,7 +88,7 @@ overlaps almost everything, so a hit means "look here," never proof.
 
 Where the graph is silent on whether the outfit covers a region, settle it with the **coverage
 question, not an occlusion one**: turn the base piece *off* and check whether the outfit leaves that
-region **exposed or gapped** (`AvatarGrab` before/after, §2). Exposure → the outfit doesn't cover it
+region **exposed or gapped** (`RenderAvatar` before/after, §2). Exposure → the outfit doesn't cover it
 (keep it, or ask); clean coverage → the base piece is a hidden overlap (strip it). Asking "is the base
 garment still visible?" is the trap — an over-layered garment is visible *because* it is the thing to
 remove.
@@ -127,8 +127,8 @@ interrelate.
 
 - **Unity MCP `execute_code`** — inventory blendshapes, the AABB prefilter, disable a mesh, set a
   weight.
-- **`ControllerReport` / `ClipReport`** (agent-tools, via `execute_code`) — the FX-graph read of
+- **`ReportController` / `ReportClip`** (agent-tools, via `execute_code`) — the FX-graph read of
   step 2.
 - **`AgentInspector`** — MA/VRCFury reactions and the mesh/component layout.
-- **`AvatarGrab`** (agent-tools, via `execute_code`) — visual *confirmation* by before/after
+- **`RenderAvatar`** (agent-tools, via `execute_code`) — visual *confirmation* by before/after
   comparison (§2); NDMF preview-resolved; grab in a separate call from any edit.

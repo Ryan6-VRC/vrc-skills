@@ -81,12 +81,12 @@ failure a green console hides.
   it merges with **no error** while the outfit skins to bones that never move. If the core hit-rate is catastrophic, this is
   the wrong base: **fail loud, surface, route to refit** (step "Scope"). Do not repair it — MA's own
   adjust-names + reset-position can rough-fit it, but that is a refit and out of scope.
-- **Broken refs — classify with `AvatarLint`, then route by class.** Run `AvatarLint.Inspect(<avatar root>)`
+- **Broken refs — classify with `CheckAvatar`, then route by class.** Run `CheckAvatar.Inspect(<avatar root>)`
   on the placed avatar: against the placed scene it names every MA scene ref and every clip/controller
   binding a rename left unresolved (`PASS`/`CLASSIFY`) — the whole reactive family included (`ShapeChanger`,
   `ObjectToggle`, `MaterialSetter`/`Swap`, `MeshDeleter`, `BlendshapeSync`, `BoneProxy`). The usual cause is
   the **renamed seam**: `own-base` normalizes the primary body mesh to `Body_Base`, vendors ship `Body_base`.
-  AvatarLint classifies and names; you route (a deliberately-null toggle target or a portability-redundant
+  CheckAvatar classifies and names; you route (a deliberately-null toggle target or a portability-redundant
   path where several point at one object is a legitimate non-offender — judge, don't blindly repath):
   - **`MA-scene-ref`** → **repath in-scene**: retarget the reference to the renamed object — a scene edit,
     **no asset write**; non-aborting.
@@ -121,7 +121,7 @@ don't run the full reconcile inline unless the operator asks, and don't silently
 - **Commit only the unambiguous disables** — underwear and costume under a full outfit, across **both
   layers** (base stockings overlap a stockinged outfit as much as the base dress does). **Enumerate**
   the uncertain overlaps (bandages, shoes, wings, creature parts) for the operator; do not disable on a
-  low-confidence spatial guess. Judge overlap by garment coverage and role, not names; `AvatarGrab`
+  low-confidence spatial guess. Judge overlap by garment coverage and role, not names; `RenderAvatar`
   confirms clipping where a capable model can read the sheet. A limb that **vanishes** when a base
   garment goes is a coupled blendshape — the `map-outfit-shapes` reconcile, not a clipping call.
 
@@ -191,7 +191,7 @@ whether the resolved seam actually *sits right*.)
   large offset means it won't sit right. MA's reset-position can rough-align a small delta, but a big one
   is a refit signal (surface it), not a compose.
 - **Clipping / look** — the real check, and it is the operator's: does it clip, sit right, read as the
-  vendor intended? `AvatarGrab` the composed avatar from the angles the check needs (e.g. `top` for
+  vendor intended? `RenderAvatar` the composed avatar from the angles the check needs (e.g. `top` for
   hair seating, `bottom` for shoes) and read the sheet as a **resolved-fit look** (NDMF preview —
   reactive components applied), not a baked-upload proof; the operator's eyes and a play-mode build
   remain the bar.
@@ -216,7 +216,7 @@ Reach for these by role; open each to learn its exact entry point.
   broken reference, disable a conflicting mesh, set a static blendshape weight. Raw MA component edits via
   `SerializedObject`; no dedicated compose tool exists (and none is warranted — this is judgment, not
   mechanics).
-- **`AvatarGrab`** (agent-tools, via `execute_code`) — drives the Scene View to render **one** avatar
+- **`RenderAvatar`** (agent-tools, via `execute_code`) — drives the Scene View to render **one** avatar
   in isolation, headlight-lit, **NDMF preview-resolved** (reactive fit applied), from named axis angles
   to a temp contact-sheet PNG. The resolved-fit look for steps 4 and 6 — not a baked-upload proof, and a
   *verification* tool, not a compose tool. Grab in a separate call from any edit — a same-call grab
@@ -229,5 +229,5 @@ Reach for these by role; open each to learn its exact entry point.
   cross-mesh collapse. The provenance blend is the source of truth.
 - **Modular Avatar / VRCFury** — the vendors' frameworks. This skill *drives* the seam they authored; it
   never re-authors it.
-- **`AvatarLint`** (agent-tools, via `execute_code`) — the step-3 broken-ref classifier: `PASS`/`CLASSIFY`
+- **`CheckAvatar`** (agent-tools, via `execute_code`) — the step-3 broken-ref classifier: `PASS`/`CLASSIFY`
   with per-offender class + `clipAssetPath`. Inspection-only; you apply the remedy it routes to.

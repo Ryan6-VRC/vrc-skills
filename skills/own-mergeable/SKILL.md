@@ -36,9 +36,9 @@ It is the **same operation regardless of what's in the set.**
 
 ## Phase 0 — Graph & decide
 
-Inventory the source (`AvatarPackageGraph` on its vendor folder — the same read-only graph `own-base`
+Inventory the source (`ReportPackage` on its vendor folder — the same read-only graph `own-base`
 Phase 1 works from; its per-FBX mesh inventory and MA/VRCFury detection carry over, the head/body/superset
-questions don't). As in `own-base`, `import-vendor-asset`'s `ImportVerify` PASS is this phase's
+questions don't). As in `own-base`, `import-vendor-asset`'s `CheckPackage` PASS is this phase's
 precondition — re-run it if health isn't already known-good. Then **surface these to the operator** —
 each decides a later branch:
 
@@ -49,7 +49,7 @@ each decides a later branch:
 - **Modular or bare** — does it carry its own MA/VRCFury seam (→ *copy* it) or none (→ *author* it)?
 - **Morph name-variants** — meshes carrying a `<Mesh>_<morph>` variant of a body morph the target base
   drives (e.g. `Dress_Breasts_small` vs the base's `Breasts_small`); coherence is `reproportion`'s job.
-- **Target base reproportioned?** — if so, the edge/recipe to apply in Phase 1.
+- **Target base reproportioned?** — if so, the edge (or edge chain) to apply in Phase 1.
 
 ## Phase 1 — Blender: own the geometry (+ reproportion)
 
@@ -57,12 +57,12 @@ each decides a later branch:
 - **`stamp_base` the armature with the target base's canonical lineage name** (e.g. `chocolat` — the
   base you're fitting to; if the vendor cut is a different-but-equivalent base, stamp its native base
   and let an equivalency profile carry it across). Seed this **here, right after import — not after the
-  later `Armature.<Name>` rename below** — `apply_profile` hard-offends on an absent base stamp, so it
+  later `Armature.<Name>` rename below** — `apply_proportion_edge` hard-offends on an absent base stamp, so it
   must be in place before the Reproportion step.
 - **Keep the subset's meshes, delete the rest.** For a standalone vendor mergeable nothing is dropped.
   Do **not** rename meshes or hunt for a `Body`/`Body_Base` (those are base-body conventions).
 - **Reproportion, if the target base is reshaped — before pruning.** This is `reproportion`'s
-  Outfit-fit: apply the target base's edge/recipe to this armature (`pivot="origin"`), skip base-only
+  Outfit-fit: apply the target base's edge (or edge chain) to this armature (`pivot="origin"`), skip base-only
   morphs, propagate name-variant morphs. **Ordering is a hard gate:**
   the edge references full-body seam bones (Head/Neck/Hand) the subset may not weight, so pruning first
   aborts the apply on missing bones.
@@ -107,14 +107,14 @@ Work on the **scene instance** of the owned FBX; prefab only at the end (Phase 3
 - **Layout picks the tool:** on-bones → `CopyComponents`; grouped in holder GOs → `GraftHierarchy` the
   holder subtree(s), scoped to the mergeable's own. **whatIf first, then one real run.**
 - **Grouping is operator preference, not a gate — the same ask as `own-base`:** relocate the reproduced
-  dynamics under `AvatarDynamics/` (`RelocateComponents`) before prefabbing, or skip; a graft that already
+  dynamics under `AvatarDynamics/` (`MoveComponents`) before prefabbing, or skip; a graft that already
   brought the vendor's holder GOs is grouped as-is, and skipping is ungrouped-but-valid.
 - A kept physbone referencing a **base-owned** collider (one you excluded) lands its `colliders[]` entry
   **null**. This is a real gap, not cosmetic — the physbone would collide against nothing — so **surface
   it as a may-block diagnostic**, don't silently leave it. The fix is a placement-time **collider relink**
   in `compose-mergeable` (re-point the entry at the base's collider on the physbone's anchor bone).
 - **Component-drift sanity-scan** (`reproportion`'s shared process): copied physbone/collider radii are
-  sized to the source and don't track the rescale. Accumulate the recipe magnitude, report it; a
+  sized to the source and don't track the rescale. Accumulate the chain magnitude, report it; a
   single-digit % is below notice (copy as-is); escalate only at large magnitude. Scaling the source
   does *not* fix it — only an explicit radius-field scale would.
 
@@ -157,7 +157,7 @@ Structural and basic — **the real proof is a compose**, so hand off after:
 - **Reproportion coherence** — the owned mergeable's bones land on the target base's reshaped world
   positions (compare a few; the vendor piece would sit off).
 - **Clean transplant diagnostics** — flagged-missing 0 for kept hosts, anchors bound, no vendor leak.
-- **Placement proof (`AvatarLint`)** — place onto the target base and run `AvatarLint.Inspect(<root>)`; expect
+- **Placement proof (`CheckAvatar`)** — place onto the target base and run `CheckAvatar.Inspect(<root>)`; expect
   `PASS`. A `CLASSIFY` names a seam scene-ref or a Phase-2C clip binding still unresolved against the placed
   scene — fix it before hand-off rather than eyeballing the pairing.
 
@@ -172,8 +172,8 @@ the pre-edit proxy; the summary's `note=` flags an in-flight rebuild but cannot 
 
 Reach by role; open each for its entry point.
 
-- **`avatarprep` (Blender):** FBX import + observe, zero-weight prune, the proportion engine (edge/recipe
-  apply — driven via `reproportion`), CATS FBX export, `merge_armatures` (superset case).
+- **`avatarprep` (Blender):** FBX import + observe, zero-weight prune, the proportion engine
+  (`apply_proportion_edge`, driven via `reproportion`), CATS FBX export, `merge_armatures` (superset case).
 - **`com.ryan6vrc.avatar-tools` (Unity):** the transplant kit (`CopyComponents` / `GraftHierarchy` /
-  `RelocateComponents` over a shared core), materials-by-name + bounds/anchor.
+  `MoveComponents` over a shared core), materials-by-name + bounds/anchor.
 - **Modular Avatar / VRCFury:** the seam frameworks — copy their components, or author one.

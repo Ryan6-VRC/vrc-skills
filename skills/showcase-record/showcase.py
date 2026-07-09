@@ -13,7 +13,7 @@ trailers; FAIL never carries a path to something not on disk.
     teaser  re-encode the cut under a size budget
 
 Stamps everywhere are the family grammar: yyyyMMdd_HHmmss_fff, local clock --
-the same DateTime.Now domain AvatarGrab/RunLogFormat write into filenames.
+the same DateTime.Now domain RenderAvatar/RunLogFormat write into filenames.
 """
 
 import argparse

@@ -21,7 +21,7 @@ In scope: owning the **base body + underwear** into a clean starting avatar. Sto
 Deferred — if the package needs any of these, do the in-scope part and **surface the boundary to the operator**
 rather than improvising:
 - **Copying Modular Avatar / VRCFury / NDMF** systems off the base. That arc reuses the **same**
-  CopyComponents / RelocateComponents tools with MA/VRCFury/NDMF type-names (conservative tier — that reuse is
+  CopyComponents / MoveComponents tools with MA/VRCFury/NDMF type-names (conservative tier — that reuse is
   the payoff), and `GraftHierarchy` pulls authoring/menu subtrees wholesale — but that orchestration is its
   own arc (the base's global systems, not a mergeable's own seam), not this one.
 - **Outfit / hair / accessory owning** → `own-mergeable`.
@@ -34,7 +34,7 @@ Run the **package-graph** tool on the vendor folder first. It is read-only and i
 verification — work from it, don't eyeball the prefabs. The one exception is its head/body call, which
 the tool itself flags as a guess (`headGuess`/`bodyGuess`, a most-blendshapes heuristic): confirm those
 two meshes before Phase 2's non-negotiable rename hangs on them. (Import health is `import-vendor-asset`'s job —
-its `ImportVerify` PASS is this phase's precondition; re-run it if health isn't already known-good.) A
+its `CheckPackage` PASS is this phase's precondition; re-run it if health isn't already known-good.) A
 shared base-model family imported whole (e.g. Plum/Chiffon/Chocolat) is graphed whole, but the keep-set
 and superset decision scope to the **one avatar being owned** — sibling avatars stay untouched vendor.
 
@@ -47,7 +47,7 @@ Then make these decisions and **surface them to the operator**:
 - **Vendor FBX import settings that differ from our preferred ones** — raise them; do not silently "fix". The
   operator decides whether the vendor's setting is deliberate.
 - **No single FBX is a superset** (variations split across files) — surface it, then build the superset by
-  merging the relevant FBX armatures in Phase 2 (avatarprep `armature_compat` + `merge_armatures`). Note which
+  merging the relevant FBX armatures in Phase 2 (avatarprep `compare_armatures` + `merge_armatures`). Note which
   FBX is the merge base (the most complete) and which are merged in.
 - **MA / VRCFury / NDMF present** — note that copying those systems is deferred; the owned base won't be
   functionally equivalent to the vendor until that later arc. Proceed with the base body only.
@@ -65,7 +65,7 @@ ask the operator for where they live).
 **Single superset FBX:** import it with the **avatarprep import** function.
 
 **No single superset (Phase-1 merge case):** build the superset first, in place of that single import. Import the
-N relevant FBX, then run **avatarprep `armature_compat`** (base vs each merge-in, read-only) and **read its
+N relevant FBX, then run **avatarprep `compare_armatures`** (base vs each merge-in, read-only) and **read its
 report** before merging — it surfaces renames/restructures the union can't reconcile blindly. Supply
 `rename_map` / `force` from what the report shows, then run **`merge_armatures`** to union them into one skeleton.
 It FAILs loud rather than producing a doubled skeleton; resolve the named offender and re-run. Do this **before**
@@ -175,7 +175,7 @@ Then, on the scene instance, in this order:
    the vendor→owned path, a flagged `[holder]` may be content you pruned on purpose, so the
    flagged-missing default (force / re-prune / accept) stands; never blanket-force the `[holder]`s.
 
-5. **Group the dynamics** (the **RelocateComponents** tool), called once per region — pure relocation, your
+5. **Group the dynamics** (the **MoveComponents** tool), called once per region — pure relocation, your
    discretion supplies the regions; **also driven by a type-name list** (no more `mode`). Rule: **physbones
    group by their chain-root bone region**; colliders and contacts each take one call targeting the avatar
    root; **VRC constraints** group the same way. **Unity built-in constraints are never relocated** — they
@@ -185,7 +185,7 @@ Then, on the scene instance, in this order:
    (behavior-neutral — no bone is moved), and echoes matches by name+count; reconcile the invariant
    **Σ(moved) + intentionally-left == total Copy reproduced** so a missing chain is computed, not missed.
    **Grouping is operator preference, not a gate** — ask whether to relocate the reproduced dynamics
-   under `AvatarDynamics/` (`RelocateComponents`) before prefabbing; the avatar is valid and uploadable
+   under `AvatarDynamics/` (`MoveComponents`) before prefabbing; the avatar is valid and uploadable
    after CopyComponents alone, so a skipped Relocate is ungrouped-but-valid, not a failure.
    (`own-mergeable` takes the same ask.) **Must run before prefab conversion** (it removes the
    original component, unreliable on a prefab instance). What-if is available here too.
@@ -201,7 +201,7 @@ gesture layers, keep them plus every layer **at or above** them, drop the outfit
 (base layer 0 is always kept). The tool FAILs loud if a named layer is absent or ambiguous. If the head
 mesh was renamed, the kept facial layers' clips bind it by its old name and stay **inert** — repath them
 with the **UC2** clip phase (`OwnControllerClips → RepathClips`, `unity.md`), here or deferred to compose
-where `AvatarLint` surfaces the break; note it, don't block. Empty expression parameters + menu, wired into
+where `CheckAvatar` surfaces the break; note it, don't block. Empty expression parameters + menu, wired into
 the descriptor.
 
 ## Tools
@@ -210,7 +210,7 @@ Reach for these by role; open the tool to learn its exact entry point.
 
 - **Unity package `com.ryan6vrc.avatar-tools`** (Editor tools, run via Unity MCP `execute_code`): a package-graph
   reporter; a humanoid-rig conformer; a materials-by-name + bounds/anchor setter; a descriptor transplanter; the
-  component-transplant kit (`CopyComponents`, `RelocateComponents`, `GraftHierarchy` over a shared transplant
+  component-transplant kit (`CopyComponents`, `MoveComponents`, `GraftHierarchy` over a shared transplant
   core); the `CleanController` builder.
 - **Blender extension `avatarprep` core**: an FBX importer + import-observer; a read-only armature-compat
   reporter + a name-based armature merger (for the multi-FBX superset case); a zero-weight-bone pruner; the

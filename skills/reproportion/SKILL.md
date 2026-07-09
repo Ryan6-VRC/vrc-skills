@@ -6,8 +6,9 @@ description: Use when reshaping an avatar's or outfit's proportions — "make th
 # Reproportion an avatar
 
 Reshape an avatar's (or outfit's) proportions and reconcile the Unity side. The `avatarprep`
-proportions engine is the deterministic executor — load / validate / apply an edge or recipe, baked to
-rest pose, state re-stamped. This skill owns the pathfinding, the gates, and the sequencing. Never
+proportions engine is the deterministic executor — `apply_proportion_edge` applies one edge (`--whatif`
+validates it against the live scene first), baked to rest pose, state re-stamped; a multi-edge chain is
+sequential `apply_proportion_edge` calls. This skill owns the pathfinding, the gates, and the sequencing. Never
 re-explain the engine API; open each tool to learn its entry point.
 
 Every reproportion, whatever the timing, runs the same engine spine: identify the source state, resolve
@@ -35,7 +36,7 @@ edge schema. Supply only the durable, non-introspectable judgment:
 naming *policy* is canonical in `docs/LAYOUT.md`; don't restate it here.
 
 **Where the profile lives:** the authored edge is co-located with the avatar it drives — `docs/LAYOUT.md`
-owns the rule. Never drive an apply from the shared `vrc-blender-tools/profiles/`.
+owns the rule. Never drive an apply from the shared `vrc-blender-tools/edges/`.
 
 **If the operator is unsure what they want,** ask *why* once: some reproportion for visual preference,
 others to match their real-life proportions so VRChat IK feels more immersive — the motivation tells you
@@ -98,7 +99,7 @@ exposed.
 surface the meter-scale component drift (physbone / collider / contact radii) for operator review — it
 scales with magnitude even without helpers. **Hard-stop** for verification only at the narrow intersection
 of large magnitude **and Unity-only constraint helpers**, where accuracy actually matters and
-self-correction can't be eyeballed. Magnitude compounds across a recipe — accumulate it over the edges
+self-correction can't be eyeballed. Magnitude compounds across a chain — accumulate it over the edges
 walked, not off a single edge. (Don't hardcode a threshold; calibrate from verification.)
 
 ## Realizing shapekeys — two approaches
@@ -130,7 +131,7 @@ Basis and **leaves the original morph behind** (reversible/extensible — keep i
 sibling morph effects are preserved (Basis-drag mechanics — see `blender.md`). It then recomputes normals
 **except a protected vertex group (default `neck`)** and **never on the head mesh** (a hard rail;
 profiles don't morph the head). Protection is an explicit vertex group, not a heuristic. **Ask the operator for the protected-group choice, default pre-selected** (~always taken). Cost:
-**lossy at the mesh level** → the profile/recipe link is the recovery artifact, so record provenance.
+**lossy at the mesh level** → the profile link is the recovery artifact, so record provenance.
 **FX note:** because the morph block is *retained*, if an animation curve drives the morph you bake, you
 must also **remove / retarget / zero that curve** — the delta now lives in Basis, so a live driver doubles
 it in FX-active states.
@@ -170,14 +171,14 @@ source adds over a vendor one:
 
 ## Outfit-fit
 
-A mergeable has **no edge of its own** — fit it by applying the **target base's** edge/recipe to the
+A mergeable has **no edge of its own** — fit it by applying the **target base's** edge (or edge chain) to the
 mergeable's armature (the same spine, `pivot="origin"` so body and mergeable co-scale about the shared
 origin), gating on **referenced-bone presence + rest-match** (not whole-armature identity, which
 false-fails legitimate subset/superset mergeables) and reporting name-level divergence as a yellow flag,
 not a block. This is the reshape half of `own-mergeable`, which owns the extraction, prune ordering, and seam
 authoring around it, and routes the wear/merge to `compose-mergeable`. A later reshape of an
 **already-owned** mergeable re-enters here directly: swap the `.blend`'s appended base reference for the
-new target, apply the new edge/recipe, re-export armature-scoped — `own-mergeable`'s extraction/prune/seam
+new target, apply the new edge (or edge chain), re-export armature-scoped — `own-mergeable`'s extraction/prune/seam
 apparatus is first-owning work, not repeated. A **cross-base** reshape saves into the **new target base's
 bucket** (`Blender/Outfits/<NewBase>/<Outfit>/`) — it never overwrites the original base's `.blend`; one
 outfit fitted to two bases is two buckets (the owned-outfit filing rule).
@@ -199,11 +200,11 @@ to its target base first** — `own-mergeable` does this right after import, bef
   `compose-mergeable` that it's a fit-time proxy (flag-only, not a base `Breasts_big` obligation).
 
 **Cross-base via an explicit equivalency profile.** plum, chiffon, and chocolat are **distinct bases**,
-not one shared body — what bridges them is an explicit `profiles/*.json` **equivalency edge**: a
+not one shared body — what bridges them is an explicit `edges/*.json` **equivalency edge**: a
 **no-op** (identity, shared-mesh bases like chiffon↔chocolat) or a **pure-scale** (e.g. plum↔chiffon).
 A base-changing equivalency profile is a valid, trusted edge kind — authored on human judgment, same
 trust as any profile, first-class rather than a hack. When the outfit's native base differs from the
-target, chain the equivalency edge *before* the reproportion edge, same as any recipe with no direct
+target, chain the equivalency edge *before* the reproportion edge, same as any chain with no direct
 edge. Author it like any edge: `unproportioned` origin state, explicit `source_base`/`target_base`. Only
 a genuinely **non-topo** different base — one no scale/bone-op/shapekey transform can bridge — is a
 **refit** (MochiFitter — not yet integrated; roadmap in `docs/mochifitter.md`), not this.
@@ -212,7 +213,8 @@ a genuinely **non-topo** different base — one no scale/bone-op/shapekey transf
 
 Reuse; this skill only sequences. Open each to learn its exact entry point, and refer to it by role.
 
-- **`avatarprep` proportions engine + CLIs** — load / validate-profile / apply profile + recipe.
+- **`avatarprep` proportions engine + CLIs** — `apply_proportion_edge` applies one edge (`--whatif`
+  validates it against the live scene first); a chain is sequential `apply_proportion_edge` calls.
 - **Humanoid-rig conformer** (avatar-tools package) — rebuilds the bind from current geometry; re-run it
   after every reproportion.
 - **Freshness assert** (avatar-tools package) — stored-bind vs. current-geometry guard, PASS/FAIL + named

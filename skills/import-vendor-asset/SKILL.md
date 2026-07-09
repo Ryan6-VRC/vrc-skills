@@ -33,8 +33,8 @@ Resolve each **as it comes up** — not every asset hits every gate, and there i
 
 ## Verify
 
-- `Ryan6Vrc.AgentTools.Editor.ImportVerify.VerifyFolder("Assets/Vendor/...")` → expect `PASS`, and check `read_console` is clean.
-- **Null material slots are not failures.** A healthy costume has hundreds of intentionally-empty submesh slots; what fails is *missing* references (a broken GUID), missing meshes, missing scripts, a **stale FBX remap**, or a `loadErrors` count (a prefab that throws on load). Don't hand-count nulls — that's the trap ImportVerify exists to avoid.
+- `Ryan6Vrc.AgentTools.Editor.CheckPackage.VerifyFolder("Assets/Vendor/...")` → expect `PASS`, and check `read_console` is clean.
+- **Null material slots are not failures.** A healthy costume has hundreds of intentionally-empty submesh slots; what fails is *missing* references (a broken GUID), missing meshes, missing scripts, a **stale FBX remap**, or a `loadErrors` count (a prefab that throws on load). Don't hand-count nulls — that's the trap CheckPackage exists to avoid.
 - A `remapSTALE` FAIL means an FBX's external-material remap resolves but the model imported empty — force-reimport that FBX (step 5) and re-verify.
 
 ## gitignore
