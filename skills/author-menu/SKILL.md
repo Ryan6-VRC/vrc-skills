@@ -104,7 +104,7 @@ offender and its fix — clear it and re-enter before trusting anything the sess
 **Play mode is the bake**: entering play runs the non-destructive build on the transient play
 copy (removed on exit), so one play session is both the baked read and the live drive — read the
 **baked** menu tree, params, and true synced-bit count from the play copy, then drive each new
-control (rung 3, `verify.md`): param changes, mesh/blendshape response, dependency edges firing.
+control (in the emulator, `verify.md`): param changes, mesh/blendshape response, dependency edges firing.
 All driving *and observation* happens inside the play session — `RenderAvatar` in play mode captures
 the driven state; after exit the scene reverts to authoring state, where a grab can verify only
 static baseline/clipping, never a toggle.
