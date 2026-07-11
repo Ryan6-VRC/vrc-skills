@@ -118,9 +118,11 @@ result matches the plan.
   control lands only when a `Menu Installer` roots the node (on its GO, or via an installed
   SubMenu/`Menu Group` above it). *Params present, menu empty* is a missing installer, not a bake
   failure — there is no child-of-root auto-install. (`menus.md` §Substrate has the mechanism.)
-- **`automaticValue` names the param from the GameObject** — renaming the toggle node later is a
-  param rename: remote/saved state and OSC bindings silently detach. Name nodes finally at plan
-  time.
+- **`automaticValue` mints a hashed internal param, not the GameObject name** — it bakes as
+  `__MA/AutoParam/<GO>$<hash>` (`nondestructive.md`), so an OSC/remote/saved binding can't target the
+  friendly node name at all, and renaming the node changes the whole hash. **Need a stable, predictable
+  param name (an OSC contract, portable saved state)? Set an explicit `parameter`** rather than relying on
+  `automaticValue`; name nodes finally at plan time either way.
 - **A radial that must be precise remotely can't be**: synced floats reach remotes as 8-bit
   [-1,1] regardless of local precision (`runtime.md`).
 - Prefab-internal reaction paths are only correct **after instance overrides** — read and write

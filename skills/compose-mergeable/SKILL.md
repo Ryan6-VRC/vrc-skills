@@ -14,10 +14,12 @@ resolves at build (MA/VRCFury merge on a clone at upload/play); nothing here bak
 identically — that a correctly-owned mergeable composes here with zero special-casing is the proof
 `own-mergeable` did its job. Never branch on where the prefab came from.
 
-**Verification here is mostly the operator's eyes.** Compose failures are overwhelmingly visual
-(clipping, misalignment, wrong shape), so this skill's programmatic job is narrow: run cheap static
-**tripwires** that catch the *non-cosmetic silent* failures a human can't eyeball, do the mechanical
-in-scene repairs, then get out of the way so the operator looks. **"Merges without error" ≠ "composed"**
+**Fit is gated mechanically; cosmetic look is the operator's.** Alignment and seam correctness are decided
+by a **mechanical seam check** (`CheckSeam`, step 6) — a model can't judge fit from a render (`verify.md`).
+The rest (clipping, wrong shape) is visual and the operator's eye is the bar, so this skill's programmatic
+job is: run cheap static **tripwires** for the *non-cosmetic silent* failures a human can't eyeball, gate
+fit on the seam check, do the mechanical in-scene repairs, then get out of the way so the operator looks.
+**"Merges without error" ≠ "composed"**
 — a wrong-base mergeable merges with a clean console (MA silently auto-creates phantom bones), so a
 green console proves nothing.
 
@@ -50,8 +52,11 @@ Confirm the mergeable prefab carries its own seam: MA `MergeArmature` / `BonePro
 ### 2. Drop
 
 Instantiate the **standalone vendor/owned prefab** (never a placed instance) as a child of the avatar
-root, at identity local transform. A mergeable authored for this base auto-targets the base's
-`Armature` — you do not wire the seam by hand.
+root, at identity local transform. The prefab's **root transform is load-bearing** — place it unmodified
+and **never normalize its scale or position** as cleanup: a vendor root scale like `0.9512` is authoring,
+not mess, and normalizing it to `1:1:1` after placement manufactures a per-bone offset gradient that reads
+as a gross misfit and bakes straight through (the merge is identity-preserving — `nondestructive.md`). A
+mergeable authored for this base auto-targets the base's `Armature` — you do not wire the seam by hand.
 
 ### 3. Verify the seam resolves (static tripwires)
 
@@ -121,8 +126,8 @@ don't run the full reconcile inline unless the operator asks, and don't silently
 - **Commit only the unambiguous disables** — underwear and costume under a full outfit, across **both
   layers** (base stockings overlap a stockinged outfit as much as the base dress does). **Enumerate**
   the uncertain overlaps (bandages, shoes, wings, creature parts) for the operator; do not disable on a
-  low-confidence spatial guess. Judge overlap by garment coverage and role, not names; `RenderAvatar`
-  confirms clipping where a capable model can read the sheet. A limb that **vanishes** when a base
+  low-confidence spatial guess. Judge overlap by garment coverage and role, not names; `RenderAvatar` is an
+  operator-facing look, not an agent clipping verdict (`verify.md`). A limb that **vanishes** when a base
   garment goes is a coupled blendshape — the `map-outfit-shapes` reconcile, not a clipping call.
 
 ### 5. Shape coherence (blendshape / baked)
@@ -180,21 +185,23 @@ to top up: it's a **fit-time proxy** bake (`reproportion`'s opposite-morph subst
 an absent morph) — **flag-only, do not auto-reconcile** it as a same-named base obligation. (The
 practical rule the operator will already know: if you bake, bake to match.)
 
-### 6. Sanity-check alignment and look
+### 6. Fit gate — mechanical first, then the operator's eyes
 
-Two cheap checks — alignment, then clipping. (Bone-*name* resolution is already step 3; this is about
-whether the resolved seam actually *sits right*.)
+Bone-*name* resolution is step 3; this is whether the resolved seam *sits right*. **The fit gate is
+mechanical, not a render read** (`verify.md`).
 
-- **Severe root misalignment.** Even when bone names resolve, the mergeable's bone roots can sit far from
-  the base's matching bones — a mergeable authored against a different rest pose or a reproportioned
-  variant. Compare a few matched bones (`Hips`, a `Shoulder`, a `Hand`) between mergeable and base; a
-  large offset means it won't sit right. MA's reset-position can rough-align a small delta, but a big one
-  is a refit signal (surface it), not a compose.
-- **Clipping / look** — the real check, and it is the operator's: does it clip, sit right, read as the
-  vendor intended? `RenderAvatar` the composed avatar from the angles the check needs (e.g. `top` for
-  hair seating, `bottom` for shoes) and read the sheet as a **resolved-fit look** (NDMF preview —
-  reactive components applied), not a baked-upload proof; the operator's eyes and a play-mode build
-  remain the bar.
+- **Seam alignment — `CheckSeam` (the agent fit gate).** It compares the mergeable's bones against the
+  base's matched bones in **world space** (a compensating root scale is legitimate authoring, so
+  world-space is the honest frame) and verdicts on **spread and direction-uniformity**: a *uniform*
+  translation across all bones is possibly benign (the mesh may carry an equal-and-opposite offset), while
+  *differing* magnitude or direction is a mechanically-certain misfit. It gates **before any render**, and
+  an agent-modified root transform is itself a flag. A large or non-uniform delta is a **refit signal** —
+  surface it, route out (`Scope`), don't force it; a genuine small misfit you correct with a **deliberate,
+  flagged, `CheckSeam`-re-verified** transform edit, never the reflexive normalization step 2 forbids.
+- **Clipping / look — the operator's, not a verdict.** Does it clip, sit right, read as the vendor
+  intended? `RenderAvatar` from the angles the check needs (`top` for hair seating, `bottom` for shoes) is
+  a resolved-fit look for the operator (NDMF preview applied), not a baked-upload proof or an agent fit
+  verdict; the operator's eye and a play-mode build are the bar.
 
 ### 7. Hand off
 
@@ -218,10 +225,10 @@ Reach for these by role; open each to learn its exact entry point.
   mechanics).
 - **`RenderAvatar`** (agent-tools, via `execute_code`) — drives the Scene View to render **one** avatar
   in isolation, headlight-lit, **NDMF preview-resolved** (reactive fit applied), from named axis angles
-  to a temp contact-sheet PNG. The resolved-fit look for steps 4 and 6 — not a baked-upload proof, and a
-  *verification* tool, not a compose tool. Grab in a separate call from any edit — a same-call grab
-  shows the pre-edit proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the
-  same-call case.
+  to a temp contact-sheet PNG. An **operator-facing** resolved-fit look (steps 4 and 6) — not a
+  baked-upload proof and not an agent fit verdict (`verify.md`); fit is gated mechanically (`CheckSeam`).
+  Grab in a separate call from any edit — a same-call grab shows the pre-edit proxy; the summary's
+  `note=` flags an in-flight rebuild but cannot catch the same-call case.
 - **avatarprep `report_stamps`** (Blender, via MCP or `cli/report_stamps.py`) — the baked-morph read in
   step 5, and also step 3's provenance fit gate: the same call returns each armature's `avatarprep_base`/
   `avatarprep_state` pair alongside the bound-mesh `avatarprep_baked` map grouped **under its owning
@@ -231,3 +238,6 @@ Reach for these by role; open each to learn its exact entry point.
   never re-authors it.
 - **`CheckAvatar`** (agent-tools, via `execute_code`) — the step-3 broken-ref classifier: `PASS`/`CLASSIFY`
   with per-offender class + `clipAssetPath`. Inspection-only; you apply the remedy it routes to.
+- **`CheckSeam`** (agent-tools, via `execute_code`) — the step-6 mechanical fit gate: per-bone world-space
+  delta between mergeable and base + a spread/direction-uniformity verdict, gating before any render;
+  inspection-only.
