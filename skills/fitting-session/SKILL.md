@@ -159,7 +159,8 @@ not more compute. It **re-runs only the cheap objective checks and reads the tra
 not re-execute the worker's expensive work** (a 100k-token play-mode battery, a long bake). The
 failure modes here aren't fabrication — the worker doesn't lie about having entered play mode —
 but skipped steps, off-script shortcuts, and rationalized judgment calls. So it (a) re-derives the cheap signals — the relevant `Check*`
-doors, a git diff, a spot-checked delta (per-bone rest-pose spread, param counts) — and (b) audits
+doors (`CheckSeam` mechanizes the compose-fit per-bone spread a grader would otherwise eyeball), a git
+diff, a spot-checked delta (param counts) — and (b) audits
 the transcript for off-script behavior: raw `execute_code` where a tool door exists, diagnostics
 ignored, steps silently skipped, skill instructions bypassed, an operator gate skipped (or asked
 when the docs already answer it). **A pass reached off-script is still a finding** — the sharp

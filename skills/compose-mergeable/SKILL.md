@@ -14,14 +14,15 @@ resolves at build (MA/VRCFury merge on a clone at upload/play); nothing here bak
 identically — that a correctly-owned mergeable composes here with zero special-casing is the proof
 `own-mergeable` did its job. Never branch on where the prefab came from.
 
-**Fit is gated mechanically; cosmetic look is the operator's.** Alignment and seam correctness are decided
-by a **mechanical seam check** (`CheckSeam`, step 6) — a model can't judge fit from a render (`verify.md`).
-The rest (clipping, wrong shape) is visual and the operator's eye is the bar, so this skill's programmatic
-job is: run cheap static **tripwires** for the *non-cosmetic silent* failures a human can't eyeball, gate
-fit on the seam check, do the mechanical in-scene repairs, then get out of the way so the operator looks.
-**"Merges without error" ≠ "composed"**
-— a wrong-base mergeable merges with a clean console (MA silently auto-creates phantom bones), so a
-green console proves nothing.
+**Fit is gated mechanically where it can be; cosmetic look is the operator's.** For a mergeable that skins
+across the humanoid skeleton (clothing), alignment is decided by a **mechanical seam check** (`CheckSeam`,
+step 3) — a model can't judge fit from a render (`verify.md`). An offset-tolerant **bone-proxy** (hair, an
+accessory bound to one bone) `CheckSeam` **refuses** to score: fit there is operator-positioned, not
+bone-determined, and joins the cosmetic (clipping, wrong shape) as the operator's eye. So this skill's
+programmatic job is: run cheap static **tripwires** for the *non-cosmetic silent* failures a human can't
+eyeball, gate fit on the seam check where it scores, do the mechanical in-scene repairs, then get out of
+the way so the operator looks. **"Merges without error" ≠ "composed"** — a wrong-base mergeable merges with
+a clean console (MA silently auto-creates phantom bones), so a green console proves nothing.
 
 **No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
 is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
@@ -63,34 +64,44 @@ not mess, and normalizing it to `1:1:1` after placement manufactures a per-bone 
 as a gross misfit and bakes straight through (the merge is identity-preserving — `nondestructive.md`). A
 mergeable authored for this base auto-targets the base's `Armature` — you do not wire the seam by hand.
 
-### 3. Verify the seam resolves (static tripwires)
+### 3. Verify the seam — mechanical gates
 
-Two seams to resolve, plus the owned-side collider gap to close — all cheap, each catching a silent
-failure a green console hides.
+All cheap and mechanical, each catching a silent failure a green console hides. Run them right after the
+drop, before de-conflict or coherence: a wrong base caught here saves the wasted strip-and-reconcile of
+steps 4–5.
 
-- **Provenance fit gate (owned mergeables only).** For an owned mergeable (asset path under `Assets/…`,
-  not `Assets/Vendor/…`), read its own mirrored `(base, state)` via avatarprep **`report_stamps`**
-  (Decision 2's mirror), then check it against the base it is landing on — which forks on whether that
-  base is owned or vendor:
-  - **Owned base** (own blend under `Assets/…`): read the base's `(base, state)` too. An exact mismatch,
-    or a genuinely-absent stamp on an owned side, is a **loud may-block WARNING — write nothing**. This is
-    not a compose-side repair: a missing/mismatched *outfit* stamp is `own-mergeable`'s re-stamp-and-refile
-    loop, a missing *base* stamp is `own-base`'s `stamp_base` seed (Decision 3) — route to whichever side is off.
-  - **Vendor base** (under `Assets/Vendor/…`, no blend and no stamp — expected, not an error): a vendor base
-    is `unproportioned` by construction. If the mergeable's **state is `unproportioned`**, the fit is
-    plausible — the blessed "own the outfit, not the base" case — so fall through to the hit-rate check to
-    confirm the base *family*. If the mergeable's state is **reshaped** (≠ `unproportioned`), that is the real
-    mismatch a stock base can't satisfy *and the hit-rate can't see* (reproportion doesn't rename bones, so
-    names still resolve while the rest pose is wrong): **loud may-block WARNING, route to `own-base`** (own +
-    reproportion the base), not `own-mergeable`.
-  A **vendor mergeable** carries no stamp and skips this gate outright, falling through to the hit-rate check
-  below — which is why that check stays as the vendor/confirmatory fallback.
-- **Armature seam — core-body-bone hit-rate.** Do the mergeable's core humanoid bones resolve by name
-  against the base armature? A mergeable authored for *this* base matches by contract. A **wrong-base**
-  mergeable matches only a handful and MA auto-creates the rest as phantom bones (`nondestructive.md`) —
-  it merges with **no error** while the outfit skins to bones that never move. If the core hit-rate is catastrophic, this is
-  the wrong base: **fail loud, surface, route to refit** (step "Scope"). Do not repair it — MA's own
-  adjust-names + reset-position can rough-fit it, but that is a refit and out of scope.
+- **Seam fit + resolution — `CheckSeam` (the mechanical gate).** `CheckSeam.Check(baseRoot, mergeableRoot)`
+  reflects the seam's own MA/VRCFury bone mapping and gates the **world-space coincidence** of the
+  mergeable's *weighted humanoid bones* against the base's (world-space, because a compensating root scale
+  is legitimate authoring). A correctly authored mergeable duplicates the base armature, so those bones
+  land coincident; a real offset is a misfit MA ships as-is and VRCFury snaps at bake. Because it reflects
+  the real resolver, it subsumes a naive name-match: the wrong-base merge that MA hides by auto-creating
+  phantom bones (`nondestructive.md`) — a clean console while the outfit skins to bones that never move —
+  surfaces here as NOT-PASS or a won't-resolve REFUSE. Three outcomes, routed differently:
+  - **PASS** — the humanoid skeleton coincides; fit is certified, proceed to de-conflict. It certifies
+    *only* the humanoid skeleton — not physics-cage / bust / hair / accessory placement, which stay the
+    operator's eye (step 6).
+  - **NOT-PASS** — humanoid bones offset past ε: the **wrong base or a real misfit**. Surface it, route out
+    (`Scope`), don't force it. (An agent-normalized root — the step-2 trap — surfaces here as an offset
+    across every bone.) A genuine small misfit you correct with a **deliberate, flagged, re-verified**
+    transform edit, never the reflexive normalization step 2 forbids.
+  - **REFUSE** — can't certify this seam, for a reason it names, and the reason picks the route. An
+    offset-tolerant proxy (≤1 humanoid bone — hair/accessory), or a *VRCFury-scales-at-bake* seam
+    (`forceOneWorldScale` / non-unit scale — legitimate authoring the edit-time pose can't certify), routes
+    to the **operator's eye and a baked-result check**, not a refit. A *seams-disagree* or
+    *won't-resolve-onto-this-base* reason is the **wrong base** → route to refit (`Scope`), not a fit you force.
+- **Provenance routing (owned mergeables only).** `CheckSeam` detects the misfit; the provenance stamps say
+  *which side to fix*. For an owned mergeable (asset path under `Assets/…`, not `Assets/Vendor/…`), read its
+  mirrored `(base, state)` via avatarprep **`report_stamps`** (Decision 2's mirror):
+  - **Owned base** (own blend under `Assets/…`): read the base's `(base, state)` too. An exact mismatch, or
+    a genuinely-absent stamp on an owned side, is a **loud may-block WARNING — write nothing**: a
+    missing/mismatched *outfit* stamp is `own-mergeable`'s re-stamp-and-refile loop, a missing *base* stamp
+    is `own-base`'s `stamp_base` seed (Decision 3) — route to whichever side is off.
+  - **Vendor base** (under `Assets/Vendor/…`, no blend or stamp — expected): a vendor base is
+    `unproportioned` by construction. A mergeable in state `unproportioned` is the blessed "own the outfit,
+    not the base" case; a **`reshaped`** mergeable can't fit a stock base → route to `own-base` (own +
+    reproportion the base). This is the same misfit `CheckSeam` flags as NOT-PASS — `reshaped` moves the
+    rest pose without renaming bones — named at the stamp level so the fix routes to the right side.
 - **Broken refs — classify with `CheckAvatar`, then route by class.** Run `CheckAvatar.Inspect(<avatar root>)`
   on the placed avatar: against the placed scene it names every MA scene ref and every clip/controller
   binding a rename left unresolved (`PASS`/`CLASSIFY`) — the whole reactive family included (`ShapeChanger`,
@@ -190,19 +201,10 @@ to top up: it's a **fit-time proxy** bake (`reproportion`'s opposite-morph subst
 an absent morph) — **flag-only, do not auto-reconcile** it as a same-named base obligation. (The
 practical rule the operator will already know: if you bake, bake to match.)
 
-### 6. Fit gate — mechanical first, then the operator's eyes
+### 6. The operator's look
 
-Bone-*name* resolution is step 3; this is whether the resolved seam *sits right*. **The fit gate is
-mechanical, not a render read** (`verify.md`).
+Fit is settled mechanically at step 3 (`CheckSeam`); what's left is cosmetic and the operator's.
 
-- **Seam alignment — `CheckSeam` (the agent fit gate).** It compares the mergeable's bones against the
-  base's matched bones in **world space** (a compensating root scale is legitimate authoring, so
-  world-space is the honest frame) and verdicts on **spread and direction-uniformity**: a *uniform*
-  translation across all bones is possibly benign (the mesh may carry an equal-and-opposite offset), while
-  *differing* magnitude or direction is a mechanically-certain misfit. It gates **before any render**, and
-  an agent-modified root transform is itself a flag. A large or non-uniform delta is a **refit signal** —
-  surface it, route out (`Scope`), don't force it; a genuine small misfit you correct with a **deliberate,
-  flagged, `CheckSeam`-re-verified** transform edit, never the reflexive normalization step 2 forbids.
 - **Clipping / look — the operator's, not a verdict.** Does it clip, sit right, read as the vendor
   intended? `RenderAvatar` from the angles the check needs (`top` for hair seating, `bottom` for shoes) is
   a resolved-fit look for the operator (NDMF preview applied), not a baked-upload proof or an agent fit
@@ -235,7 +237,7 @@ Reach for these by role; open each to learn its exact entry point.
   Grab in a separate call from any edit — a same-call grab shows the pre-edit proxy; the summary's
   `note=` flags an in-flight rebuild but cannot catch the same-call case.
 - **avatarprep `report_stamps`** (Blender, via MCP or `cli/report_stamps.py`) — the baked-morph read in
-  step 5, and also step 3's provenance fit gate: the same call returns each armature's `avatarprep_base`/
+  step 5, and also step 3's provenance routing: the same call returns each armature's `avatarprep_base`/
   `avatarprep_state` pair alongside the bound-mesh `avatarprep_baked` map grouped **under its owning
   armature** (+ an `unbound` bucket); step 5 keys on the side's own armature handle and does the
   cross-mesh collapse. The provenance blend is the source of truth.
@@ -243,6 +245,6 @@ Reach for these by role; open each to learn its exact entry point.
   never re-authors it.
 - **`CheckAvatar`** (agent-tools, via `execute_code`) — the step-3 broken-ref classifier: `PASS`/`CLASSIFY`
   with per-offender class + `clipAssetPath`. Inspection-only; you apply the remedy it routes to.
-- **`CheckSeam`** (agent-tools, via `execute_code`) — the step-6 mechanical fit gate: per-bone world-space
-  delta between mergeable and base + a spread/direction-uniformity verdict, gating before any render;
-  inspection-only.
+- **`CheckSeam`** (agent-tools, via `execute_code`) — the step-3 mechanical fit gate:
+  `Check(baseRoot, mergeableRoot)` reflects the MA/VRCFury seam mapping and gates world-space coincidence
+  of weighted humanoid bones → PASS / NOT-PASS / REFUSE, before any render; inspection-only.

@@ -158,9 +158,11 @@ the `unity.md` **UC2** clip phase, `whatIf` first:
 
 Structural and basic — **the real proof is a compose**, so hand off after:
 
-- **Seam hit-rate** — the core seam bones resolve by name against the target base.
-- **Reproportion coherence** — the owned mergeable's bones land on the target base's reshaped world
-  positions (compare a few; the vendor piece would sit off).
+- **Seam fit — `CheckSeam`** — place onto the target base and run `CheckSeam.Check(base, mergeable)`. It
+  reflects the seam mapping and gates world-position coincidence of the weighted humanoid bones, so a PASS
+  proves the owned piece lands on the target base's (reshaped) skeleton — subsuming the by-name hit-rate and
+  the eyeballed "compare a few". NOT-PASS is a reproportion/seam problem to fix before hand-off; a hair or
+  single-bone accessory REFUSEs (offset-tolerant proxy) — its fit is the operator's at compose, as expected.
 - **Clean transplant diagnostics** — flagged-missing 0 for kept hosts, anchors bound, no vendor leak.
 - **Placement proof (`CheckAvatar`)** — place onto the target base and run `CheckAvatar.Inspect(<root>)`; expect
   `PASS`. A `CLASSIFY` names a seam scene-ref or a Phase-2C clip binding still unresolved against the placed
