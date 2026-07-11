@@ -10,8 +10,8 @@ owned bucket plus **only the textures actually being changed** — every untouch
 vendor GUID reference (normal maps and masks usually stay vendor; the commonest real
 customization forks exactly one albedo). This is `docs/LAYOUT.md`'s selective-owning rule
 applied to materials, and the executable half of its read-only policy: `Assets/Vendor/` and
-`Packages/` are never written — a task that needs to mutate a material there enters this skill
-to materialize the owned copy first.
+`Packages/` are never edited in place — a task that needs to change a vendor material there enters
+this skill to materialize the owned copy first.
 
 **No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
 is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
