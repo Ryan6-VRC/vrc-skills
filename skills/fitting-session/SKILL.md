@@ -12,10 +12,17 @@ docs + skills, **not the workers** — a worker failing where the docs say it sh
 finding about the docs. Stay context-light: dispatch the heavy work (tasks, grading, transcript
 reads) to subagents and hold only their verdicts.
 
+Coverage means **breadth**, not a single success. A tool that passed on one outfit breaks on the
+next — a different rig, blendshape set, or material layout — or when that outfit is stacked with a
+second and a hair. Two misses defeat the exercise equally: proving a capability once and moving on,
+and building one avatar deep while the corpus stays untouched. Quantity is a quality of its own.
+
 ## Parameters and venue
 
-At launch: a **lane**, a **task budget** (default ~10), and the Unity project the session was
-started in. Two sessions may run concurrently only on **different lanes in different projects** —
+At launch: a **lane**, a **task budget** (default ~10 *dispatches* — a batch is one dispatch no
+matter how many assets it carries, so ~10 dispatches should exercise far more than 10 assets), and
+the Unity project the session was started in. Two sessions
+may run concurrently only on **different lanes in different projects** —
 and even then they share state: edit only your own lane's rows in `LEDGER.md` and re-read it
 before each write, and treat physical singletons (Blender, each Editor) as claimed per-lane by
 operator coordination rather than grabbed on sight.
@@ -38,13 +45,20 @@ Everything durable lives in the Atelier root's `docs/assay/` (gitignored — cre
 and seed an empty ledger if missing; being untracked, it needs no worktree to write):
 
 - `LEDGER.md` — cross-run state. One row per **capability claim**, keyed
-  `arc | claim | asset-class | lane` — asset *class*, never a specific file: the class is what
-  passes or fails. Status vocabulary: `untested`; `blocked` (a precondition the claim needs is
-  absent — pattern library unseeded, fixture missing — so it can't be tested yet, distinct from
-  tested-and-failed); `pass@run-N-<lane>`; `fail@run-N-<lane> → <kickoff-id>`;
-  `fixed-verified@run-N-<lane>`. The `-<lane>` suffix disambiguates concurrent lanes, which share a
-  run number across different project files. Keep keys stable across runs; a later fitter must recognize
-  its predecessor's rows.
+  `arc | claim | asset-class | lane`. The class is the key; what a row *records* depends on the
+  claim's **variance** — whether breadth across the corpus can change the answer. Low-variance
+  claims (most deep-behavior arcs) still pass or fail as a class and close: `pass@run-N-<lane>`.
+  High-variance claims accumulate a **coverage profile** and never terminally close:
+  `covering@run-N-<lane> — covered N assets / V vendors / topologies:simple|mixed; fragile-on <classes>`.
+  Variance, not execution speed, decides this: a heavy single-deep arc like own-base is still
+  high-variance and carries a profile. A `fragile-on <class>` entry is regression-verified next run
+  exactly as a `fail` is — it enters Phase 1 priority 1 (regression), not just priority 3's
+  thin-coverage resample. Rest of
+  the vocabulary: `untested`; `blocked` (a precondition the claim needs is absent — pattern library
+  unseeded, fixture missing — so it can't be tested yet, distinct from tested-and-failed);
+  `fail@run-N-<lane> → <kickoff-id>`; `fixed-verified@run-N-<lane>`. The `-<lane>` suffix
+  disambiguates concurrent lanes, which share a run number across different project files. Keep keys
+  stable across runs; a later fitter must recognize its predecessor's rows.
 - `run-N-<lane>.md` — this run's report: envelope map, queue with predictions, per-task verdicts,
   findings with IDs — including friction with *this skill's own instructions*, which a run tempers
   the same way it tempers the workshop. Append as you go — the report must survive an interrupted
@@ -68,10 +82,10 @@ queued against an empty resource it tests nothing.
 A fixed queue, written into the run report before any dispatch — no per-task asset picking. The
 queue is fixed against *asset-picking drift*, not against operator knowledge: an operator prior
 delivered before a dispatch lands as a recorded prediction revision, and an operator ruling
-delivered mid-run lands as a finding — neither is off-limits the way re-choosing the next asset by
-hand is. Priority order:
+delivered mid-run lands as a finding. Priority order:
 
-1. **Regression-verify prior fails** — every `fail` ledger row in this lane. First check whether
+1. **Regression-verify prior fails** — every `fail` ledger row, and every `fragile-on` class carried
+   by a `covering@` row, in this lane. First check whether
    a fix plausibly landed (its kickoff's status; `git log` of the tool repos since the fail was
    recorded), but test regardless — the ledger distinguishes "fix never attempted" from "fix
    landed but insufficient", and they produce different kickoffs.
@@ -79,15 +93,32 @@ hand is. Priority order:
    *churned* since the pass (`git log` of vrc-unity-tools / vrc-blender-tools / vrc-skills
    against the pass date). Retesting an untouched code path is worthless; backslides live
    downstream of churn.
-3. **Frontier** — untested rows and new asset classes, stratified across vendor, asset type, and
-   expected weirdness (the library's inventory doc helps), plus 2–3 limit-pushers.
+3. **Frontier** — untested rows, new asset classes, and **coverage rows still thin or skewed** (few
+   assets, one vendor, all simple topologies), drawn as a **fresh sample each run** so no two runs
+   repeat a queue; stratified across vendor, asset type, and expected weirdness (the library's
+   inventory doc helps), plus 2–3 limit-pushers.
+
+**Execution speed is set by the arc.** Mechanical arcs (import, compose, repath) run as **batch**
+dispatches — one worker, many assets, one FRICTION REPORT — and each batch must span multiple
+vendors and topologies (the inventory doc stratifies it); a two-asset, single-vendor batch is
+try-once-and-done in a batch costume. Heavy arcs (controller authoring, gimmicks, reconciles, and
+the heavy geometry arcs — own-base, own-mergeable, reproportion) stay **single-deep**: one asset,
+fully graded and escalated. Speed is orthogonal to ledger closure (set by variance, above).
+
+**Combination tasks** are a frontier category of their own — the *interaction* between composed
+pieces, where bone conflicts, param collisions, menu overflow, and material-slot clashes live,
+invisible to any arc tested alone. Keep them real: a combination is **partial mix-and-match** (shoes
+and pants from outfit A, shirt and necklace from B, onto a base), not stacked full outfits, and
+bounded to **2–3 sources** of one type — the worker prompt names which slots come from which source,
+the way an owner would ask. Queue a small set stratified across base, source pair, and slot split,
+and rotate it across runs like any other coverage; its ledger home is the `compose` arc with a
+`combination` asset-class.
 
 Each entry: asset, arc, the worker prompt, an assigned **tier**, a **prediction** (pass/fail, one
 line of why), and — where the arc's skill contains an operator gate — the **gates you expect the
 worker to hit and the answer you'll give in the operator's voice** (the operator-proxy script;
-Phase 2 Dispatch resolves it). Tier is itself a calibration claim: Sonnet for asset shuffling and mechanical
-arcs (import, compose, repath), Opus for complex behavior work (controller authoring, gimmicks,
-multi-step reconciles), Fable only for frontier limit-pushers. Predictions — outcome and tier —
+Phase 2 Dispatch resolves it). Tier is itself a calibration claim: Sonnet for mechanical arcs, Opus for complex behavior work,
+Fable only for frontier limit-pushers. Predictions — outcome and tier —
 are what make the envelope map falsifiable: a miss in either direction is a finding, including a
 task that needed a higher tier than assigned.
 
@@ -127,8 +158,7 @@ auditor, not a second worker** — its edge is freedom from the worker's sunk co
 not more compute. It **re-runs only the cheap objective checks and reads the transcript; it does
 not re-execute the worker's expensive work** (a 100k-token play-mode battery, a long bake). The
 failure modes here aren't fabrication — the worker doesn't lie about having entered play mode —
-but skipped steps, off-script shortcuts, and rationalized judgment calls, which a transcript read
-plus a cheap spot-check catch. So it (a) re-derives the cheap signals — the relevant `Check*`
+but skipped steps, off-script shortcuts, and rationalized judgment calls. So it (a) re-derives the cheap signals — the relevant `Check*`
 doors, a git diff, a spot-checked delta (per-bone rest-pose spread, param counts) — and (b) audits
 the transcript for off-script behavior: raw `execute_code` where a tool door exists, diagnostics
 ignored, steps silently skipped, skill instructions bypassed, an operator gate skipped (or asked
@@ -151,13 +181,25 @@ Two hard rules on the evidence:
   0-byte stub; the worker transcript lives at `<session-dir>/subagents/agent-<id>.jsonl` (the Agent
   result cites the id). Hand the grader that path — both if you like, `subagents/` first.
 
+**Grading a batch is cheaper, not blinder.** Run the cheap objective door — the relevant `Check*`, a
+**per-asset** git diff — on **every** item, never a sampled subset: sampling re-trusts the worker's
+"the rest were fine", which the self-report rule forbids. What batch grading drops is per-item
+*escalation*, not verification. When the door surfaces a chafing asset, **promote that asset to a
+single-deep escalated re-run** (this run if budget allows, else a kickoff) — that recovers the
+escalation differential Phase 3 triage needs; a chafing batch item left un-escalated has no route to
+a triage class.
+
 **Escalate.** On a fail (or drift bad enough to void the run): revert, then replay the *identical*
 prompt one tier up. The differential is the diagnostic — a pass one tier up is a legibility/doc or
 tier-calibration bug; a fail at the top tier is a tool or envelope hole.
 
 **Hygiene.** A verified pass is committed to the project repo with its task id; a fail is fully
 reverted (git restore/clean of the project's changed paths + discard unsaved scene state) before
-the next dispatch. Two traps even a read-only task springs: Unity inspection flips the scene's
+the next dispatch. A batch breaks the one-mutation-per-dispatch assumption — whole-dispatch revert
+would discard the passing imports, and the intentionally-dirty tree defeats the grader's clean
+`git status` mutate-check — so attribute per asset: the batch worker commits each asset with its id
+(or the fitter commits the passing paths and reverts only the chafed ones post-grade), and the
+grader's mutate-check becomes a per-asset diff. Two traps even a read-only task springs: Unity inspection flips the scene's
 `isDirty` with no on-disk change — clear the phantom dirt between tasks (ClearSceneDirtiness
 reflection, `unity-scene-revert-via-mcp`) so it can't bake into a later save or muddy the next
 grader's "did the worker mutate?" read; and inspection still leaves committable residue (tracked
