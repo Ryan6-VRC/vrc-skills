@@ -1,7 +1,7 @@
 {
   "name": "vrc-skills",
   "description": "Reusable Claude Code skills for the VRChat avatar/outfit workflow.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": { "name": "Ryan6-VRC", "email": "236273965+Ryan6-VRC@users.noreply.github.com" },
   "repository": "https://github.com/Ryan6-VRC/vrc-skills",
   "keywords": ["skills", "vrchat", "avatar", "blender", "unity"]
