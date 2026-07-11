@@ -119,8 +119,8 @@ falsify it (so the grade step can't fail a worker who proceeded on it). Do **not
 gates inside the opening prompt — that makes the worker skip the gate's *other* checks and hides whether it would
 have asked at all. The asking is itself under test: a skipped gate and a gate-question the docs
 already answer are both findings (grade below). The general skills-side rule for a worker with no
-ask channel is B2's in `kickoffs.md`; this is only the fitting-session harness half, and the two
-must agree.
+ask channel is the canonical no-operator line each gated skill carries; this is only the
+fitting-session harness half, and the two must agree.
 
 **Grade — never trust the worker's self-report.** The grader is a **disinterested, low-effort
 auditor, not a second worker** — its edge is freedom from the worker's sunk cost ("I succeeded"),

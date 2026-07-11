@@ -23,6 +23,11 @@ fit on the seam check, do the mechanical in-scene repairs, then get out of the w
 — a wrong-base mergeable merges with a clean console (MA silently auto-creates phantom bones), so a
 green console proves nothing.
 
+**No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
+is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
+take the derivable defaults, flag every undecided call loudly at the top of your report, and never
+silently mint a convention — folder or category placement especially.
+
 ## Scope — what this owns, and where it routes out
 
 Owns: the cheap, non-destructive, **in-scene** work — drop, seam verification, scene-ref repath, mesh

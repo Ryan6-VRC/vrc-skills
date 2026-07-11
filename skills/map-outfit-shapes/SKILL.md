@@ -14,6 +14,11 @@ coherence are all reads of it.
 blendshape names every which way; no deterministic script maps them. You read the graph across those
 idioms and reason — the method below is authority order and fallbacks built for exactly that variety.
 
+**No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
+is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
+take the derivable defaults, flag every undecided call loudly at the top of your report, and never
+silently mint a convention — folder or category placement especially.
+
 ## Scope
 
 Owns: producing the interaction map, and the in-scene acts that consume it (disable an overlapped

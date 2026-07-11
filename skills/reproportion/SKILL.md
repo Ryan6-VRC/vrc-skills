@@ -16,6 +16,11 @@ the path to the target and validate its edge(s) against the live scene (missing 
 as named offenders **before** any mutation), then walk the path — object transform + per-bone scales +
 shapekey values, baked, re-stamped. Authoring precedes it; Unity reconciliation follows.
 
+**No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
+is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
+take the derivable defaults, flag every undecided call loudly at the top of your report, and never
+silently mint a convention — folder or category placement especially.
+
 ## Author or load a profile
 
 Either load an existing profile or author one. Authoring is the judgment-heavy part: applying is a

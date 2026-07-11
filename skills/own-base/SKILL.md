@@ -14,6 +14,11 @@ prose below only tells you which to reach for and when.
 The flow is three phases: graph-and-decide, Blender normalize, Unity rebuild. Don't skip ahead — each phase's
 gates feed the next.
 
+**No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
+is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
+take the derivable defaults, flag every undecided call loudly at the top of your report, and never
+silently mint a convention — folder or category placement especially.
+
 ## Scope — what this covers, and the boundary
 
 In scope: owning the **base body + underwear** into a clean starting avatar. Stop there.

@@ -11,13 +11,16 @@ Get a vendor package into `AvatarProject` cleanly: untouched under `Assets/Vendo
 
 Resolve each **as it comes up** — not every asset hits every gate, and there is no silent default; if the option exists, ask.
 
-**Dispatched with no operator to ask** (a subagent, an automated run) — don't stall, and don't invent silently. Surface the question to whoever dispatched you and wait, if you can. Failing that, split by gate kind: a **preference** you can't derive (version/base, prune, kaihen, PSDs) → do the rest of the import, leave that one choice undone, and flag it at the top of your report; **folder placement** → mirror the nearest existing `Vendor/<Category>/` and say loudly which precedent you followed and why. Never mint a new category or drop a guessed variant in silence.
+**No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
+is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
+take the derivable defaults, flag every undecided call loudly at the top of your report, and never
+silently mint a convention — folder or category placement especially.
 
 - **Which version / avatar base** — applies to outfits, hair, accessories (and sometimes systems), not base avatars. If the source offers several, ask which to import. If there's only one, take it — **except** when its target avatar isn't already in the project (e.g. a Manuka outfit with no Manuka present): always confirm first.
 - **Prune a combined package** — ask **only** when it's a full-set of *distinct* avatars (offer to drop the non-targets). A shared base-model family — cross-compatible bodies packaged together, e.g. Plum/Chiffon/Chocolat — is kept whole; don't ask.
 - **Alternate / edit (`kaihen`) FBX** — ask. If kept, place it with the other FBXes in Unity (inside the vendor `FBX/` folder).
 - **Non-linked PSDs / texture packs** — ask; if kept they go to `Photoshop/<Avatars|Outfits>/<Name>/` (our work, outside `Assets/`). A PSD a material actually links to is required — bring it in without asking; confirm the no-link case from the verify step's `0 .psd` material dependencies.
-- **Folder placement** — drop into an existing `Vendor/<Category>/` when it's an obvious match (hair → `Hair`). Ask before creating a new category, or when the right one isn't obvious.
+- **Folder placement** — drop into an existing `Vendor/<Category>/` when it's an obvious match (hair → `Hair`). Ask before creating a new category, or when the right one isn't obvious; dispatched with no one to ask, mirror the nearest existing `Vendor/<Category>/` precedent and say loudly which you followed.
 
 ## Take the right files
 

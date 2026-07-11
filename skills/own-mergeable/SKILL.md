@@ -16,6 +16,11 @@ seam the mergeable is missing.** A piece that needs neither — already seam-aut
 fine, like a rigid accessory that just follows its bone — is not owned here; **compose the vendor
 prefab** (`compose-mergeable`).
 
+**No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
+is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
+take the derivable defaults, flag every undecided call loudly at the top of your report, and never
+silently mint a convention — folder or category placement especially.
+
 ## Scope — what this owns, and the boundary
 
 In scope: own an **operator-designated geometry subset** as a standalone mergeable. The subset is the
