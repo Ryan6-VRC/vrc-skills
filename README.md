@@ -9,7 +9,7 @@ This repo is a self-hosted Claude Code plugin (single-plugin marketplace).
 
 ## Skills
 
-The skills and their triggers are listed in the meta-repo `TOOLS.md` (vrc-skills section);
+The skills are rostered in the meta-repo `README.md` (`## Skills` section);
 each skill's `description` frontmatter is its canonical trigger.
 
 ## Install (local)
@@ -22,7 +22,8 @@ each skill's `description` frontmatter is its canonical trigger.
 ## Authoring
 
 New skills drop into `skills/<name>/SKILL.md` and are auto-discovered by the plugin — no registration
-here. The meta-repo `TOOLS.md` still needs the skill's row (its pre-commit hook verifies the key exists).
+here. The meta-repo `README.md` (`## Skills`) still needs the skill's row (the meta-repo pre-commit
+hook verifies the key exists).
 
 Skills with **ask-the-operator gates** carry a canonical no-operator block verbatim — what a dispatched
 or headless worker does when there's no one to ask. Copy it from any gated skill (e.g. `compose-mergeable`)
