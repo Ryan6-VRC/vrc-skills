@@ -81,15 +81,10 @@ steps 4–5.
   - **PASS** — the humanoid skeleton coincides; fit is certified, proceed to de-conflict. It certifies
     *only* the humanoid skeleton — not physics-cage / bust / hair / accessory placement, which stay the
     operator's eye (step 6).
-  - **NOT-PASS** — humanoid bones offset past ε. A large offset, or one across most bones, is the **wrong
-    base or a real misfit** (an agent-normalized root — the step-2 trap — is this signature): surface it,
-    route out (`Scope`), don't force it. **A few peripheral bones just over ε** (a hand or finger, sub-mm)
-    is ambiguous and **not yours to fix blind**: `CheckSeam` measures position only, so it can't tell a
-    pose-mode bake drift (re-aligning the bone fixes it) from an edit-mode bump where the mesh is already
-    aligned to the moved bone (re-aligning drags the mesh *off*) — opposite handling, indistinguishable
-    from the number. **Flag it to the operator and change nothing.** Only a misfit whose cause you
-    actually know do you correct, with a **deliberate, flagged, re-verified** transform edit — never the
-    reflexive normalization step 2 forbids.
+  - **NOT-PASS** — humanoid bones offset past ε: the **wrong base or a real misfit**. Surface it, route out
+    (`Scope`), don't force it. (An agent-normalized root — the step-2 trap — surfaces here as an offset
+    across every bone.) A genuine small misfit you correct with a **deliberate, flagged, re-verified**
+    transform edit, never the reflexive normalization step 2 forbids.
   - **REFUSE** — can't certify this seam, for a reason it names, and the reason picks the route. An
     offset-tolerant proxy (≤1 humanoid bone — hair/accessory), or a *VRCFury-scales-at-bake* seam
     (`forceOneWorldScale` / non-unit scale — legitimate authoring the edit-time pose can't certify), routes
@@ -120,10 +115,7 @@ steps 4–5.
     which always looks writable): an **owned/writable** `.anim` is repathed **inline** (the
     `OwnControllerClips → RepathClips` clip phase, `unity.md` UC2); an **unowned vendor** clip (`clipAssetPath`
     under `Assets/Vendor/`|`Packages/`) needs a geometry round-trip compose can't do — **abort the compose and
-    route to `own-mergeable`**, but **only when the compose introduced the break.** A vendor binding already
-    dangling on the bare base (it shows in a `CheckAvatar` run *before* you compose — e.g. a base's own
-    `Breast_Size → Costume_*` ref) is vendor-shipped, not your regression — flag it and proceed; only a
-    break a rename or move in *this* compose created routes out.
+    route to `own-mergeable`**.
 - **Physbone collider refs — relink null base-collider slots.** A placed physbone whose `colliders[]`
   holds a **null** slot collided against a *base-owned* collider the mergeable doesn't carry
   (`own-mergeable` leaves it null by design — the collider is the base's). Re-point each null at the
@@ -145,29 +137,14 @@ don't run the full reconcile inline unless the operator asks, and don't silently
   onto that and there is little to strip (`outfits.md`). If the vendor ships only a clothed base (or
   only shader variants of it), strip it here. A base locked in a complete *fixed* outfit with no
   toggle surface is the refuse case — ask for the kisekae variant.
-- **Disable, never delete** — a later optimizer strips unused mesh; disabling is reversible. The
-  exception is an **operator-sanctioned** delete (a gimmick-subtree strip, a dangling menu item): it
-  requires **unpacking** the vendor prefab instance in-scene first (a packed instance no-ops structural
-  deletes — `unity.md`), which is fine — the build unpacks a clone regardless and the vendor asset on
-  disk stays byte-identical.
+- **Disable, never delete.** A later optimizer strips unused mesh; disabling is reversible, deletion is
+  not.
 - **Commit only the unambiguous disables** — underwear and costume under a full outfit, across **both
   layers** (base stockings overlap a stockinged outfit as much as the base dress does). **Enumerate**
   the uncertain overlaps (bandages, shoes, wings, creature parts) for the operator; do not disable on a
-  low-confidence spatial guess. **Base underwear is the asymmetric case:** when it isn't clearly replaced
-  by the outfit's own layer, default to **keeping** it and raise the call — underwear left on under
-  clothing is the better mistake than an uncovered avatar (fail toward covered). Judge overlap by garment
-  coverage and role, not names; `RenderAvatar` is an
+  low-confidence spatial guess. Judge overlap by garment coverage and role, not names; `RenderAvatar` is an
   operator-facing look, not an agent clipping verdict (`verify.md`). A limb that **vanishes** when a base
   garment goes is a coupled blendshape — the `map-outfit-shapes` reconcile, not a clipping call.
-- **Shrink/hide over shared vertices are almost never both on** (`outfits.md`; reconciled in
-  `map-outfit-shapes`). Hiding a base mesh should flip its paired `Shrink_*` off — the pair travels
-  together — and a kept outfit `ShapeChanger` shrinking the *same* vertices double-subtracts to an
-  inverted mesh if the base shape stays worn (invisible to the sheet and every `Check*`). Absence of the
-  shape on the outfit's own `ShapeChanger` is the tell it doesn't need it.
-- **Partial use of a module carrying `MergeAnimators`:** stripping its menu leaves the merged layers'
-  **default-active params** free to re-enable the meshes you just disabled at runtime (invisible to
-  every gate). Don't need the merged controller? Remove it with the menu. Need part of it? That's an
-  `own-mergeable` fork (decompile + surgery), not an in-scene strip.
 
 ### 5. Shape coherence (blendshape / baked)
 
