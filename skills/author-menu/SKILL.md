@@ -27,7 +27,8 @@ outfit/mergeable prefabs (`menus.md`).
   scope here. This skill fronts an existing module; a generated gimmick arrives as the same thing —
   a module, with or without its own menu — so the gimmick mode below is the whole interface.
 - **Custom animator logic beyond what toggle actions/reactions express** (chained drivers,
-  bespoke layers) → operator/controller work; flag, don't improvise.
+  bespoke layers) → operator/controller work; flag, don't improvise. Whether that lands as an inline
+  edit to the owned FX or a separate merged controller is `docs/animator.md`'s gate.
 - **The avatar already ships its menu and the operator only wants to test it** → **not an authoring
   task.** A vendor base carries menu / params / FX on the `VRCAvatarDescriptor`; absent MA/VRCFury
   components does **not** mean absent menu (`outfits.md`). Exercising shipped controls is a play-mode
