@@ -36,10 +36,8 @@ their own right, not a silent pre-step.
 
 The vendor library root comes from `CLAUDE.local.md` (machine-local). It is **read-only** — a
 worker writing to it is an automatic grade-fail regardless of task outcome. It may also be a
-**network share**: treat every byte read off it as expensive. List directories shallowly, copy
-the one package a task needs into local scratch, and do all extraction and inspection on the
-copy — no recursive scans, hashing, or streaming whole archives in place. Worker prompts name
-exact package paths (never "find something in the library") and carry the same constraint.
+**network share**: the one read to avoid is a *whole-library* byte-read (streaming or hashing
+every archive in place) — otherwise search and probe it freely, workers on the same terms.
 
 ## The assay record
 
@@ -49,7 +47,9 @@ and seed an empty ledger if missing; being untracked, it needs no worktree to wr
 - `LEDGER.md` — cross-run state. It opens with a **run registry** — one line per run,
   `run-N — <project> — <date>`; claim your N by appending your line before any dispatch, so
   concurrent sessions never share a number and a bare `run-N` in any status routes to its report
-  and project. Below that, one row per **capability claim**, keyed
+  and project. A run may instead **adopt an interrupted predecessor** — reuse its N and report
+  rather than claim a fresh one, note the adoption, and resample its unexecuted frontier under
+  Phase 1's fresh-sample rule. Below that, one row per **capability claim**, keyed
   `arc | claim | asset-class`. The class is the key; what a row *records* depends on the
   claim's **variance** — whether breadth across the corpus can change the answer. Low-variance
   claims (most deep-behavior arcs) still pass or fail as a class and close: `pass@run-N`.
@@ -146,6 +146,10 @@ Give the worker one more standing instruction: **stop and ask on any operator ga
 guessing. Both read as ordinary operator requests — the worker is still told nothing about being
 graded, nor anything else about the harness.
 
+A task that produces a written artifact gets a drop-path **outside `docs/assay/`**: a worker who
+can read the run reports there can absorb a prior verdict, contaminating the independent-grade
+premise.
+
 **Operator-proxy.** The workshop's skills contain first-class *ask-the-operator* gates, but a
 dispatched worker has no operator — so the fitter is the proxy. When the worker stops on a gate,
 answer in the operator's voice via agent-resume: from the queue's pre-authored script if the gate
@@ -212,14 +216,25 @@ grader's mutate-check becomes a per-asset diff. Two traps even a read-only task 
 reflection, `unity-scene-revert-via-mcp`) so it can't bake into a later save or muddy the next
 grader's "did the worker mutate?" read; and inspection still leaves committable residue (tracked
 `Assets/Agent/Snapshots/`), so commit or clean it between dispatches to hand the next grader a
-clean `git status`. Update the ledger row and append the task verdict to the run report after
+clean `git status`. Never fold SDK-bounced `ProjectSettings` into a task commit — the SDK re-flips
+them between sessions, so committing them manufactures churn; leave them unstaged. Update the
+ledger row and append the task verdict to the run report after
 every task, not at the end.
 
 ## Phase 3 — synthesize
 
 Triage every finding: **tool bug** / **doc-or-skill legibility gap** / **envelope hole** (docs
 imply a capability that doesn't exist) / **vendor-corpus surprise** / **worker-model limitation**.
-Prediction misses are findings about the envelope map itself. Then produce three artifacts:
+Prediction misses are findings about the envelope map itself.
+
+Two filters gate a finding into a kickoff. **The bar:** a worker who complains but succeeds is no
+automatic fix — a fix earns a kickoff only if it lands in tool output (zero ongoing context cost)
+or ~one line in a doc the task already reads; otherwise drop it, don't document it. **Softness:**
+a fitter closing a long run has spent its research budget, so write each finding as a *hypothesis*
+that hands the design space to the implementing agent — which has the room to research what you
+couldn't — not a decision to relitigate.
+
+Then produce three artifacts:
 
 - Finish the run report: predictions vs outcomes, findings with evidence pointers (task id,
   transcript, RunLog), updated ledger.
@@ -229,7 +244,9 @@ Prediction misses are findings about the envelope map itself. Then produce three
 - Leave the run's surviving avatars standing side by side in **one saved review scene**, so the
   operator's end-of-run check is a single eyeball pass over everything the session built.
   Vision-illegible passes (a controller graph, a shape map) get no stand-in; only avatars that
-  should *look* right belong there.
+  should *look* right belong there. Pair the scene with an **operator handoff**: per surviving
+  avatar, a line on what was done and what to check or test and how ("enter play mode and drive
+  the Hair Color radial").
 
 Do not fix anything yourself mid-run — a fitting session measures; the kickoffs fix. The one
 exception is operator-sanctioned: a run-*stopping* tool bug the operator explicitly rules on may
