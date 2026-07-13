@@ -19,55 +19,62 @@ and building one avatar deep while the corpus stays untouched. Quantity is a qua
 
 ## Parameters and venue
 
-At launch: a **lane**, a **task budget** (default ~10 *dispatches* — a batch is one dispatch no
-matter how many assets it carries, so ~10 dispatches should exercise far more than 10 assets), and
-the Unity project the session was started in. Two sessions
-may run concurrently only on **different lanes in different projects** —
-and even then they share state: edit only your own lane's rows in `LEDGER.md` and re-read it
-before each write, and treat physical singletons (Blender, each Editor) as claimed per-lane by
-operator coordination rather than grabbed on sight.
+At launch: a **task budget** (default ~10 *dispatches* — a batch is one dispatch no matter how
+many assets it carries, so ~10 dispatches should exercise far more than 10 assets) and the Unity
+project the session was started in. The whole envelope is in scope every run — geometry, behavior,
+and the handoffs between them; an operator-suggested focus in the prompt weights the sample,
+nothing more. Two sessions may run concurrently only in **different projects** — and even then
+they share state: re-read `LEDGER.md` before each write and edit only rows your own run touched,
+and treat physical singletons (Blender, each Editor) as claimed by operator coordination rather
+than grabbed on sight.
 
-- **geometry** — import-vendor-asset, own-base, own-mergeable, compose-mergeable,
-  map-outfit-shapes, reproportion.
-- **behavior** — controller round-trips (`DecompileController`/`CompileController`), gimmick and
-  menu authoring, emulator verification per `verify.md`. Needs vendor assets already **imported**,
-  not composed: a shipped vendor FX is itself a round-trip/rebuild target, and a simple compose
-  done as the task's setup is a test in its own right. When the project starts empty — the normal
-  case under two-lane concurrency, since geometry claims the populated project — run the
-  corpus-building imports as graded setup tasks in their own right, not a silent pre-step.
+Behavior arcs (controller round-trips, gimmick and menu authoring, emulator verification per
+`verify.md`) need vendor assets already **imported**, not composed: a shipped vendor FX is itself
+a round-trip/rebuild target, and a simple compose done as the task's setup is a test in its own
+right. When the project starts empty, run the corpus-building imports as graded setup tasks in
+their own right, not a silent pre-step.
 
 The vendor library root comes from `CLAUDE.local.md` (machine-local). It is **read-only** — a
-worker writing to it is an automatic grade-fail regardless of task outcome.
+worker writing to it is an automatic grade-fail regardless of task outcome. It may also be a
+**network share**: treat every byte read off it as expensive. List directories shallowly, copy
+the one package a task needs into local scratch, and do all extraction and inspection on the
+copy — no recursive scans, hashing, or streaming whole archives in place. Worker prompts name
+exact package paths (never "find something in the library") and carry the same constraint.
 
 ## The assay record
 
 Everything durable lives in the Atelier root's `docs/assay/` (gitignored — create the directory
 and seed an empty ledger if missing; being untracked, it needs no worktree to write):
 
-- `LEDGER.md` — cross-run state. One row per **capability claim**, keyed
-  `arc | claim | asset-class | lane`. The class is the key; what a row *records* depends on the
+- `LEDGER.md` — cross-run state. It opens with a **run registry** — one line per run,
+  `run-N — <project> — <date>`; claim your N by appending your line before any dispatch, so
+  concurrent sessions never share a number and a bare `run-N` in any status routes to its report
+  and project. Below that, one row per **capability claim**, keyed
+  `arc | claim | asset-class`. The class is the key; what a row *records* depends on the
   claim's **variance** — whether breadth across the corpus can change the answer. Low-variance
-  claims (most deep-behavior arcs) still pass or fail as a class and close: `pass@run-N-<lane>`.
+  claims (most deep-behavior arcs) still pass or fail as a class and close: `pass@run-N`.
   High-variance claims accumulate a **coverage profile** and never terminally close:
-  `covering@run-N-<lane> — covered N assets / V vendors / topologies:simple|mixed; fragile-on <classes>`.
+  `covering@run-N — covered N assets / V vendors / topologies:simple|mixed; fragile-on <classes>`.
   Variance, not execution speed, decides this: a heavy single-deep arc like own-base is still
   high-variance and carries a profile. A `fragile-on <class>` entry is regression-verified next run
   exactly as a `fail` is — it enters Phase 1 priority 1 (regression), not just priority 3's
   thin-coverage resample. Rest of
   the vocabulary: `untested`; `blocked` (a precondition the claim needs is absent — pattern library
   unseeded, fixture missing — so it can't be tested yet, distinct from tested-and-failed);
-  `fail@run-N-<lane> → <kickoff-id>`; `fixed-verified@run-N-<lane>`. The `-<lane>` suffix
-  disambiguates concurrent lanes, which share a run number across different project files. Keep keys
+  `fail@run-N → <kickoff-id>`; `fixed-verified@run-N`. Keep keys
   stable across runs; a later fitter must recognize its predecessor's rows.
-- `run-N-<lane>.md` — this run's report: envelope map, queue with predictions, per-task verdicts,
+- `run-N.md` — this run's report: envelope map, queue with predictions, per-task verdicts,
   findings with IDs — including friction with *this skill's own instructions*, which a run tempers
   the same way it tempers the workshop. Append as you go — the report must survive an interrupted
   session.
 
 ## Phase 0 — map the envelope
 
-Derive the claimed capability envelope from `TOOLS.md`, the lane's docs, and the lane's skill
-descriptions: a checklist of task shapes a competent model should complete. Diff it against the
+Derive the claimed capability envelope from `TOOLS.md`, the docs, and the skill
+descriptions: a checklist of task shapes a competent model should complete. Do not carve the
+envelope into a taxonomy and sample per bucket — classifying every tool and skill invites
+coverage gaps and double-testing; the checklist is flat, and cross-arc handoffs (a deep
+multi-arc build on one avatar) are claims in their own right. Diff it against the
 ledger's prior map — docs change as holes close, so the boundary moves. A **limit-pusher** is one
 deliberate step past a named boundary, labeled as such in the queue; its failure confirms the map
 rather than filing a bug.
@@ -85,7 +92,7 @@ delivered before a dispatch lands as a recorded prediction revision, and an oper
 delivered mid-run lands as a finding. Priority order:
 
 1. **Regression-verify prior fails** — every `fail` ledger row, and every `fragile-on` class carried
-   by a `covering@` row, in this lane. First check whether
+   by a `covering@` row. First check whether
    a fix plausibly landed (its kickoff's status; `git log` of the tool repos since the fail was
    recorded), but test regardless — the ledger distinguishes "fix never attempted" from "fix
    landed but insufficient", and they produce different kickoffs.
@@ -139,7 +146,7 @@ Give the worker one more standing instruction: **stop and ask on any operator ga
 guessing. Both read as ordinary operator requests — the worker is still told nothing about being
 graded, nor anything else about the harness.
 
-**Operator-proxy.** The lane's skills contain first-class *ask-the-operator* gates, but a
+**Operator-proxy.** The workshop's skills contain first-class *ask-the-operator* gates, but a
 dispatched worker has no operator — so the fitter is the proxy. When the worker stops on a gate,
 answer in the operator's voice via agent-resume: from the queue's pre-authored script if the gate
 was expected, otherwise a sane default plus a log line. Settle one thing at launch: the gates **no tool or
@@ -212,13 +219,17 @@ every task, not at the end.
 
 Triage every finding: **tool bug** / **doc-or-skill legibility gap** / **envelope hole** (docs
 imply a capability that doesn't exist) / **vendor-corpus surprise** / **worker-model limitation**.
-Prediction misses are findings about the envelope map itself. Then produce the two artifacts:
+Prediction misses are findings about the envelope map itself. Then produce three artifacts:
 
 - Finish the run report: predictions vs outcomes, findings with evidence pointers (task id,
   transcript, RunLog), updated ledger.
 - Distill the findings into kickoff blocks appended to the Atelier root's `kickoffs.md`, authored
   with the **kickoff** + **lapidary** skills — each scoped to one future session, each citing the
   finding IDs it closes, each recorded in the ledger row it should flip.
+- Leave the run's surviving avatars standing side by side in **one saved review scene**, so the
+  operator's end-of-run check is a single eyeball pass over everything the session built.
+  Vision-illegible passes (a controller graph, a shape map) get no stand-in; only avatars that
+  should *look* right belong there.
 
 Do not fix anything yourself mid-run — a fitting session measures; the kickoffs fix. The one
 exception is operator-sanctioned: a run-*stopping* tool bug the operator explicitly rules on may
