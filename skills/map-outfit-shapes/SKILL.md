@@ -62,6 +62,10 @@ pieces (`AgentInspector`) over **naming** (a hint, never acted on alone) over **
 (first-class when the graph is silent — a garment with no declared coupling has none until confirmed;
 don't invent one).
 
+**Reading a `ShapeChanger` raw** (`AgentInspector` / SerializedProperty): its `ShapeChangeType` prints
+as an enum index — **Delete=0, Set=1** — so a bare `enum[0]` is *Delete* (geometry deletion), the more
+consequential mode, not the harmless-looking default. Resolve the name before acting on it.
+
 **Vision is a check, not a source.** If the graph and the user leave an edge open, `RenderAvatar`
 confirms it only by **before/after comparison** — the shape worn vs. zeroed, the mesh on vs. off; read
 the *difference*, never a single capture. Vision confirms a hypothesis, it doesn't originate one.
