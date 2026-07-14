@@ -1,6 +1,6 @@
 ---
 name: author-menu
-description: Use when authoring NEW expression-menu controls on a composed avatar (outfit/prop toggles, gimmick fronts) or placing a gimmick's shipped menu. Not for testing controls the avatar already ships — drive those in play mode, don't author. Not placing the mergeable (compose-mergeable) or a gimmick's internals.
+description: Use when authoring NEW expression-menu controls on a composed avatar (outfit/prop toggles, gimmick fronts) or placing a gimmick's shipped menu. Not for testing controls the avatar already ships — drive those in play mode, don't author. Not placing the mergeable (compose-mergeable) or a gimmick's internals (author-gimmick / own-gimmick).
 ---
 
 # Author expression menus on a composed avatar
@@ -23,9 +23,10 @@ verification. Menus are authored **on the avatar, after composition** — never 
 outfit/mergeable prefabs (`menus.md`).
 
 - **Mergeable not yet placed** → `compose-mergeable` first.
-- **Gimmick internals** (state machines, constraints, contacts) → `gimmicks.md` patterns, out of
-  scope here. This skill fronts an existing module; a generated gimmick arrives as the same thing —
-  a module, with or without its own menu — so the gimmick mode below is the whole interface.
+- **Gimmick internals** (state machines, constraints, contacts) → `author-gimmick` (new from
+  intent) or `own-gimmick` (cutting/changing an existing module), out of scope here. This skill
+  fronts an existing module; a generated gimmick arrives as the same thing — a module, with or
+  without its own menu — so the gimmick mode below is the whole interface.
 - **Custom animator logic beyond what toggle actions/reactions express** (chained drivers,
   bespoke layers) → operator/controller work; flag, don't improvise. Whether that lands as an inline
   edit to the owned FX or a separate merged controller is `docs/animator.md`'s gate.

@@ -30,9 +30,9 @@ prerequisite for any other task. Route out:
 - **Geometry** → `own-base` / `own-mergeable`. Owning a material never requires owning the
   geometry it sits on, and vice versa — a composed vendor outfit can wear an owned material.
 - **The finished menu control** → `author-menu`, after this skill's groundwork — including
-  placing a vendor-shipped gimmick (anim grids, controllers, prefabs) and menu-driven material
-  swaps; this skill only produces the owned materials and animated-ready properties such a
-  control points at.
+  menu-driven material swaps; this skill only produces the owned materials and animated-ready
+  properties such a control points at. Placing a vendor-shipped gimmick **module** (prefab with
+  its controllers) is `compose-mergeable`; only its menu front is `author-menu`.
 
 ## The mechanism — decide before forking anything
 
@@ -50,8 +50,9 @@ prerequisite for any other task. Route out:
   beside the package in the vendor library, almost never inside `Assets/`).
 - **(c) Clip-driven property** — an animation clip drives the value (defined by the driver —
   shader-clock/AudioLink effects are (a)). First check what the vendor shipped: complete anim
-  grids and gimmick controllers are common, and placing one is `author-menu` work, not
-  construction. Ownership splits by shader family:
+  grids and gimmick controllers are common, and placing one is placement work
+  (`compose-mergeable` for the module, `author-menu` for the front), not construction.
+  Ownership splits by shader family:
   - **lilToon — no fork, bounded.** The clip drives the renderer's material instance and the
     build keeps clip-driven uniforms alive (below); the vendor `.mat` is never written. The
     bound: this holds for properties of feature blocks the material already has enabled.

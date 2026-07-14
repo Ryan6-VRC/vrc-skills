@@ -1,6 +1,6 @@
 ---
 name: own-mergeable
-description: Use when making our own owned copy of a mergeable's geometry — outfit, hair, ears/tail, or accessory — so it composes onto a base like a vendor one — "own this outfit", "turn just the clothing/hair into a mergeable", "extract the outfit from a full avatar", "add an MA/VRCFury seam to a bare outfit". Not placing a ready-made mergeable (compose-mergeable), not the base body (own-base), not reshaping alone (reproportion).
+description: Use when making our own owned copy of a mergeable's geometry — outfit, hair, ears/tail, or accessory — so it composes onto a base like a vendor one — "own this outfit", "turn just the clothing/hair into a mergeable", "extract the outfit from a full avatar", "add an MA/VRCFury seam to a bare outfit". Not placing a ready-made mergeable (compose-mergeable), not the base body (own-base), not reshaping alone (reproportion), not a gimmick's animator/param system (own-gimmick).
 ---
 
 # Own a mergeable
@@ -35,6 +35,9 @@ It is the **same operation regardless of what's in the set.**
   because the seam matches by name; the cross-base mechanics are `reproportion`'s (*Cross-base*). A
   genuinely different (non-topo) base is a **refit** (roadmap: `docs/mochifitter.md`), out of scope.
 - Placing the finished mergeable on a base → `compose-mergeable`.
+- The own here is **geometry-led**: the subset's meshes, rig, dynamics, and seam. An
+  **animator/param system** — a gimmick riding the piece, or wanted out of it — is `own-gimmick`;
+  this skill's animator ceiling is Phase 2C (repointing motion assets for a controller kept whole).
 - Reshaping proportions is `reproportion`'s engine — this skill *drives* it, never reimplements it.
 - Seam morph-follow (MA BlendshapeSync / VRCFury blendshape-link) is **deliberately skipped** — too
   fragile to later base renames/bakes; a separate task if the operator asks.
@@ -170,6 +173,8 @@ the `unity.md` **UC2** clip phase, `whatIf` first:
    mount-relative), the one thing the tool can't infer.
 
 `compose-mergeable` invokes this same phase for the owned-outfit inline case — it is one named unit.
+It repoints motion assets for a controller **kept whole**; any cut, trim, or param surgery on the
+controller is `own-gimmick`.
 
 ## Phase 3 — Verify
 

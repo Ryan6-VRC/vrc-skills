@@ -1,6 +1,6 @@
 ---
 name: compose-mergeable
-description: Use when placing a ready-made outfit, hair, or accessory (vendor or already-owned) onto an avatar base — "put this outfit on my avatar", "add this hair to the base", "compose/wear this mergeable". Not owning or creating a mergeable's geometry, and not adding a seam to a bare prefab (both own-mergeable); not cross-base refitting.
+description: Use when placing a ready-made outfit, hair, accessory, or gimmick module (vendor or already-owned) onto an avatar base — "put this outfit on my avatar", "add this hair to the base", "compose/wear this mergeable". Not owning or creating a mergeable's geometry, and not adding a seam to a bare prefab (both own-mergeable); not cross-base refitting.
 ---
 
 # Compose a mergeable onto an avatar base
@@ -167,7 +167,7 @@ don't run the full reconcile inline unless the operator asks, and don't silently
 - **Partial use of a module carrying `MergeAnimators`:** stripping its menu leaves the merged layers'
   **default-active params** free to re-enable the meshes you just disabled at runtime (invisible to
   every gate). Don't need the merged controller? Remove it with the menu. Need part of it? That's an
-  `own-mergeable` fork (decompile + surgery), not an in-scene strip.
+  `own-gimmick` fork (decompile + surgery), not an in-scene strip.
 
 ### 5. Shape coherence (blendshape / baked)
 
