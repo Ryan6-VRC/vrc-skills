@@ -106,7 +106,8 @@ by target identity: **own** (vendor source → new owned `.mat`), **branch** (ow
 second look that inherits every edit, diverging only forked slots), **augment** (no `outDir` —
 fork additional slots into an existing owned material in place). It deep-copies the `.mat`,
 forks exactly the named texture slots (carrying each texture's `.meta` import settings — the
-vendor's import profile is usually right), leaves every other slot as a vendor GUID reference,
+vendor's import profile is usually right — with streaming mipmaps enabled on the owned copy as a perf
+default, never on the vendor source), leaves every other slot as a vendor GUID reference,
 flattens variants, and unlocks a locked Poiyomi copy without breaking the vendor original.
 `whatIf` first; the RunLog's **slot-provenance table** is the verification gate — read it, don't
 eyeball the material.

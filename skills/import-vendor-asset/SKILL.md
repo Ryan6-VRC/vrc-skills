@@ -26,7 +26,7 @@ silently mint a convention — folder or category placement especially.
 ## Take the right files
 
 - **Take only the `.unitypackage`** — it almost always contains the FBX even when a loose FBX sits beside it. Confirm: a `.unitypackage` is a gzip tar; list its `pathname` files. Source a loose FBX only if none is inside.
-- **Zips → extract to a temp/scratch workspace first**, never into the project. Materials and PSDs sometimes ship as their own zip/unitypackage. Clean the scratch workspace when done and **re-list it to confirm empty** — a "cleaned" claim is only true if you listed it.
+- **Zips → extract to your OS temp / session scratch dir first** — never into the project, and never a folder you mint at the workspace root (that pollutes the meta-repo working tree). Materials and PSDs sometimes ship as their own zip/unitypackage. Clean the scratch workspace when done and **re-list it to confirm empty** — a "cleaned" claim is only true if you listed it.
 - **Outfits often ship a separate MaterialPack** (sometimes very large) — the costume alone has no materials, so import both. A single all-avatars package exists but is rare.
 - **Windows path/quoting traps.** GNU `tar` needs `--force-local` to read a `C:`-drive path (the colon parses as a remote host) and cannot read `Y:`-style asset-library paths at all — copy the package to scratch before listing or extracting. Backslash-before-quote bash quoting mangles copies; prefer forward slashes.
 
