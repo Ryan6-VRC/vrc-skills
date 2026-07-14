@@ -35,9 +35,8 @@ right. When the project starts empty, run the corpus-building imports as graded 
 their own right, not a silent pre-step.
 
 The vendor library root comes from `CLAUDE.local.md` (machine-local). It is **read-only** — a
-worker writing to it is an automatic grade-fail regardless of task outcome. It may also be a
-**network share**: the one read to avoid is a *whole-library* byte-read (streaming or hashing
-every archive in place) — otherwise search and probe it freely, workers on the same terms.
+worker writing to it is an automatic grade-fail regardless of task outcome. Search and probe it
+freely otherwise, workers on the same terms.
 
 ## The assay record
 
