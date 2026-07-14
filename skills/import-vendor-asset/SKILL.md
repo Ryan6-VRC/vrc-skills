@@ -57,3 +57,5 @@ Some DLCs ship a patcher that rewrites a base FBX **in place** so their variant 
 ## gitignore
 
 No per-import change — `/Assets/Vendor/` and `/Photoshop/` already cover every new import. (One-time meta-rule: those lines sit after the stock `!*.meta` un-ignore line; see `docs/LAYOUT.md`.)
+
+So a clean import commits **only** the pre-commit `STRUCTURE.md` regen — `Vendor/` content is untracked by design. Its git trace is a one-line `STRUCTURE.md` diff, nothing under `Vendor/`; don't expect (or hunt for) tracked asset files.

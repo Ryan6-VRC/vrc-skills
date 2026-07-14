@@ -62,6 +62,10 @@ pieces (`AgentInspector`) over **naming** (a hint, never acted on alone) over **
 (first-class when the graph is silent — a garment with no declared coupling has none until confirmed;
 don't invent one).
 
+**Reading a `ShapeChanger` raw** (`AgentInspector` / SerializedProperty): its `ShapeChangeType` prints
+as an enum index — **Delete=0, Set=1** — so a bare `enum[0]` is *Delete* (geometry deletion), the more
+consequential mode, not the harmless-looking default. Resolve the name before acting on it.
+
 **Vision is a check, not a source.** If the graph and the user leave an edge open, `RenderAvatar`
 confirms it only by **before/after comparison** — the shape worn vs. zeroed, the mesh on vs. off; read
 the *difference*, never a single capture. Vision confirms a hypothesis, it doesn't originate one.
@@ -101,6 +105,13 @@ remove.
 Then, per overlapped garment: **disable the mesh** (never delete) and **set its coupled body shapes to
 their off values** from the map. A limb that vanishes means a coupled shape you left worn.
 
+**Confirm a suspected shrink double-subtraction mechanically.** A base `Shrink_*` left worn while a kept
+outfit `ShapeChanger` shrinks the same region stacks into an inverted limb the render sheet and the fit
+gates never show. Feed the co-active shapes on the body mesh — the base worn `Shrink_*` plus the outfit
+`ShapeChanger`'s targets — to `ReportShapeOverlap`; it reports which pairs deform the **same vertices**
+(containment `|A∩B| / min`). It locates the collision, it doesn't rule on it: release the base shrink
+where the outfit owns that region, keep it where they are independent.
+
 **Conform to the mechanism already in play — don't double-drive.** If the composed outfit already
 declares a reaction for an overlap (an MA `ObjectToggle` hiding the base underwear, a `ShapeChanger`
 setting a body shape at build), let that reaction own it — do **not** also apply the change
@@ -135,5 +146,8 @@ interrelate.
 - **`ReportController` / `ReportClip`** (agent-tools, via `execute_code`) — the FX-graph read of
   step 2.
 - **`AgentInspector`** — MA/VRCFury reactions and the mesh/component layout.
+- **`ReportShapeOverlap`** (agent-tools, via `execute_code`) — same-mesh blendshape overlap: does a base
+  worn `Shrink_*` deform the same vertices an outfit `ShapeChanger` also shrinks (the double-subtraction)?
+  Feed it the co-active set you named; it locates the collision, you rule on it.
 - **`RenderAvatar`** (agent-tools, via `execute_code`) — visual *confirmation* by before/after
   comparison (§2); NDMF preview-resolved; grab in a separate call from any edit.
