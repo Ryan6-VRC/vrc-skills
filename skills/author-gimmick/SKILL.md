@@ -44,7 +44,9 @@ This design is the operator's first gate: the state table and bit cost, before a
 `gimmicks.md` §State machine patterns and §Packaging own the shapes (banded-int fusion when
 states are exclusive, off-is-reset, deterministic resume from param values alone). Author as
 `CompileController` YAML from the start (`animator-schema.md`) — the controller half's source of
-truth is the document, compiled in, never hand-built graphs decompiled out.
+truth is the document, compiled in, never hand-built graphs decompiled out. A clip whose binding
+the compiler refuses (`animator-schema.md` §clips) is hand-authored as a human-owned `.anim`, not
+forced inline or into a hand-built graph — the first-class fork, framed in `animator.md`.
 
 ### 3. Physical affordances
 
