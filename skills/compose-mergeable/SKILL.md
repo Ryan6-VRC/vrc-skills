@@ -153,11 +153,15 @@ don't run the full reconcile inline unless the operator asks, and don't silently
 - **Commit only the unambiguous disables** — underwear and costume under a full outfit, across **both
   layers** (base stockings overlap a stockinged outfit as much as the base dress does). **Enumerate**
   the uncertain overlaps (bandages, shoes, wings, creature parts) for the operator; do not disable on a
-  low-confidence spatial guess. **Base underwear is the asymmetric case:** when it isn't clearly replaced
-  by the outfit's own layer, default to **keeping** it and raise the call — underwear left on under
-  clothing is the better mistake than an uncovered avatar (fail toward covered). Judge overlap by garment
-  coverage and role, not names; `RenderAvatar` is an
-  operator-facing look, not an agent clipping verdict (`verify.md`). A limb that **vanishes** when a base
+  low-confidence spatial guess. Judge overlap by garment coverage and role, not names; `RenderAvatar` is an
+  operator-facing look, not an agent clipping verdict (`verify.md`). **Base underwear:** hide it when the
+  outfit's own underwear layer replaces it, or when the renders positively confirm the region covered — a
+  form-fitting, full-coverage garment (a leotard, a bodysuit) occludes it from every grab angle, and
+  occlusion-from-every-angle is a read a render *can* make, unlike fit or clipping. Keep it and raise the
+  call only when coverage is genuinely unknowable — a loose garment (a skirt, baggy shorts) where no static
+  angle rules out exposure in motion — **and** the outfit ships no underwear layer of its own: there,
+  underwear left on is the better mistake than an uncovered avatar (fail toward covered). A limb that
+  **vanishes** when a base
   garment goes is a coupled blendshape — the `map-outfit-shapes` reconcile, not a clipping call.
 - **Shrink/hide over shared vertices are almost never both on** (`outfits.md`; reconciled in
   `map-outfit-shapes`). Hiding a base mesh should flip its paired `Shrink_*` off — the pair travels
