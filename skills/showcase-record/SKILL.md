@@ -49,9 +49,12 @@ belong inside a repo — use a scratch/output dir.
    announce it: no labeled preambles ("My plan:", "voiced before I act:"), no talking to the
    camera. Think out loud the way you already would — when a choice has live alternatives, weigh
    them and say why you picked, in the ordinary flow of the work. Don't manufacture deliberation,
-   slow the work, or grab (RenderAvatar etc.) where the work doesn't genuinely want a visual
-   check; those diagnostic moments *are* the hero shots. A failure on camera is honest; keep
-   going — first take, no re-shoots.
+   slow the work, or grab where the work doesn't genuinely want a visual check; those diagnostic
+   moments *are* the hero shots. The take's only image beats are the avatar task's own stamped
+   grabs (RenderAvatar / Blender render_mesh) landing in the grab-dir — never stand up your own
+   capture camera or screenshot the screen, which land outside it, stay invisible to `beats`, and
+   fabricate shots the take doesn't have. A failure on camera is honest; keep going — first take,
+   no re-shoots.
 5. **Wrap.** After the final commit: `showcase.py stop --manifest <path>`, then dispatch the
    edit subagent (below) with the manifest path and a target duration (30–120s by task
    complexity). Relay its returned cut path and verify frame to the operator; run
