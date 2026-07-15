@@ -118,7 +118,7 @@ steps 4–5.
     **no asset write**; non-aborting.
   - **`clip-binding`** → asset surgery, routed by the offender's **`clipAssetPath`** (not its scene `path`,
     which always looks writable): an **owned/writable** `.anim` is repathed **inline** (the
-    `OwnControllerClips → RepathClips` clip phase, `unity.md` UC2); an **unowned vendor** clip (`clipAssetPath`
+    `OwnControllerClips → RepathClips` clip phase, `animator.md` UC2); an **unowned vendor** clip (`clipAssetPath`
     under `Assets/Vendor/`|`Packages/`) needs a geometry round-trip compose can't do — **abort the compose and
     route to `own-mergeable`**, but **only when the compose introduced the break.** A vendor binding already
     dangling on the bare base (it shows in a `CheckAvatar` run *before* you compose — e.g. a base's own

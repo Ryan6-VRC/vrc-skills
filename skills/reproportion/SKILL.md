@@ -161,7 +161,7 @@ source adds over a vendor one:
   supplies the skeleton. Don't run it twice.
 - **Dynamics: force the holders.** A finished avatar parks its dynamics on holder GOs, so those hosts flag
   `[holder]` on the bare twin (colliders/contacts whose holder sits under a surviving bone auto-recreate
-  instead — see `unity.md`). Force the `[holder]`-classified hosts (per `unity.md`) to scaffold the grouping
+  instead — see `unity-tools.md`). Force the `[holder]`-classified hosts (per `unity-tools.md`) to scaffold the grouping
   back, and **skip the relocate step** — the scaffold already rebuilt it. Completeness check, split across
   the two runs (the re-run can't show scaffold — the holders exist by then): on the **real forced run's**
   log, `scaffold` equals the number of forced `[holder]` hosts; then a **re-run `whatIf`** shows zero

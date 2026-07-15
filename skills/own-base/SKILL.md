@@ -205,7 +205,7 @@ Final cleanup: produce a **clean FX** (the **CleanController** tool). It keeps o
 gesture layers, keep them plus every layer **at or above** them, drop the outfit/visibility toggles below
 (base layer 0 is always kept). The tool FAILs loud if a named layer is absent or ambiguous. If the head
 mesh was renamed, the kept facial layers' clips bind it by its old name and stay **inert** — repath them
-with the **UC2** clip phase (`OwnControllerClips → RepathClips`, `unity.md`), here or deferred to compose
+with the **UC2** clip phase (`OwnControllerClips → RepathClips`, `animator.md`), here or deferred to compose
 where `CheckAvatar` surfaces the break; note it, don't block. Empty expression parameters + menu, wired into
 the descriptor.
 

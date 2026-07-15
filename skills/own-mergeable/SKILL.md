@@ -164,7 +164,7 @@ Work on the **scene instance** of the owned FBX; prefab only at the end (Phase 3
 Only when the seam carries its **own animator** (an MA MergeAnimator / VRCFury FullController with clips) —
 **skip the armature-link-only case, the common one.** A vendor seam's clips still bind **vendor `.anim`
 assets by GUID**, so owning the geometry without owning the clips leaves them vendor-coupled or inert. Run
-the `unity.md` **UC2** clip phase, `whatIf` first:
+the `animator.md` **UC2** clip phase, `whatIf` first:
 
 1. **`OwnControllerClips(controller, outDir)`** — materialize owned `.anim` copies and repoint the
    controller's motion slots (closes the CleanController GUID-coupling gap).
