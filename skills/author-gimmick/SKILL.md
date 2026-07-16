@@ -12,20 +12,21 @@ design rules this skill sequences), `docs/runtime.md` (the physics), `vrc-patter
 module/pattern entries), the mechanisms survey for worked examples. This skill owns the process
 and its gates only.
 
-> **Provisional — extraction pending.** No end-to-end authoring session has run under this
-> skill yet; the sequence below is corpus-validated (every deep-read vendor/Remy system fits
-> it) but the step internals are study, not transcript. The G5 builds (contact-tracker,
-> grabprop, then a raycast world-place prop) are the designated extraction beds: a bed session
-> follows this skeleton, **logs every deviation it makes as it works**, and afterward kicks off
-> `skill-temper` on this skill with the transcript. Weight the skeleton accordingly until this
-> block is gone.
-
 **No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
 is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
 take the derivable defaults, flag every undecided call loudly at the top of your report, and never
 silently mint a convention — folder or category placement especially.
 
 ## The sequence
+
+**Clone or intent?** Settle this first — it changes how every step below runs. Proven precedent,
+when it exists, comes in this order of authority: a `vrc-patterns` module → a routed ancestry
+asset (`references/README.md`) → a measured example off a working avatar or the mechanisms survey.
+**Cloning a known mechanism** (the common case): confirm it against that source *before* step 1 —
+the ported state table, bit cost, and affordance constants are what you carry, so the steps below
+ratify the port and the operator's first gate signs off the ported design, not a from-scratch one.
+**From intent:** run the steps as written. Affordance geometry is cloned from the same source
+order either way, never invented (step 3).
 
 Order is load-bearing — the corpus's failure mode is never mechanism, always sync hygiene
 discovered too late.
@@ -34,10 +35,13 @@ discovered too late.
 
 Against `gimmicks.md` §Choosing a transport + §First principles: what state exists, who must
 agree on it, which transport carries each edge, what it costs in synced bits. Only intent costs
-bits; sensing params are never synced, saved, or menu-exposed. Label every empirical constant
-(dwell, pulse phase, threshold, λ) as empirical **at design time** — the verify budget
-concentrates on exactly these, and feel-tunable ones additionally mark what the wear-test owns.
-This design is the operator's first gate: the state table and bit cost, before anything is built.
+bits; sensing params are never synced, saved, or menu-exposed. Flag the empirical constants
+(dwell, pulse phase, threshold, λ) at design time so verify knows where to look — but the flag is
+a starting guess, not a sweep contract: which constants the emulator can actually settle, and
+which are feel-owned and can't be discriminated in it at all, often only resolves once the
+mechanism is understood; a feel-owned constant ships at its cloned value (the 90% rule) for the
+wear-test, never swept. This design is the operator's first gate: the state table and bit cost,
+before anything is built.
 
 ### 2. Mode machine
 
@@ -51,18 +55,16 @@ forced inline or into a hand-built graph — the first-class fork, framed in `an
 ### 3. Physical affordances
 
 Affordances (grab, touch, gesture-near-contact) are the primary interface — but **never invent
-affordance geometry from scratch**: clone a proven shape with its constants, sources in order of
-availability — a `vrc-patterns` module if one exists → a routed ancestry asset
-(`references/README.md`) → a measured example from a Remy project or the mechanisms survey.
-Cross-base cloning verifies placement in world space (`gimmicks.md` §Contact patterns).
+affordance geometry from scratch**: clone a proven shape with its constants (the source order
+above). Cross-base cloning verifies placement in world space (`gimmicks.md` §Contact patterns).
 Two operator gates live here:
 
 - **Affordance selection** — present 2–3 candidates *with their precedent*; what's intuitive in
   VR is operator knowledge, not derivable.
 - **Feel vs firing** — firing correctness (does it trigger, latch, release) is emulator work,
   yours; *feel* (size generosity, dwell comfort, reachability on a real body) is a named
-  **headset wear-test handoff** over the feel-labeled constants — `verify.md`'s "name what needs
-  two clients" discipline, extended to what needs a headset.
+  **headset wear-test handoff** over the constants that prove feel-owned, whenever that resolves —
+  `verify.md`'s "name what needs two clients" discipline, extended to what needs a headset.
 
 The **scene half** (receivers, constraint rigs, PB chains, freeze roots) is assembled by
 `execute_code` or a checked-in editor script and captured as the committed prefab — the prefab
@@ -79,8 +81,10 @@ or redirecting it on an avatar is `author-menu`.
 One self-contained module (`gimmicks.md` §Packaging: mixed MA-anchor/VRCF-behavior seam,
 config-default params for variant knobs). Verify to `gimmicks.md` §Verification via `verify.md`:
 compile + `Check*` are cheap and continuous; play-mode entry costs minutes on a heavy avatar, so
-**batch emulator work into few sessions**, concentrated on the labeled empirical constants; name
-the in-game residue (network timing, IK, culling, feel) explicitly as handoff.
+**batch emulator work into few sessions** on the firing questions the emulator can settle. A
+question can change identity as you measure — a "settle time" that turns out to be low-FPS sample
+delivery — so reframe it rather than forcing the original sweep. Name the in-game residue
+(network timing, IK, culling, feel) explicitly as handoff.
 
 ## Tools
 
