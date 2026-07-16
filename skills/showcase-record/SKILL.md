@@ -37,7 +37,9 @@ belong inside a repo — use a scratch/output dir.
    `showcase.py check --manifest <path>` and **Read the frame as an image**: confirm it shows
    the staged monitor with no taskbar intruding. Wrong frame, black frame, or a visible taskbar:
    stop and tell the operator before any work is spent. Use the default GPU capture (ddagrab);
-   `--gdigrab` is the fallback only where ddagrab won't run.
+   `--gdigrab` is the fallback only where ddagrab won't run. Those grab dirs — and any RunLog dir
+   the task's tools stamp into — persist across sessions; clear prior-run grabs and logs before
+   rolling, so nothing foreign rides into the take or captions a beat in the edit.
 3. **Pin the tail, then proceed.** Create a persistent task now — "stop capture + dispatch edit
    — manifest=<path>" — so the obligation survives compaction. Then follow the prompt path from
    step 1: if you already hold the prompt, go straight to the work. If the operator chose to
@@ -54,7 +56,8 @@ belong inside a repo — use a scratch/output dir.
    grabs (RenderAvatar / Blender render_mesh) landing in the grab-dir — never stand up your own
    capture camera or screenshot the screen, which land outside it, stay invisible to `beats`, and
    fabricate shots the take doesn't have. A failure on camera is honest; keep going — first take,
-   no re-shoots.
+   no re-shoots. The take is self-contained: re-run every check on camera, never citing a prior
+   run's cached result (a stale CheckSeam/lint log, an earlier PASS) in its place.
 5. **Wrap.** After the final commit: `showcase.py stop --manifest <path>`, then dispatch the
    edit subagent (below) with the manifest path and a target duration (30–120s by task
    complexity). Relay its returned cut path and verify frame to the operator; run
