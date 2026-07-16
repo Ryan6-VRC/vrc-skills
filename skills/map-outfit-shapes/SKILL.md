@@ -43,6 +43,8 @@ disagree, so an edge without its provenance can neither be trusted nor rechecked
   values).
 - **Source / confidence** — `FX-clip | MA/VRCFury-reaction | naming-hint | asked-user | visual`,
   high→low authority (below).
+- **Runtime owner** — what drives the edge's target at runtime: `FX-layer (← param ← expression
+  default) | none`. Decides whether a static apply ships (§Deconflict).
 
 Hold it in-context as you work; write it to `Assets/Agent/Scratch/` only when a later session or a
 human will reuse it.
@@ -117,7 +119,13 @@ where the outfit owns that region, keep it where they are independent.
 declares a reaction for an overlap (an MA `ObjectToggle` hiding the base underwear, a `ShapeChanger`
 setting a body shape at build), let that reaction own it — do **not** also apply the change
 statically. Match the substrate the avatar/outfit already uses; driving one state two ways is the bug,
-not the fix. Act statically only where nothing already handles it.
+not the fix. Act statically only where nothing already handles it. **The base's FX is a mechanism in
+play too**: a garment or shape an always-on FX layer drives from an expression parameter ships
+whatever the **parameter default** says — a static edit there is overwritten at runtime (`outfits.md`
+§The FX controller). Tag every edge with its runtime owner; apply static edits only on unowned edges,
+and hand the runtime-owned set back to the caller as **named residue** (param, mesh, shape, off
+value) — the fix, a shipped-default flip, is `author-menu`'s to author and the operator's to call,
+not a static apply here.
 
 **A base accessory the outfit supersedes** (a base bracelet under the outfit's wrist belt, a base
 hairpin under its hat) — **default to dropping it**; it is trivially re-enabled. But when an

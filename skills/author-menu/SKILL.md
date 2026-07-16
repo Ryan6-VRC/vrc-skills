@@ -96,6 +96,20 @@ exclusive tags / material-prop sliders / global params / transitions becomes a V
 component (actions carry the dependency edges); a module escalates wholly when most of its
 controls did.
 
+### 4b. Overriding shipped defaults — the compose residue
+
+A base garment an always-on FX layer drives from an expression parameter ships its **parameter
+default**, so stripping it under a composed outfit means flipping that default to the off value —
+the residue `compose-mergeable` step 4 routes here. Author it as an `MA Parameters` entry on the
+composed avatar with an explicit default: at merge it overrides the descriptor param's default (MA
+`RenameParametersHook.ResolveParameter`), vendor assets untouched. No new controls are minted, but
+it **changes the avatar's shipped menu defaults** — operator-gated like any plan item, and the
+shipped toggle stays live (a wearer can still re-enable the garment; removing the control is a
+separate plan item). Verify in step 6's play drive: each stripped garment inactive at spawn, its
+coupled shapes at their off values. MA ORs `saved`, so on a `saved` param a value stored from an
+earlier wearing of this blueprint outlives the new default — a deliberate re-enable or your own
+test history, cleared by one toggle-off; name it, don't chase it.
+
 ### 5. Gimmick mode
 
 A well-built gimmick ships its menu — *place* it (MA installer target, or VRCFury FullController

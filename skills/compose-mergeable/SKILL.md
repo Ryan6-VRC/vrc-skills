@@ -43,6 +43,8 @@ operator** rather than improvising:
   force it.
 - **Mergeable missing a shape the base needs** (step 5 can't reconcile) → `own-mergeable` to bake it.
 - **Menu / animator / parameter coherence** → `author-menu` (step 7). Required, but out of scope here.
+  Step 4's runtime-owned residue routes there too: flipping a shipped parameter default changes the
+  avatar's menu defaults — the operator's call, never composed in silently.
 
 ## The flow
 
@@ -148,6 +150,15 @@ map stays opt-in; the scoped read is part of the compose.
   onto that and there is little to strip (`outfits.md`). If the vendor ships only a clothed base (or
   only shader variants of it), strip it here. A base locked in a complete *fixed* outfit with no
   toggle surface is the refuse case — ask for the kisekae variant.
+- **Runtime ownership decides whether a static edit ships — act statically only where statics hold.**
+  An always-on FX layer (weight 1, WD ON) gated on an expression parameter re-applies the garment's
+  `m_IsActive` and coupled shapes every frame: what ships is the **parameter default**, so a static
+  disable there is edit-time cosmetics, invisible to every edit-time gate and render (`outfits.md`
+  §The FX controller). The scoped `map-outfit-shapes` read carries each edge's runtime owner: commit
+  the statics on unowned edges; everything runtime-owned is **residue this skill must not fix** — the
+  default flip is `author-menu`'s, FX-layer surgery `own-gimmick`'s. Name it in the checkpoint
+  (params, meshes, shapes, off values) with the line **the compose is not runtime-wearable until the
+  routed follow-up lands**. Never a derivable default: with no operator channel, name it and stop.
 - **Disable, never delete** — a later optimizer strips unused mesh; disabling is reversible. The
   exception is an **operator-sanctioned** delete (a gimmick-subtree strip, a dangling menu item): it
   requires **unpacking** the vendor prefab instance in-scene first (a packed instance no-ops structural
@@ -183,11 +194,18 @@ map stays opt-in; the scoped read is part of the compose.
 
 **Before the checkpoint, every judgment-call keep or release above — a kept live weight, a kept
 should-be-hidden layer, a released shrink — gets its mechanical check.** A value the outfit's own
-`ShapeChanger` or FX layer legibly drives is already settled — the mapping is authoritative over any
-render; spend nothing checking it. For the rest: `CaptureDiff` toggling the element, angle chosen from
+`ShapeChanger` or FX layer legibly drives is already settled *as mechanism* — the mapping is
+authoritative over any render; spend nothing re-checking the value it drives. But an FX layer drives
+to whatever its parameter says, so the shipped **default** is still the compose's to judge when the
+outfit changed what's worn — and evidence settles only the avatar it lives on: another avatar's outfit
+declaring a value transfers nothing. For the rest: `CaptureDiff` toggling the element, angle chosen from
 where the element lives (feet read from `bottom`); a keep defended as "covered" takes `CaptureOcclusion`
 instead. A non-empty diff proves the element materially visible — argue the keep/release from the diff
 region, never from magnitude; an empty diff with freshness certified proves it immaterial (`verify.md`).
+
+**Foot-pose shapes** (a heel arch — `Heel_Feet`, `Foot_heel`) are coupled to the worn *footwear*, not
+to any stripped garment: resolve **declared-or-zero** — the outfit's own `ShapeChanger` declaration,
+else 0 — and never from a render (`outfits.md`).
 
 When keep and hide trade risks, the order is **exposure > hole > clip**: an uncovered avatar is worst, a
 visible absence (a hollow shoe glimpsed through a gap) next, a clip cheapest — the one failure the diff
@@ -272,7 +290,8 @@ components is the normal vendor state, **not** an empty menu (`outfits.md`). If 
 to exercise existing controls, that is a **play-mode drive of the shipped menu** (`verify.md`), not
 authoring — do not reach for `author-menu`. Flag an `author-menu` follow-up only for the **new**
 controls the operator asked for. Then ask the operator to eyeball the result: the spot-check is the real verification
-bar. A **play-mode build** is the operator's call at a suitable time, **not** a gate here.
+bar. A **play-mode build** is the operator's call at a suitable time, **not** a gate here — the
+runtime-owned residue's driven-state verify belongs to the skill it routed to (step 4).
 
 ## Tools
 
