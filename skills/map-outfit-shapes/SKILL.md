@@ -26,8 +26,9 @@ mesh, set a body shape to its off value). Read-first and non-destructive — dis
 weights are reversible sets. Does **not** compose/place the outfit (`compose-mergeable`), author menu
 controls (`author-menu`), or reconcile proportions (`reproportion`) — it *feeds* those.
 
-**Opt-in.** The mapping is slow, so `compose-mergeable`'s quick de-conflict commits only the obvious
-mesh disables and routes here for the full coupling read.
+**Scoped by caller.** The full-avatar map is slow and opt-in. `compose-mergeable`'s de-conflict
+invokes this skill on every base-clothing strip, scoped to just the garments it disables — map their
+edges, release their coupled shapes, return.
 
 ## The map
 

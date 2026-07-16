@@ -33,13 +33,18 @@ belong inside a repo — use a scratch/output dir.
 2. **Roll.** `showcase.py start --monitor N --out <take-dir> --grab-dir <dir>` — pass every
    candidate dir where stamped grabs could land; extra dirs are harmless (Unity
    `Application.temporaryCachePath` for RenderAvatar; Blender render_mesh's
-   `<tempfile.gettempdir()>/avatarprep_rendermesh`; add others as they exist). Then
+   `<tempfile.gettempdir()>/avatarprep_rendermesh`; add others as they exist). Resolve the Unity
+   dir from the editor actually on the staged monitor — a mis-pinned MCP instance hands you
+   another project's cache — and when the task's first stamped grab lands, confirm it arrived
+   under a registered dir; a miss is repaired by registering the real dir in the manifest,
+   mid-take. Then
    `showcase.py check --manifest <path>` and **Read the frame as an image**: confirm it shows
    the staged monitor with no taskbar intruding. Wrong frame, black frame, or a visible taskbar:
    stop and tell the operator before any work is spent. Use the default GPU capture (ddagrab);
    `--gdigrab` is the fallback only where ddagrab won't run. Those grab dirs — and any RunLog dir
-   the task's tools stamp into — persist across sessions; clear prior-run grabs and logs before
-   rolling, so nothing foreign rides into the take or captions a beat in the edit.
+   the task's tools stamp into — are shared caches other sessions' work also lives in: **never
+   delete from them**. Foreign files don't ride into the edit — every grab and log is
+   filename-stamped, and `beats` flags anything outside the recording window for the edit to drop.
 3. **Pin the tail, then proceed.** Create a persistent task now — "stop capture + dispatch edit
    — manifest=<path>" — so the obligation survives compaction. Then follow the prompt path from
    step 1: if you already hold the prompt, go straight to the work. If the operator chose to

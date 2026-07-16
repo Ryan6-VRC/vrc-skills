@@ -135,10 +135,13 @@ steps 4–5.
 
 A full outfit replaces base clothing; overlapping meshes clip. Disabling those meshes is the quick,
 in-scope pass. But a base garment is often **coupled to body blendshapes** (`outfits.md`) — disable
-the mesh alone and the pre-collapsed body region it covered stays collapsed, a missing limb you won't
-see until you look. This step commits the mesh disables only; the coupled-blendshape reconcile is the
-opt-in **`map-outfit-shapes`** skill. Flag that follow-up whenever you disable a coupled garment —
-don't run the full reconcile inline unless the operator asks, and don't silently ship a half-strip.
+the mesh alone and the pre-collapsed body region it covered stays collapsed, a stuck shrink you won't
+see until you look. Whether a garment is coupled is not judgeable from this step: the coupling lives
+in the base's FX controller and on body meshes beyond the one named `Body`, invisible to an edit-time
+weight scan — "no coupling" is a conclusion only the map can reach. So whenever this step disables
+base clothing, **run `map-outfit-shapes` scoped to the disabled garments** — map their coupling edges
+and release their coupled shapes to the off values — before calling the compose done. The full-avatar
+map stays opt-in; the scoped read is part of the compose.
 
 - **Prefer the kisekae (undressed) base variant.** Many vendors ship a dedicated `<Name>_kisekae`
   prefab — body + underwear, no costume — beside the regular clothed base (`<Name>.prefab`); compose
@@ -245,8 +248,7 @@ arrives **menu-complete** — menu / params / FX on the `VRCAvatarDescriptor`, w
 components is the normal vendor state, **not** an empty menu (`outfits.md`). If the operator only wants
 to exercise existing controls, that is a **play-mode drive of the shipped menu** (`verify.md`), not
 authoring — do not reach for `author-menu`. Flag an `author-menu` follow-up only for the **new**
-controls the operator asked for (and a `map-outfit-shapes` follow-up if step 4 left coupled blendshapes
-unreconciled). Then ask the operator to eyeball the result: the spot-check is the real verification
+controls the operator asked for. Then ask the operator to eyeball the result: the spot-check is the real verification
 bar. A **play-mode build** is the operator's call at a suitable time, **not** a gate here.
 
 ## Tools
