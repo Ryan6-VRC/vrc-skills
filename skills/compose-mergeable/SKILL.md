@@ -153,17 +153,22 @@ map stays opt-in; the scoped read is part of the compose.
   requires **unpacking** the vendor prefab instance in-scene first (a packed instance no-ops structural
   deletes — `unity.md`), which is fine — the build unpacks a clone regardless and the vendor asset on
   disk stays byte-identical.
-- **Commit only the unambiguous disables** — underwear and costume under a full outfit, across **both
-  layers** (base stockings overlap a stockinged outfit as much as the base dress does). **Enumerate**
-  the uncertain overlaps (bandages, shoes, wings, creature parts) for the operator; do not disable on a
-  low-confidence spatial guess. Judge overlap by garment coverage and role, not names; `RenderAvatar` is an
-  operator-facing look, not an agent clipping verdict (`verify.md`). **Base underwear:** hide it when the
-  outfit's own underwear layer replaces it, or when the renders positively confirm the region covered — a
-  form-fitting, full-coverage garment (a leotard, a bodysuit) occludes it from every grab angle, and
-  occlusion-from-every-angle is a read a render *can* make, unlike fit or clipping. Keep it and raise the
-  call only when coverage is genuinely unknowable — a loose garment (a skirt, baggy shorts) where no static
-  angle rules out exposure in motion — **and** the outfit ships no underwear layer of its own: there,
-  underwear left on is the better mistake than an uncovered avatar (fail toward covered). A limb that
+- **A disable is safe when the outfit fills the same coverage role — commit those.** Role is purpose
+  and coverage, never name or exact class: spats, a swimsuit bottom, or a leotard fill the
+  underwear-bottom slot; a swimsuit top or a wrap fills the bra's — but a shirt or sweater does not
+  (right region, wrong coverage: loose over formed); a stockinged outfit fills the base stockings',
+  outfit shoes the base shoes'; the costume under a full outfit is the plain case. Judge per slot, across **both layers**
+  (base stockings overlap a stockinged outfit as much as the base dress does). Where no high-confidence
+  role match exists and no legible mapping drives the value (the settled case below), fall through to
+  evidence: **default keep**, and check it. `CaptureOcclusion`'s `visible>0` is a proven clip on any
+  target — hide only under a garment that credibly covers in motion (form-fitting), else keep and flag
+  the call OPEN. `visible=0` certifies the keep harmless only with `expected>0`; a reactive target
+  reports `expected=n/a` (any live MA reactive component — the common composed case) and there
+  `visible=0` proves nothing — certify by toggle-diff instead (an empty `CaptureDiff`, freshness
+  certified) or flag OPEN. Occlusion never creates a hide obligation. An eyeballed render is no proof, and
+  `RenderAvatar` is an operator-facing look, not an agent clipping verdict (`verify.md`). **Enumerate**
+  the roleless unknowns (bandages, wings, creature parts) for the operator; never disable on a
+  low-confidence spatial guess. A limb that
   **vanishes** when a base
   garment goes is a coupled blendshape — the `map-outfit-shapes` reconcile, not a clipping call.
 - **Shrink/hide over shared vertices are almost never both on** (`outfits.md`; reconciled in
@@ -175,6 +180,24 @@ map stays opt-in; the scoped read is part of the compose.
   **default-active params** free to re-enable the meshes you just disabled at runtime (invisible to
   every gate). Don't need the merged controller? Remove it with the menu. Need part of it? That's an
   `own-gimmick` fork (decompile + surgery), not an in-scene strip.
+
+**Before the checkpoint, every judgment-call keep or release above — a kept live weight, a kept
+should-be-hidden layer, a released shrink — gets its mechanical check.** A value the outfit's own
+`ShapeChanger` or FX layer legibly drives is already settled — the mapping is authoritative over any
+render; spend nothing checking it. For the rest: `CaptureDiff` toggling the element, angle chosen from
+where the element lives (feet read from `bottom`); a keep defended as "covered" takes `CaptureOcclusion`
+instead. A non-empty diff proves the element materially visible — argue the keep/release from the diff
+region, never from magnitude; an empty diff with freshness certified proves it immaterial (`verify.md`).
+
+When keep and hide trade risks, the order is **exposure > hole > clip**: an uncovered avatar is worst, a
+visible absence (a hollow shoe glimpsed through a gap) next, a clip cheapest — the one failure the diff
+proves statically and a play-mode build catches in motion, so defaults push residual risk toward clip.
+Perf is no tiebreaker: a kept occluded layer's triangles are the optimizer's, not a hide obligation. Two
+hard edges: **never shrink or hide body geometry (a foot, the torso) that no vendor authoring drives** —
+garment layers are yours to disable, the body underneath is not; hole risk is motion-unknowable, so
+propose it with evidence instead — and never *close* a motion-dependent call:
+apply the ranking's default and list the call **OPEN** in the checkpoint with its diff/occlusion counts,
+for the operator or the play-mode build.
 
 ### 5. Shape coherence (blendshape / baked)
 
@@ -264,7 +287,8 @@ Reach for these by role; open each to learn its exact entry point.
   to a temp contact-sheet PNG. An **operator-facing** resolved-fit look (steps 4 and 6) — not a
   baked-upload proof and not an agent fit verdict (`verify.md`); fit is gated mechanically (`CheckSeam`).
   Grab in a separate call from any edit — a same-call grab shows the pre-edit proxy; the summary's
-  `note=` flags an in-flight rebuild but cannot catch the same-call case.
+  `note=` flags an in-flight rebuild but cannot catch the same-call case. Its `CaptureDiff` /
+  `CaptureOcclusion` doors carry step 4's decision checks (`unity-tools.md`).
 - **avatarprep `report_stamps`** (Blender, via MCP or `cli/report_stamps.py`) — the baked-morph read in
   step 5, and also step 3's provenance routing: the same call returns each armature's `avatarprep_base`/
   `avatarprep_state` pair alongside the bound-mesh `avatarprep_baked` map grouped **under its owning
