@@ -120,13 +120,13 @@ the way an owner would ask. Queue a small set stratified across base, source pai
 and rotate it across runs like any other coverage; its ledger home is the `compose` arc with a
 `combination` asset-class.
 
-Each entry: asset, arc, the worker prompt, an assigned **tier**, a **prediction** (pass/fail, one
-line of why), and — where the arc's skill contains an operator gate — the **gates you expect the
-worker to hit and the answer you'll give in the operator's voice** (the operator-proxy script;
-Phase 2 Dispatch resolves it). Tier is itself a calibration claim: Sonnet for mechanical arcs, Opus for complex behavior work,
-Fable only for frontier limit-pushers. Predictions — outcome and tier —
-are what make the envelope map falsifiable: a miss in either direction is a finding, including a
-task that needed a higher tier than assigned.
+Each entry: asset, arc, the worker prompt, an assigned **tier**, a `mutating | read-only` token, a
+**prediction** (pass/fail, one line of why), and — where the arc's skill contains an operator gate —
+the **gates you expect the worker to hit and the answer you'll give in the operator's voice** (the
+operator-proxy script; Phase 2 Dispatch resolves it). Tier is itself a calibration claim: Sonnet for
+mechanical arcs, Opus for complex behavior work, Fable only for frontier limit-pushers. Predictions —
+outcome and tier — are what make the envelope map falsifiable: a miss in either direction is a
+finding, including a task that needed a higher tier than assigned.
 
 ## Phase 2 — the task loop
 
@@ -168,14 +168,19 @@ auditor, not a second worker** — its edge is freedom from the worker's sunk co
 not more compute. It **re-runs only the cheap objective checks and reads the transcript; it does
 not re-execute the worker's expensive work** (a 100k-token play-mode battery, a long bake). The
 failure modes here aren't fabrication — the worker doesn't lie about having entered play mode —
-but skipped steps, off-script shortcuts, and rationalized judgment calls. So it (a) re-derives the cheap signals — the relevant `Check*`
-doors (`CheckSeam` mechanizes the compose-fit per-bone spread a grader would otherwise eyeball), a git
-diff, a spot-checked delta (param counts) — and (b) audits
-the transcript for off-script behavior: raw `execute_code` where a tool door exists, diagnostics
-ignored, steps silently skipped, skill instructions bypassed, an operator gate skipped (or asked
-when the docs already answer it). **A pass reached off-script is still a finding** — the sharp
-edges that never surface as failures. Same-tier grading catches a rationalized error only where
-the truth is cheaply re-derivable, and cannot cross a blind spot both models share; so it **never renders a judgment call** — a
+but skipped steps, off-script shortcuts, and rationalized judgment calls. So it (a) re-derives the
+cheap signals — the relevant `Check*` doors (`CheckSeam` mechanizes the compose-fit per-bone spread a
+grader would otherwise eyeball), the `venue-integrity` change-list, a spot-checked delta (param
+counts) — and (b) audits the transcript for off-script behavior: raw `execute_code` where a tool door
+exists, diagnostics ignored, steps silently skipped, skill instructions bypassed, an operator gate
+skipped (or asked when the docs already answer it). **A pass reached off-script is still a finding** —
+the sharp edges that never surface as failures. Read the change-list against the entry's token: on a
+**mutating** task an empty list is the hollow-work tell, and a list of only `.meta`/scene-save
+touches is churn *only* when the expected artifact is a new asset the `Check*` doors confirm
+absent — a task whose deliverable is in-scene state legitimately shows just a scene save. On a
+**read-only** task (a report written outside `Assets/`) an empty list confirms, not flags. Same-tier grading catches a
+rationalized error only where the truth is cheaply re-derivable, and cannot cross a blind spot both
+models share; so it **never renders a judgment call** — a
 load-bearing judgment that isn't mechanically settleable belongs to the operator or a genuinely
 different model class, never a same-tier grader.
 
@@ -193,32 +198,26 @@ Two hard rules on the evidence:
   result cites the id). Hand the grader that path — both if you like, `subagents/` first.
 
 **Grading a batch is cheaper, not blinder.** Run the cheap objective door — the relevant `Check*`, a
-**per-asset** git diff — on **every** item, never a sampled subset: sampling re-trusts the worker's
-"the rest were fine", which the self-report rule forbids. What batch grading drops is per-item
-*escalation*, not verification. When the door surfaces a chafing asset, **promote that asset to a
-single-deep escalated re-run** (this run if budget allows, else a kickoff) — that recovers the
-escalation differential Phase 3 triage needs; a chafing batch item left un-escalated has no route to
-a triage class.
+`venue-integrity` change-list — on **every** item, never a sampled subset: sampling re-trusts the
+worker's "the rest were fine", which the self-report rule forbids. A batch is one worker over many
+assets returning once, so a single before/after snapshot — never one per item — yields a flat
+change-list that can't attribute a touch per-asset when imports scatter into shared folders. What
+batch grading drops is per-item *escalation*, not verification: when the door surfaces a chafing
+asset, **promote it to a single-deep escalated re-run** (this run if budget allows, else a kickoff)
+— that recovers the per-asset resolution the flat list lost and the differential Phase 3 triage
+needs; a chafing item left un-escalated has no route to a triage class.
 
-**Escalate.** On a fail (or drift bad enough to void the run): revert, then replay the *identical*
-prompt one tier up. The differential is the diagnostic — a pass one tier up is a legibility/doc or
-tier-calibration bug; a fail at the top tier is a tool or envelope hole.
+**Escalate.** On a fail (or drift bad enough to void the run): replay the *identical* prompt one tier
+up. The escalated worker is blind — so re-establish the cheap precursor the task needs (re-import the
+base, or clear the mess and have it rebuild the precursor first), but **never** re-run the prior
+worker's expensive work to fake a pristine start; where even the cheap reset isn't feasible, the run
+report notes the dirty-substrate confound. The differential is the diagnostic — a pass one tier up is
+a legibility/doc or tier-calibration bug; a fail at the top tier is a tool or envelope hole.
 
-**Hygiene.** A verified pass is committed to the project repo with its task id; a fail is fully
-reverted (git restore/clean of the project's changed paths + discard unsaved scene state) before
-the next dispatch. A batch breaks the one-mutation-per-dispatch assumption — whole-dispatch revert
-would discard the passing imports, and the intentionally-dirty tree defeats the grader's clean
-`git status` mutate-check — so attribute per asset: the batch worker commits each asset with its id
-(or the fitter commits the passing paths and reverts only the chafed ones post-grade), and the
-grader's mutate-check becomes a per-asset diff. Two traps even a read-only task springs: Unity inspection flips the scene's
-`isDirty` with no on-disk change — clear the phantom dirt between tasks (ClearSceneDirtiness
-reflection, `unity-scene-revert-via-mcp`) so it can't bake into a later save or muddy the next
-grader's "did the worker mutate?" read; and inspection still leaves committable residue (tracked
-`Assets/Agent/Snapshots/`), so commit or clean it between dispatches to hand the next grader a
-clean `git status`. Never fold SDK-bounced `ProjectSettings` into a task commit — the SDK re-flips
-them between sessions, so committing them manufactures churn; leave them unstaged. Update the
-ledger row and append the task verdict to the run report after
-every task, not at the end.
+**Hygiene.** The venue is disposable and cumulative — nothing is rolled back. Grade an item by
+snapshotting the venue before it and diffing after with `venue-integrity.ps1`: the change-list proves
+a file was *touched*, while the `Check*` doors judge whether that touch was the right *substance*.
+Update the ledger row and append the task verdict to the run report after every task, not at the end.
 
 ## Phase 3 — synthesize
 
