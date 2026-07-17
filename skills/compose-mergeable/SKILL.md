@@ -171,12 +171,16 @@ map stays opt-in; the scoped read is part of the compose.
   outfit shoes the base shoes'; the costume under a full outfit is the plain case. Judge per slot, across **both layers**
   (base stockings overlap a stockinged outfit as much as the base dress does). Where no high-confidence
   role match exists and no legible mapping drives the value (the settled case below), fall through to
-  evidence: **default keep**, and check it. `CaptureOcclusion`'s `visible>0` is a proven clip on any
-  target — hide only under a garment that credibly covers in motion (form-fitting), else keep and flag
-  the call OPEN. `visible=0` certifies the keep harmless only with `expected>0`; a reactive target
-  reports `expected=n/a` (any live MA reactive component — the common composed case) and there
-  `visible=0` proves nothing — certify by toggle-diff instead (an empty `CaptureDiff`, freshness
-  certified) or flag OPEN. Occlusion never creates a hide obligation. An eyeballed render is no proof, and
+  evidence: **default keep**, and certify it with a `CaptureDiff` toggle-diff — toggle the element
+  off/on and exact-compare the pair over the region in question. A **non-empty diff** over that region
+  shows the element drawing where it's questioned (a proven clip) — hide only under a garment that
+  credibly covers in motion (form-fitting), else keep and flag the call OPEN. An **empty diff with
+  freshness certified** proves only **sampled-view pixel immateriality** — that toggling the element
+  changed no composited pixels from that angle — NOT that the renderer is invisible: an element
+  coplanar with, or same-material as, geometry beneath it draws yet diffs empty. Treat empty as
+  harmless-here; where actual renderer visibility must be certified, keep the call OPEN. A diff whose
+  freshness is not certified proves nothing — OPEN. Coverage never creates a hide obligation.
+  An eyeballed render is no proof, and
   `RenderAvatar` is an operator-facing look, not an agent clipping verdict (`verify.md`). **Enumerate**
   the roleless unknowns (bandages, wings, creature parts) for the operator; never disable on a
   low-confidence spatial guess. A limb that
@@ -199,9 +203,10 @@ authoritative over any render; spend nothing re-checking the value it drives. Bu
 to whatever its parameter says, so the shipped **default** is still the compose's to judge when the
 outfit changed what's worn — and evidence settles only the avatar it lives on: another avatar's outfit
 declaring a value transfers nothing. For the rest: `CaptureDiff` toggling the element, angle chosen from
-where the element lives (feet read from `bottom`); a keep defended as "covered" takes `CaptureOcclusion`
-instead. A non-empty diff proves the element materially visible — argue the keep/release from the diff
-region, never from magnitude; an empty diff with freshness certified proves it immaterial (`verify.md`).
+where the element lives (feet read from `bottom`); a keep defended as "covered" takes a `CaptureDiff`
+toggle-diff over the questioned region. A non-empty diff proves the element materially visible — argue
+the keep/release from the diff region, never from magnitude; an empty diff with freshness certified
+proves it immaterial (`verify.md`).
 
 **Foot-pose shapes** (a heel arch — `Heel_Feet`, `Foot_heel`) are coupled to the worn *footwear*, not
 to any stripped garment: resolve **declared-or-zero** — the outfit's own `ShapeChanger` declaration,
@@ -305,9 +310,10 @@ Reach for these by role; open each to learn its exact entry point.
   in isolation, headlight-lit, **NDMF preview-resolved** (reactive fit applied), from named axis angles
   to a temp contact-sheet PNG. An **operator-facing** resolved-fit look (steps 4 and 6) — not a
   baked-upload proof and not an agent fit verdict (`verify.md`); fit is gated mechanically (`CheckSeam`).
-  Grab in a separate call from any edit — a same-call grab shows the pre-edit proxy; the summary's
-  `note=` flags an in-flight rebuild but cannot catch the same-call case. Its `CaptureDiff` /
-  `CaptureOcclusion` doors carry step 4's decision checks (`unity-tools.md`).
+  Grab in a separate call from any edit — a same-call edit either settles in-call or the grab FAILs
+  transiently (re-grab), never a silent stale sheet; OK carries `gate=armed` (rendered-current) or
+  `gate=exempt` (nothing to certify). Its `CaptureDiff` door carries step 4's decision checks
+  (`unity-tools.md`).
 - **avatarprep `report_stamps`** (Blender, via MCP or `cli/report_stamps.py`) — the baked-morph read in
   step 5, and also step 3's provenance routing: the same call returns each armature's `avatarprep_base`/
   `avatarprep_state` pair alongside the bound-mesh `avatarprep_baked` map grouped **under its owning
