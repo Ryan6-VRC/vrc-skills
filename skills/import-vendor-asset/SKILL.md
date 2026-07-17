@@ -5,7 +5,7 @@ description: Use when bringing a vendor VRChat avatar, outfit, hair, or accessor
 
 # Import a vendor asset
 
-Get a vendor package into `AvatarProject` cleanly: untouched under `Assets/Vendor/<Category>/<Name>`, verified, gitignored. Layout rationale lives in `docs/LAYOUT.md` — this is the per-import flow, its gates, and its gotchas.
+Get a vendor package into `AvatarProject` cleanly: untouched under `Assets/Vendor/<Category>/<Name>`, verified, not kept (reproducible). Layout rationale lives in `docs/LAYOUT.md` — this is the per-import flow, its gates, and its gotchas.
 
 ## Gates — hard stops, ask the operator
 
@@ -53,8 +53,6 @@ Some DLCs ship a patcher that rewrites a base FBX **in place** so their variant 
 - **Benign importer non-determinism is not a fail.** A self-intersecting source polygon makes an `Error`-typed `FBXImporter generated inconsistent result` recur on *every* reimport while CheckPackage stays PASS. Judge it via CheckPackage + slot inspection and record the console line — don't abort on it, and don't let it train you to wave off console errors wholesale.
 - A `remapSTALE` FAIL means an FBX's external-material remap resolves but the model imported empty — force-reimport that FBX (step 5) and re-verify.
 
-## gitignore
+## No git trace — verify with CheckPackage, not a diff
 
-No per-import change — `/Assets/Vendor/` and `/Photoshop/` already cover every new import. (One-time meta-rule: those lines sit after the stock `!*.meta` un-ignore line; see `docs/LAYOUT.md`.)
-
-So a clean import commits **only** the pre-commit `STRUCTURE.md` regen — `Vendor/` content is untracked by design. Its git trace is a one-line `STRUCTURE.md` diff, nothing under `Vendor/`; don't expect (or hunt for) tracked asset files.
+The Unity project is an **untracked working venue** (no `.git`; CLAUDE.md §Layout), so an import produces no commit and no git footprint. Don't look for a diff or tracked asset files to confirm it — the `CheckPackage` PASS above is the confirmation; `Vendor/` content just lands on disk (reproducible, backed up externally — `docs/LAYOUT.md`).

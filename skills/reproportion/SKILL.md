@@ -63,7 +63,7 @@ input, not staleness.
 
 1. **Reproportion the Blender asset** (the spine) and re-export the FBX. If the owned viewpoint was
    ever hand-tuned, instantiate the current prefab into the scene **before this re-export** — it
-   overwrites the gitignored geometry, and step 3's viewpoint fix needs that pre-reshape reference
+   overwrites the not-kept geometry, and step 3's viewpoint fix needs that pre-reshape reference
    (unrecoverable after). **Author at world origin** —
    transform (0,0,0); never bake a position offset into the owned asset (reproportion pivots about
    origin; the coherence checks compare world positions).

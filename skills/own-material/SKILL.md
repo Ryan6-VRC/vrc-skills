@@ -181,7 +181,7 @@ even means:
 - **Author unlocked.** Keep owned poi materials unlocked while working so edits take effect;
   the VRChat upload hook auto-locks every material on the avatar — accept that as the ship
   step. It **rewrites `.mat` assets on disk and generates `OptimizedShaders/` folders**:
-  expected churn (the generated shaders are regenerable, gitignored).
+  expected churn (the generated shaders are regenerable, not kept).
 - **Every clip-driven property needs its `Animated` tag set before lock, by hand.** The upload
   auto-lock does **not** detect animated properties from the avatar's clips (its clip scan is
   material-swap references only) — an animated-but-untagged property is baked at lock and the
