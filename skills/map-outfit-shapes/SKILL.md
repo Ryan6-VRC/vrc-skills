@@ -14,10 +14,12 @@ coherence are all reads of it.
 blendshape names every which way; no deterministic script maps them. You read the graph across those
 idioms and reason — the method below is authority order and fallbacks built for exactly that variety.
 
-**No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
-is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
-take the derivable defaults, flag every undecided call loudly at the top of your report, and never
-silently mint a convention — folder or category placement especially.
+**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
+dispatched worker or background job still **has a channel** — the dispatcher — so surface the
+gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
+with no channel at all do you take the derivable defaults, and even then the disclosure leads the
+report — every undecided call flagged at the top, never a silently minted convention (folder or
+category placement especially).
 
 ## Scope
 

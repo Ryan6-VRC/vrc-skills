@@ -5,10 +5,12 @@ description: Use when placing a ready-made outfit, hair, accessory, or gimmick m
 
 # Compose a mergeable onto an avatar base
 
-Place one seam-authored mergeable (outfit / hair / accessory) onto an avatar base, non-destructively.
-The mergeable already carries its own Modular Avatar / VRCFury seam; you **drop it in, verify the seam
-resolves, de-conflict the meshes it replaces, and reconcile shape coherence** — then hand off. The seam
-resolves at build (MA/VRCFury merge on a clone at upload/play); nothing here bakes it down.
+Place one seam-authored mergeable (outfit / hair / accessory / gimmick module) onto an avatar base,
+non-destructively. The mergeable already carries its own Modular Avatar / VRCFury seam; you **drop it in,
+verify the seam resolves, de-conflict the meshes it replaces, and reconcile shape coherence** — then hand
+off. The seam resolves at build (MA/VRCFury merge on a clone at upload/play); nothing here bakes it down.
+A **gimmick/behavior module** (a prop, a contact / physbone / constraint system) composes on the same
+spine but is gated on behavior integrity, not geometry — the fork is step 3, and steps 4–5 fall away.
 
 **Source-agnostic.** A vendor mergeable and a mergeable produced by `own-mergeable` are treated
 identically — that a correctly-owned mergeable composes here with zero special-casing is the proof
@@ -24,10 +26,12 @@ eyeball, gate fit on the seam check where it scores, do the mechanical in-scene 
 the way so the operator looks. **"Merges without error" ≠ "composed"** — a wrong-base mergeable merges with
 a clean console (MA silently auto-creates phantom bones), so a green console proves nothing.
 
-**No operator to ask?** A gate you can't put to an operator (a dispatched worker, a headless run)
-is expected, not a blocker: surface it to whoever dispatched you and wait. With no channel at all,
-take the derivable defaults, flag every undecided call loudly at the top of your report, and never
-silently mint a convention — folder or category placement especially.
+**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
+dispatched worker or background job still **has a channel** — the dispatcher — so surface the
+gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
+with no channel at all do you take the derivable defaults, and even then the disclosure leads the
+report — every undecided call flagged at the top, never a silently minted convention (folder or
+category placement especially).
 
 ## Scope — what this owns, and where it routes out
 
@@ -45,6 +49,9 @@ operator** rather than improvising:
 - **Menu / animator / parameter coherence** → `author-menu` (step 7). Required, but out of scope here.
   Step 4's runtime-owned residue routes there too: flipping a shipped parameter default changes the
   avatar's menu defaults — the operator's call, never composed in silently.
+- **Gimmick/behavior module** → composed here whole, on the behavior-integrity gates of step 3. Editing
+  its behavior — trim, param surgery, a with/without variant — is `own-gimmick`; grafting new behavior is
+  `author-gimmick`. This skill places a finished module; it never re-authors one.
 
 ## The flow
 
@@ -71,6 +78,29 @@ mergeable authored for this base auto-targets the base's `Armature` — you do n
 All cheap and mechanical, each catching a silent failure a green console hides. Run them right after the
 drop, before de-conflict or coherence: a wrong base caught here saves the wasted strip-and-reconcile of
 steps 4–5.
+
+**The module class forks the gates.** A mergeable that skins the humanoid skeleton (clothing; the
+humanoid-weighted part of a body accessory) is gated on geometry — the bullets below. A **gimmick/behavior
+module** (a world prop, a contact / physbone / constraint system, an accessory carrying behavior but **no
+weighted humanoid bones**) gives `CheckSeam` nothing to score, so it REFUSEs — the **expected** path here,
+not a misfit, **when the REFUSE names an abstain reason** (no humanoid bones / bare prop / proxy). A REFUSE
+citing a seam-resolution or reflect/API failure is a tool break, class-independent — never waved off as
+the gimmick case. Its seam anchors to one bone or the avatar root and its fit is authored; what a compose
+silently breaks instead is **behavior integrity**, gated by two reads in place of `CheckSeam`:
+
+- **`ReportGimmick`** — read the module's subtree topology (receivers, PB chains, constraint rigs, params)
+  and compare it to the module's standalone shape: the drop should carry the whole system intact, and a
+  piece left behind or a param that didn't come across shows against that baseline.
+- **`CheckAvatar`** (the broken-ref bullet below, run the same way) — a re-root moves the paths the
+  module's contacts / drivers / clips bind to; `CheckAvatar` names what the move left unresolved, routed by
+  class exactly as for geometry.
+
+Firing (does it trigger, latch, release) is **not gated here**: the module's author already proved it in
+the emulator, so the compose confirms only that placement didn't break it statically, then names an
+**emulator smoke** as the play-mode handoff (step 7) — consistent with step 6's operator's-call stance.
+A cross-base placement is a refit, out of scope (`Scope`), so world-space contact re-verification never
+arises in a compose. The geometry bullets below apply to the humanoid-skinned case; a gimmick module runs
+only the two reads above plus the broken-ref and physbone-collider bullets.
 
 - **Seam fit + resolution — `CheckSeam` (the mechanical gate).** `CheckSeam.Check(baseRoot, mergeableRoot)`
   reflects the seam's own MA/VRCFury bone mapping and gates the **world-space coincidence** of the
@@ -134,6 +164,9 @@ steps 4–5.
   vendor mergeable has none, so this is a no-op for it.
 
 ### 4. De-conflict the meshes (quick pass)
+
+A whole gimmick/behavior module replaces nothing and keeps all its layers — steps 4–5 don't apply to it
+(a *partial* take is an `own-gimmick` fork, not a compose). The rest of this step is the geometry case.
 
 A full outfit replaces base clothing; overlapping meshes clip. Disabling those meshes is the quick,
 in-scope pass. But a base garment is often **coupled to body blendshapes** (`outfits.md`) — disable
@@ -298,6 +331,10 @@ controls the operator asked for. Then ask the operator to eyeball the result: th
 bar. A **play-mode build** is the operator's call at a suitable time, **not** a gate here — the
 runtime-owned residue's driven-state verify belongs to the skill it routed to (step 4).
 
+For a **gimmick/behavior module**, the static integrity gates (step 3) prove placement didn't break it;
+that it still **fires** is an **emulator smoke** the operator drives in play mode — named as a handoff,
+the firing counterpart to the outfit's clipping look, not a gate here.
+
 ## Tools
 
 Reach for these by role; open each to learn its exact entry point.
@@ -323,6 +360,9 @@ Reach for these by role; open each to learn its exact entry point.
   never re-authors it.
 - **`CheckAvatar`** (agent-tools, via `execute_code`) — the step-3 broken-ref classifier: `PASS`/`CLASSIFY`
   with per-offender class + `clipAssetPath`. Inspection-only; you apply the remedy it routes to.
+- **`ReportGimmick`** (agent-tools, via `execute_code`) — the gimmick-module integrity read at step 3:
+  subtree topology (receivers, PB chains, constraint rigs, params) to diff a placed module against its
+  standalone shape. Inspection-only.
 - **`CheckSeam`** (agent-tools, via `execute_code`) — the step-3 mechanical fit gate:
   `Check(baseRoot, mergeableRoot)` reflects the MA/VRCFury seam mapping and gates world-space coincidence
   of weighted humanoid bones → PASS / NOT-PASS / REFUSE, before any render; inspection-only.
