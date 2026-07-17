@@ -234,8 +234,9 @@ couldn't — not a decision to relitigate.
 
 Then produce three artifacts:
 
-- Finish the run report: predictions vs outcomes, findings with evidence pointers (task id,
-  transcript, RunLog), updated ledger.
+- Finish the run report: predictions vs outcomes, updated ledger, and each finding with its evidence
+  pointers — task id, RunLog, and a **backing anchor** (a distinctive verbatim phrase from the transcript
+  that recorded it) so the row routes a later agent to the moment, not a re-description it would re-derive.
 - Distill the findings into kickoff blocks appended to the Atelier root's `kickoffs.md`, authored
   with the **kickoff** + **lapidary** skills — each scoped to one future session, each citing the
   finding IDs it closes, each recorded in the ledger row it should flip.
