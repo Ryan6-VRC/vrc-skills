@@ -38,7 +38,7 @@ rather than improvising:
 Run the **package-graph** tool on the vendor folder first. It is read-only and its report *is* the
 verification — work from it, don't eyeball the prefabs. The one exception is its head/body call, which
 the tool itself flags as a guess (`headGuess`/`bodyGuess`, a most-blendshapes heuristic): confirm those
-two meshes before Phase 2's non-negotiable rename hangs on them. (Import health is `import-vendor-asset`'s job —
+two meshes before Phase 2's rename hangs on them. (Import health is `import-vendor-asset`'s job —
 its `CheckPackage` PASS is this phase's precondition; re-run it if health isn't already known-good.) A
 shared base-model family imported whole (e.g. Plum/Chiffon/Chocolat) is graphed whole, but the keep-set
 and superset decision scope to the **one avatar being owned** — sibling avatars stay untouched vendor.
@@ -56,6 +56,13 @@ Then make these decisions and **surface them to the operator**:
   FBX is the merge base (the most complete) and which are merged in.
 - **MA / VRCFury / NDMF present** — note that copying those systems is deferred; the owned base won't be
   functionally equivalent to the vendor until that later arc. Proceed with the base body only.
+- **Base mesh naming** — rename head→`Body`, primary body→`Body_Base` (Phase 2 carries the mechanics and
+  the variant naming), or keep the vendor names. **Recommended: rename** — downstream owner systems (shader/
+  material toggles, animation shared across the fleet) key on the canonical `Body_Base` name, so consistent
+  naming is load-bearing across every owned base even though no installed package requires it. The cost is
+  real: renaming breaks vendor clip/MA refs that point at the old name (`CheckAvatar` flags them after
+  placement), and Phase 2 repaths them. Keep the vendor name only for a throwaway you won't add to the fleet;
+  with no operator, rename (the workspace convention) and flag it.
 
 **Which body to own:** the keep-set is **every non-identical body mesh** — an owned base stays
 outfit-agnostic, so keep all body/underwear variants and let the prefab's consumer disable the unwanted ones
@@ -90,10 +97,10 @@ Normalize down to just the avatar:
 
 - **Drop every clothing mesh**, keeping only the underwear/base. The graph's toggle membership (renderers a
   clip drives via `m_IsActive`, often the vendor's `_OFF` meshes) tells you which meshes are removable parts.
-- **Rename so the head mesh is `Body` and the primary body mesh is `Body_Base`.** This is non-negotiable:
-  third-party systems key off these two exact names. **Additional body options** (kept by the merge keep-rule)
-  become `Body_Base_<Variant>` — only `Body` / `Body_Base` are load-bearing; the extras just need stable,
-  distinct names.
+- **Rename so the head mesh is `Body` and the primary body mesh is `Body_Base`** — executing the Phase-1
+  naming gate (recommended and defaulted-on; skip this bullet if the operator kept the vendor names).
+  **Additional body options** (kept by the merge keep-rule) become `Body_Base_<Variant>`; only `Body` /
+  `Body_Base` are the names downstream systems key on, so the extras just need stable, distinct ones.
 - **Renaming a mesh breaks name-based matching** — two consequences. (1) The material-copy step matches
   renderers by name, so hand it the `{ourName → sourceName}` mapping for anything you renamed. (2) If you rename
   the **head** mesh, its facial-gesture clips almost certainly need to be copied and re-pathed to the new name.

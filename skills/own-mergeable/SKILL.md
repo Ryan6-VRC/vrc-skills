@@ -66,6 +66,13 @@ base) skips reproportion, the reference-body append, and morph propagation below
 re-export to carry or author the seam, nothing more.
 
 - **Import** the source FBX (the whole avatar, if monolithic) with the **avatarprep import** function.
+- **The FBX may not carry the whole fit.** A vendor *per-base variant* prefab can author its entire fit as
+  Unity-side transform overrides — root scale plus per-bone pose deltas — over a generic shared FBX, leaving
+  no Blender-visible trace. When the source is such a variant prefab (not a monolithic avatar), instantiate
+  it in Unity and diff its transform overrides (root scale + humanoid-bone rotations) against the imported
+  FBX's rest pose, then replicate any non-identity delta in Blender before export. Skip this and the owned
+  copy ships the generic un-fitted geometry — a silent, hundreds-of-mm misfit that surfaces only on a
+  `CheckSeam` against the vendor instance.
 - **`stamp_base` the armature with the target base's canonical lineage name** (e.g. `chocolat` — the
   base you're fitting to; if the vendor cut is a different-but-equivalent base, stamp its native base
   and let an equivalency profile carry it across). Seed this **here, right after import — not after the
