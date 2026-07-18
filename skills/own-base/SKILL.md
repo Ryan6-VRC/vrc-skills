@@ -69,7 +69,10 @@ Then make these decisions and **surface them to the operator**:
 **Which body to own:** the keep-set is **every non-identical body mesh** — an owned base stays
 outfit-agnostic, so keep all body/underwear variants and let the prefab's consumer disable the unwanted ones
 per outfit. Prefer the **superset FBX**: build straight from it when it already holds the whole keep-set;
-reach for the Phase-2 merge only when the keep-set is split across FBXs.
+reach for the Phase-2 merge only when the keep-set is split across FBXs. A vendor's own **dress-up (kisekae)
+FBX** — base + underwear, no outer clothing — is a legitimate source when it already holds the whole keep-set,
+and is the vendor's own statement of what their base carries. It is a shortcut past the mesh drops and nothing
+else: same keep-set, same rename, same prune.
 
 Imitate the operator's known-good bases when judging what "normalized" looks like (machine-local —
 ask the operator for where they live).
@@ -114,8 +117,11 @@ Normalize down to just the avatar:
   fit-test and compose gate resolves against — without it, no outfit for this base is checkable, and
   `reproportion`'s later apply (once the base is built) hard-offends on an absent base stamp.
 
-After dropping meshes, run the **avatarprep prune** function to delete the now-orphaned zero-weight bone chains.
-It keeps physbone tips, attachment parents, and ancestors of weighted bones, and preserves only depth-1
+Then run the **avatarprep prune** function. This is **unconditional** — an owned base carries only the bones
+its own meshes need, whatever route it took to get here, and a base that dropped no meshes still prunes. A
+retained chain is not inert: it changes how every mergeable afterwards merges onto this base
+(`nondestructive.md`), and it rides in every avatar the fleet builds from the base. It keeps physbone tips,
+attachment parents, and ancestors of weighted bones, and preserves only depth-1
 zero-weight leaves (over-pruning is unrecoverable post-export, so it errs toward keeping). It prunes aggressively by design:
 weights alone can't distinguish dead clothing chains from a rare load-bearing helper chain (an intentionally
 unweighted chain used as a constraint target). Don't second-guess it from weights — if it removes a load-bearing
@@ -173,9 +179,11 @@ Then, on the scene instance, in this order:
    contact / VRC-constraint go through the typed deep tier (dependency-follow, `Col_*` leaf-anchor
    recreate, hard/soft criticality); **Unity built-in `RotationConstraint`/`PositionConstraint`** and
    anything non-VRC (MA/VRCFury/NDMF on the outfit arc) go through the type-blind conservative tier
-   (`CopySerialized` + generic ref remap, leave-missing-missing). A vendor's "constraints" are usually
-   those built-ins, **not** `VRCConstraintBase` — which alone matches none of them — so name the
-   built-in types explicitly. The **reach root** is
+   (`CopySerialized` + generic ref remap, leave-missing-missing). Which constraint family a vendor used is a
+   **census result, not a default** — both families ship in the wild and they take different tiers. Phase 1's
+   graph gives you a constraint *count*, not types; the types come from `ReportGimmick`'s constraint
+   edge-list (it spans both families) or from inspecting the vendor hierarchy directly. A wrong family
+   yields an **empty plan** — a zero-copy what-if is the tell. The **reach root** is
    `(vendorSource, ownedRoot)` — refs to objects under the vendor source rebind to our counterparts;
    out-of-reach refs (assets, other objects) are left for placement.
 
