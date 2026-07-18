@@ -105,6 +105,15 @@ exempt** — don't read "still visible" as "additive." A coarse `Renderer.bounds
 (`Bounds.Intersects`, a few lines of `execute_code`) is a weak prefilter only — a full garment's AABB
 overlaps almost everything, so a hit means "look here," never proof.
 
+**A disable is safe when the outfit fills the same coverage role — commit those.** Role is purpose and
+coverage, never name or exact class: spats, a swimsuit bottom, or a leotard fill the underwear-bottom
+slot; a swimsuit top or a wrap fills the bra's — but a shirt or sweater does not (right region, wrong
+coverage: loose over formed); a stockinged outfit fills the base stockings', outfit shoes the base
+shoes'; the costume under a full outfit is the plain case. Judge per slot, across **both layers** (base
+stockings overlap a stockinged outfit as much as the base dress does). **Enumerate** the roleless
+unknowns (bandages, wings, creature parts) for the operator; never disable on a low-confidence spatial
+guess.
+
 Where the graph is silent on whether the outfit covers a region, settle it with the **coverage
 question, not an occlusion one**: turn the base piece *off* and check whether the outfit leaves that
 region **exposed or gapped** (`RenderAvatar` before/after, §2). Exposure → the outfit doesn't cover it
@@ -113,17 +122,89 @@ garment still visible?" is the trap — an over-layered garment is visible *beca
 remove.
 
 Then, per overlapped garment: **disable the mesh** (never delete) and **set its coupled body shapes to
-their off values** from the map. A limb that vanishes means a coupled shape you left worn.
+their off values** from the map. A limb that **vanishes** when a base garment goes is a coupled shape
+left worn — the reconcile below, not a clipping call.
 
-**Run the census as `ReportShapeOverlap`, not a hand-listed set.** Given the body-morph mesh and the
-**outfit root**, it reads the outfit's `ShapeChanger` reactions itself — including the weight-0 ones a
-scan and the fit gates never show — and emits the resolution table: per shape, its reaction
-(`Set=<v>`/`Delete`/none), current weight, **resolved-target** (declared value; a `Delete` bakes to 100;
-undeclared → 0), same-vertex overlap (the double-subtraction locator, `|A∩B| / min`), and a **MISMATCH**
-on any worn-but-undeclared shape. Add the FX-clip-tier co-active shapes the tool can't see (§2) to the
-set you pass. It reports; you rule: release a worn-but-undeclared shape toward its resolved-target,
-release a base `Shrink_*` where the outfit owns that region, keep independent shapes. Its RunLog records
-that the census ran.
+**"No coupling" is a conclusion, not a default** — it holds only when the reaction read *and* the FX
+read both come up empty; a 0-weight audit over a driven mesh is residue to name, never absence.
+
+#### The census — `ReportShapeOverlap`, not a hand-listed set
+
+Pass the body-morph mesh **and the outfit root** — reaction ingestion is gated on that second argument.
+Omit it and the analysed set silently narrows to caller-passed ∪ worn-nonzero, dropping **exactly the
+weight-0 reactions** the census exists to surface; the summary's `reacted=0` is the tell. With it, the
+tool reads the outfit's `ShapeChanger` reactions itself — those targeting *this* mesh; rows aimed at a
+sibling mesh are filtered out, so their absence is not drift — and emits the resolution table: per
+shape, its reaction (`Set=<v>`/`Delete`/none), current weight, **resolved-target** (declared value; a
+`Delete` bakes to 100; undeclared → 0), same-vertex overlap (the double-subtraction locator,
+`|A∩B| / min`), and a **MISMATCH** on any worn-but-undeclared shape.
+
+**`MISMATCH` is `worn ∧ undeclared`, never `current ≠ resolved-target`.** A reaction-declared row is
+never flagged however far its edit-time weight sits from its target, because the reaction owns it at
+runtime; reading the column as a diff manufactures offenders the build resolves on its own.
+
+Two cells are **not dispositionable**: two reactions declaring different `(type, value)` for one shape
+render `CONFLICT: …` with resolved-target `conflict`, and an unmodelled `ShapeChangeType` renders
+`UNKNOWN(n)`. Neither has a presumption to discharge — **surface it, never pick**. `CONFLICT` is the
+merge case above (two kept pieces driving one body shape to different values) caught mechanically.
+
+A name in the analysed set that isn't on the mesh reports **`MISSING`**, and the rest still analyse. When
+it's a *reaction-targeted* name, that is the finding: a `ShapeChanger` still pointing at a renamed or
+deleted shape.
+
+Add the
+FX-clip-tier co-active shapes the tool can't see (§2) to the set you pass. It reports; you rule — and a
+shape that is neither overlapped nor coupled to a garment you disabled is independent: appearing in the
+table is not a reason to touch it. Its RunLog records that the census ran.
+
+**Each MISMATCH row's resolved-target is a defeasible presumption — discharge it, never eyeball it.** A
+worn-but-undeclared shape resolves toward its target unless you **override with a named `CaptureDiff`
+differential** showing the target value defects — the base foot piercing the outfit sole, a gap, a clip
+over the region. **A render *look* is never override currency** (it reads clean over a real clip).
+Accept or override, both logged; an un-dispositioned MISMATCH stays **OPEN**. It cuts both ways: a
+footwear outfit that declares no foot-pose shape (`Heel_Feet`/`Foot_heel`) resolves it to 0, releasing a
+base heel a scan left worn — the observed `Heel_Feet=100`-kept-on-a-render failure, not a constructed
+illustration; a heeled outfit that *forgot* the declaration also resolves to 0, overridden
+back to 100 only when a `CaptureDiff` at 0 shows the flat foot piercing the sole.
+
+**Shrink/hide over shared vertices are almost never both on** (`outfits.md`). Hiding a base mesh should
+flip its paired `Shrink_*` off — the pair travels together — and a kept outfit `ShapeChanger` shrinking
+the *same* vertices double-subtracts to an inverted mesh if the base shape stays worn. Absence of the
+shape on the outfit's own `ShapeChanger` is the tell it doesn't need it.
+
+#### Evidence for the calls the graph doesn't settle
+
+A value the outfit's own `ShapeChanger` or FX layer legibly drives is **settled as mechanism** — the
+mapping is authoritative over any render; spend nothing re-checking the value it drives. But an FX layer
+drives to whatever its parameter says, so the shipped **default** is still a judgment call whenever the
+outfit changed what's worn. And evidence settles only the avatar it lives on: another avatar's outfit
+declaring a value transfers nothing.
+
+For the rest, fall through to evidence: **default keep**, certified with a `CaptureDiff` toggle-diff —
+toggle the element off/on and exact-compare the pair over the region in question, angle chosen from
+where the element lives (feet read from `bottom`).
+
+- A **non-empty diff** shows the element drawing where it's questioned (a proven clip) — hide only under
+  a garment that credibly covers in motion (form-fitting), else keep and flag the call OPEN. Argue from
+  the diff *region*, never from magnitude.
+- An **empty diff with freshness certified** proves only **sampled-view pixel immateriality** — that
+  toggling changed no composited pixels from that angle — NOT that the renderer is invisible: an element
+  coplanar with, or same-material as, geometry beneath it draws yet diffs empty. Treat empty as
+  harmless-here; where actual renderer visibility must be certified, keep the call OPEN.
+- A diff whose **freshness is not certified** proves nothing — OPEN.
+
+An eyeballed render is no proof, and `RenderAvatar` is an operator-facing look, not an agent clipping
+verdict (`verify.md`). Coverage never creates a hide obligation.
+
+**When keep and hide trade risks, the order is `exposure > hole > clip`**: an uncovered avatar is worst,
+a visible absence (a hollow shoe glimpsed through a gap) next, a clip cheapest — the one failure the
+diff proves statically and a play-mode build catches in motion, so defaults push residual risk toward
+clip. Perf is no tiebreaker: a kept occluded layer's triangles are the optimizer's, not a hide
+obligation. Two hard edges: **never shrink or hide body geometry (a foot, the torso) that no vendor
+authoring drives** — garment layers are yours to disable, the body underneath is not; hole risk is
+motion-unknowable, so propose it with evidence instead — and never *close* a motion-dependent call:
+apply the ranking's default and return the call **OPEN** with its diff counts, for the caller's
+checkpoint, the operator, or the play-mode build.
 
 **Conform to the mechanism already in play — don't double-drive.** If the composed outfit already
 declares a reaction for an overlap (an MA `ObjectToggle` hiding the base underwear, a `ShapeChanger`
@@ -151,7 +232,12 @@ deformed).
 ### Shape coherence
 
 The map's shared-morph edges are the one-value-per-morph obligation `compose-mergeable` §5 reconciles
-across the outfit and body.
+across the outfit and body. The split is by evidence, not by depth: **live** coupling — what the
+reaction and FX graph declares — is this skill's, and this skill emits the carriers and their values.
+Whether a morph was **baked** into Basis leaves no in-scene signal at all; only the Blender provenance
+stamp knows, so that read and the reconcile it feeds stay in `compose-mergeable`. Don't infer a bake
+from a zero weight here. Invoked standalone on a coherence question, say so: a live-only answer is
+incomplete until the provenance stamp is read.
 
 ### Standalone
 
@@ -165,9 +251,13 @@ interrelate.
 - **`ReportController` / `ReportClip`** (agent-tools, via `execute_code`) — the FX-graph read of
   step 2.
 - **`AgentInspector`** — MA/VRCFury reactions and the mesh/component layout.
-- **`ReportShapeOverlap`** (agent-tools, via `execute_code`) — the de-conflict census: given the body-morph
-  mesh and the outfit root, it ingests the outfit's `ShapeChanger` reactions (the weight-0 coupling a scan
-  misses) and emits the resolution table — reaction / weight / resolved-target / same-vertex overlap /
-  MISMATCH. A Report, not a verdict; you disposition each row.
-- **`RenderAvatar`** (agent-tools, via `execute_code`) — visual *confirmation* by before/after
-  comparison (§2); NDMF preview-resolved; grab in a separate call from any edit.
+- **`ReportShapeOverlap`** (agent-tools, via `execute_code`) — the de-conflict census. Given the
+  body-morph mesh **and the outfit root**, it ingests the outfit's `ShapeChanger` reactions (the weight-0
+  coupling a scan misses) and emits a per-shape resolution table (reaction, current weight,
+  resolved-target, overlap, and a `MISMATCH` disposition on worn-but-undeclared rows). The outfit root is
+  optional in the signature and load-bearing in practice — omit it and ingestion never runs. A Report, not
+  a verdict; you disposition each row. Contract: `unity-tools.md`.
+- **`RenderAvatar`** (agent-tools, via `execute_code`) — two doors. `Capture` is visual *confirmation* by
+  before/after comparison (§2), never a source. `CaptureDiff` is the pinned-camera differential this
+  section's keep/hide calls are argued from — exact compare, `gate=armed` certifying freshness. Both
+  NDMF preview-resolved; grab in a separate call from any edit.

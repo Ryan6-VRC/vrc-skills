@@ -166,111 +166,51 @@ only the two reads above plus the broken-ref and physbone-collider bullets.
   write) — left null, the physbone collides against nothing. Act on the null slot, not on provenance: a
   vendor mergeable has none, so this is a no-op for it.
 
-### 4. De-conflict the meshes (quick pass)
+### 4. De-conflict the meshes — delegate, then dispose
 
 A whole gimmick/behavior module replaces nothing and keeps all its layers — steps 4–5 don't apply to it
 (a *partial* take is an `own-gimmick` fork, not a compose). The rest of this step is the geometry case.
 
-A full outfit replaces base clothing; overlapping meshes clip. Disabling those meshes is the quick,
-in-scope pass. But a base garment is often **coupled to body blendshapes** (`outfits.md`) — disable
-the mesh alone and the pre-collapsed region it covered stays collapsed, a stuck shrink you won't see
-until you look. The coupling lives in FX clips and MA `ShapeChanger` reactions, on a **body-morph mesh
-that is not the one named `Body`** (identify it first — `map-outfit-shapes` step 1), and reads **weight
-0 at edit time**, invisible to a scan. So whenever this step disables base clothing, **delegate to
-`map-outfit-shapes` scoped to the disabled garments** (the full-avatar map stays opt-in). Two outputs
-are required before the geometry-path compose is done, both geometry-path only — a gimmick module has
-neither:
+A full outfit replaces base clothing; overlapping meshes clip. Disabling those meshes looks like a
+one-line in-scene edit and is not. A base garment is often **coupled to body blendshapes**
+(`outfits.md`): disable the mesh alone and the pre-collapsed region it covered stays collapsed. The
+coupling lives in FX clips and MA `ShapeChanger` reactions, on a **body-morph mesh that is not the one
+named `Body`**, and reads **weight 0 at edit time** — invisible to any scan you would run here. Deciding
+which garments are overlapped, ruling on each shape, and gathering the evidence for a contested keep is
+`map-outfit-shapes`' domain, not this skill's.
 
-1. its **`ReportShapeOverlap` resolution artifact** — the per-shape table (reaction / weight /
-   resolved-target / same-vertex overlap / MISMATCH), whose RunLog records the census ran; and
-2. the **named runtime-owned residue** (the runtime-ownership bullet below).
+So whenever this step disables base clothing, **delegate to `map-outfit-shapes`, scoped to the composed
+outfit and the base clothing layers it could replace** (the full-avatar map stays opt-in) — naming which
+of those are actually overlapped is map's call, not this step's — and require two artifacts back before
+the geometry-path compose is done. A gimmick module has neither:
 
-**"No coupling" is a conclusion, not a default** — it holds only when the reaction read *and* the FX
-read both come up empty; a 0-weight audit over a driven mesh is residue to name, never absence.
+1. its **`ReportShapeOverlap` resolution artifact**, every `MISMATCH` row accepted, overridden, or left
+   explicitly **OPEN**, whose RunLog records the census ran; and
+2. the **named runtime-owned residue** — every edge an always-on FX layer drives from an expression
+   parameter.
 
-**Each MISMATCH row's resolved-target is a defeasible presumption — discharge it, never eyeball it.** A
-worn-but-undeclared shape resolves toward its target (declared value; a `Delete` bakes to 100;
-undeclared → 0) unless you **override with a named `CaptureDiff` differential** showing the target value
-defects — the base foot piercing the outfit sole, a gap, a clip over the region. **A render *look* is
-never override currency** (it reads clean over a real clip). Accept or override, both logged; an
-un-dispositioned MISMATCH stays **OPEN**. It cuts both ways: a footwear outfit that declares no foot-pose
-shape (`Heel_Feet`/`Foot_heel`) resolves it to 0, releasing a base heel a scan left worn (the exact
-`Heel_Feet=100`-kept-on-a-render failure); a heeled outfit that *forgot* the declaration also resolves to
-0, overridden back to 100 only when a `CaptureDiff` at 0 shows the flat foot piercing the sole. Inherits
-`CaptureDiff`'s caveats (empty-diff ≠ invisible, freshness certified — `verify.md`).
+**What this skill does with them.** `map-outfit-shapes` commits the statics on unowned edges; what comes
+back here is what it could not. **Runtime-owned residue is
+residue this skill must not fix**: what ships there is the **parameter default**, so a static disable is
+edit-time cosmetics invisible to every gate and render — the default flip is `author-menu`'s, FX-layer
+surgery `own-gimmick`'s. Name it in the checkpoint (params, meshes, shapes, off values) with the line
+**the compose is not runtime-wearable until the routed follow-up lands**, and carry every OPEN call
+across with its evidence, for the operator or the play-mode build. Never a derivable default: with no
+operator channel, name it and stop.
 
 - **Prefer the kisekae (undressed) base variant.** Many vendors ship a dedicated `<Name>_kisekae`
   prefab — body + underwear, no costume — beside the regular clothed base (`<Name>.prefab`); compose
   onto that and there is little to strip (`outfits.md`). If the vendor ships only a clothed base (or
   only shader variants of it), strip it here. A base locked in a complete *fixed* outfit with no
   toggle surface is the refuse case — ask for the kisekae variant.
-- **Runtime ownership decides whether a static edit ships — act statically only where statics hold.**
-  An always-on FX layer (weight 1, WD ON) gated on an expression parameter re-applies the garment's
-  `m_IsActive` and coupled shapes every frame: what ships is the **parameter default**, so a static
-  disable there is edit-time cosmetics, invisible to every edit-time gate and render (`outfits.md`
-  §The FX controller). The scoped `map-outfit-shapes` read carries each edge's runtime owner: commit
-  the statics on unowned edges; everything runtime-owned is **residue this skill must not fix** — the
-  default flip is `author-menu`'s, FX-layer surgery `own-gimmick`'s. Name it in the checkpoint
-  (params, meshes, shapes, off values) with the line **the compose is not runtime-wearable until the
-  routed follow-up lands**. Never a derivable default: with no operator channel, name it and stop.
-- **Disable, never delete** — a later optimizer strips unused mesh; disabling is reversible. The
-  exception is an **operator-sanctioned** delete (a gimmick-subtree strip, a dangling menu item): it
-  requires **unpacking** the vendor prefab instance in-scene first (a packed instance no-ops structural
-  deletes — `unity.md`), which is fine — the build unpacks a clone regardless and the vendor asset on
-  disk stays byte-identical.
-- **A disable is safe when the outfit fills the same coverage role — commit those.** Role is purpose
-  and coverage, never name or exact class: spats, a swimsuit bottom, or a leotard fill the
-  underwear-bottom slot; a swimsuit top or a wrap fills the bra's — but a shirt or sweater does not
-  (right region, wrong coverage: loose over formed); a stockinged outfit fills the base stockings',
-  outfit shoes the base shoes'; the costume under a full outfit is the plain case. Judge per slot, across **both layers**
-  (base stockings overlap a stockinged outfit as much as the base dress does). Where no high-confidence
-  role match exists and no legible mapping drives the value (the settled case below), fall through to
-  evidence: **default keep**, and certify it with a `CaptureDiff` toggle-diff — toggle the element
-  off/on and exact-compare the pair over the region in question. A **non-empty diff** over that region
-  shows the element drawing where it's questioned (a proven clip) — hide only under a garment that
-  credibly covers in motion (form-fitting), else keep and flag the call OPEN. An **empty diff with
-  freshness certified** proves only **sampled-view pixel immateriality** — that toggling the element
-  changed no composited pixels from that angle — NOT that the renderer is invisible: an element
-  coplanar with, or same-material as, geometry beneath it draws yet diffs empty. Treat empty as
-  harmless-here; where actual renderer visibility must be certified, keep the call OPEN. A diff whose
-  freshness is not certified proves nothing — OPEN. Coverage never creates a hide obligation.
-  An eyeballed render is no proof, and
-  `RenderAvatar` is an operator-facing look, not an agent clipping verdict (`verify.md`). **Enumerate**
-  the roleless unknowns (bandages, wings, creature parts) for the operator; never disable on a
-  low-confidence spatial guess. A limb that
-  **vanishes** when a base
-  garment goes is a coupled blendshape — the `map-outfit-shapes` reconcile, not a clipping call.
-- **Shrink/hide over shared vertices are almost never both on** (`outfits.md`; reconciled in
-  `map-outfit-shapes`). Hiding a base mesh should flip its paired `Shrink_*` off — the pair travels
-  together — and a kept outfit `ShapeChanger` shrinking the *same* vertices double-subtracts to an
-  inverted mesh if the base shape stays worn (invisible to the sheet and every `Check*`). Absence of the
-  shape on the outfit's own `ShapeChanger` is the tell it doesn't need it.
+- **An operator-sanctioned delete needs an unpack first.** De-conflict disables rather than deletes, but
+  a sanctioned delete (a gimmick-subtree strip, a dangling menu item) requires **unpacking** the vendor
+  prefab instance in-scene — a packed instance no-ops structural deletes (`unity.md`). That is safe: the
+  build unpacks a clone regardless and the vendor asset on disk stays byte-identical.
 - **Partial use of a module carrying `MergeAnimators`:** stripping its menu leaves the merged layers'
   **default-active params** free to re-enable the meshes you just disabled at runtime (invisible to
   every gate). Don't need the merged controller? Remove it with the menu. Need part of it? That's an
   `own-gimmick` fork (decompile + surgery), not an in-scene strip.
-
-**Before the checkpoint, every judgment-call keep or release above — a kept live weight, a kept
-should-be-hidden layer, a released shrink — gets its mechanical check.** A value the outfit's own
-`ShapeChanger` or FX layer legibly drives is already settled *as mechanism* — the mapping is
-authoritative over any render; spend nothing re-checking the value it drives. But an FX layer drives
-to whatever its parameter says, so the shipped **default** is still the compose's to judge when the
-outfit changed what's worn — and evidence settles only the avatar it lives on: another avatar's outfit
-declaring a value transfers nothing. For the rest: `CaptureDiff` toggling the element, angle chosen from
-where the element lives (feet read from `bottom`); a keep defended as "covered" takes a `CaptureDiff`
-toggle-diff over the questioned region. A non-empty diff proves the element materially visible — argue
-the keep/release from the diff region, never from magnitude; an empty diff with freshness certified
-proves it immaterial (`verify.md`).
-
-When keep and hide trade risks, the order is **exposure > hole > clip**: an uncovered avatar is worst, a
-visible absence (a hollow shoe glimpsed through a gap) next, a clip cheapest — the one failure the diff
-proves statically and a play-mode build catches in motion, so defaults push residual risk toward clip.
-Perf is no tiebreaker: a kept occluded layer's triangles are the optimizer's, not a hide obligation. Two
-hard edges: **never shrink or hide body geometry (a foot, the torso) that no vendor authoring drives** —
-garment layers are yours to disable, the body underneath is not; hole risk is motion-unknowable, so
-propose it with evidence instead — and never *close* a motion-dependent call:
-apply the ranking's default and list the call **OPEN** in the checkpoint with its diff/occlusion counts,
-for the operator or the play-mode build.
 
 ### 5. Shape coherence (blendshape / baked)
 
@@ -362,12 +302,12 @@ Reach for these by role; open each to learn its exact entry point.
   mechanics).
 - **`RenderAvatar`** (agent-tools, via `execute_code`) — drives the Scene View to render **one** avatar
   in isolation, headlight-lit, **NDMF preview-resolved** (reactive fit applied), from named axis angles
-  to a temp contact-sheet PNG. An **operator-facing** resolved-fit look (steps 4 and 6) — not a
+  to a temp contact-sheet PNG. An **operator-facing** resolved-fit look (step 6) — not a
   baked-upload proof and not an agent fit verdict (`verify.md`); fit is gated mechanically (`CheckSeam`).
   Grab in a separate call from any edit — a same-call edit either settles in-call or the grab FAILs
   transiently (re-grab), never a silent stale sheet; OK carries `gate=armed` (rendered-current) or
-  `gate=exempt` (nothing to certify). Its `CaptureDiff` door carries step 4's decision checks
-  (`unity-tools.md`).
+  `gate=exempt` (nothing to certify). Its `CaptureDiff` differential door is `map-outfit-shapes`' to
+  drive, not this skill's (`unity-tools.md`).
 - **avatarprep `report_stamps`** (Blender, via MCP or `cli/report_stamps.py`) — the baked-morph read in
   step 5, and also step 3's provenance routing: the same call returns each armature's `avatarprep_base`/
   `avatarprep_state` pair alongside the bound-mesh `avatarprep_baked` map grouped **under its owning
