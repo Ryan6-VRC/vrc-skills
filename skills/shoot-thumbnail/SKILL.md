@@ -54,14 +54,16 @@ FAIL saying the expression *moved no blendshape* usually means you used one.
 
 ## Pick the backdrop
 
-`bg` takes `#RRGGBB`; null is the default dark grey. Choose for **contrast, not taste** — a
-dark-haired avatar in a black outfit on the default backdrop loses its outline, and a VRChat
-thumbnail is read at menu size.
+`bg` takes `#RRGGBB` or a vertical two-stop gradient `#TOP:#BOTTOM`; null is the default dark grey.
+Choose for **contrast, not taste** — a dark-haired avatar in a black outfit on the default backdrop
+loses its outline, and a VRChat thumbnail is read at menu size.
 
-`silhouette=NN%` is the free tell: it counts pixels differing from a background corner, so a subject
-blending into its backdrop reports a *lower* silhouette than the same shot on a contrasting one.
-Unexpectedly low, on a pose that should fill the frame, means the backdrop is the problem rather than
-the pose.
+**Nothing in the verdict measures contrast.** Pick against the avatar's dominant hair and outfit
+tone, and when the call is close, shoot it and show the operator — rendering is cheap, and a backdrop
+that fails is obvious in the image and invisible in a number.
+
+A gradient is the answer when no single tone clears the whole palette: a light-to-dark ramp keeps a
+dark crown and a pale hem legible in one frame.
 
 Shortlist and draw as for pose and expression, conditioned on the avatar's palette.
 
@@ -69,11 +71,20 @@ Shortlist and draw as for pose and expression, conditioned on the avatar's palet
 
 Draw a **compatible set** rather than each independently — a demure pose under a manic grin is two
 good choices pairing badly, and a pastel backdrop behind a gothic avatar is three. Pair framing to
-the drawn pose; a hands-on-hips or full-body pose wastes `bust`.
+the drawn pose; a hands-on-hips or full-body pose wastes `bust`, and a seated pose wants `half` —
+bundled clips carry no root translation, so at `full` the avatar visibly hovers at standing height.
 
 ```
-RenderThumbnail.Render(target, pose: <token>, expression: <slot>, framing: <paired>, bg: <hex>)
+RenderThumbnail.Render(target, pose: <token>, expression: <slot>, framing: <paired>, bg: <hex>,
+                       fov: <deg>, yaw: <deg?>)
 ```
+
+`fov` is vertical degrees (default ~30, [10,90]); distance is solved from it, so it changes the look,
+not the framing. `yaw` null is an automatic flattering oblique — a number is an **offset added to
+head tracking**, not an absolute heading (`yaw: 0` means "no oblique", not "frontal"), positive
+orbiting toward screen-left. An explicit `yaw` carries the composition with it: the subject shifts
+opposite the way the camera swung, to leave the gaze somewhere to go, and `yaw: 0` centres it.
+Both are taste dials: leave them alone unless the shot asks for it.
 
 **Serialize the calls** — the bake drives global editor state. Never two at once, never parallelized
 across subagents.
@@ -87,13 +98,18 @@ behalf — the prompt is reporting a real defect that is theirs to decide about.
 ## Read the verdict
 
 ```
-... expression=Open (F_smile_1) framing=bust silhouette=20% => OK | png=...
+... expression=Open (F_smile_1) framing=bust fov=30 headYaw=11.9 camYaw=24.9 head=(0.54,0.62) => OK | png=...
 ```
 
 - **`(F_smile_1)`** — the clip the slot actually resolved to post-bake. Worth reading: it is the only
   place the drawn face is named.
-- **`silhouette=NN%`** — reported, not gated. Compare against a pose-only render only if the shot
-  looks wrong; it costs a second bake.
+- **`headYaw`** — what the *pose* did, measured off the posed head. Zero on an unposed render.
+- **`camYaw`** — the *resolved* camera angle: `headYaw` plus the oblique, so it names the shot you got.
+  The pair is what makes it decomposable — `camYaw − headYaw` is the offset to pass as `yaw` to
+  reproduce the shot, and a gap wider than that offset means tracking saturated its ±60° clamp.
+- **`head=(x,y)`** — the view point in viewport coords, origin bottom-left, centre `(0.5,0.5)`.
+  Reported, never gated; an off-centre head is something you can see in the PNG. A blank frame does
+  fail loud, so an `OK` verdict means something was rendered.
 - A FAIL saying the expression *moved no blendshape* means the clip and the baked avatar disagree —
   usually a path/GUID escape hatch pointing at pre-bake shape names. Pass the slot instead.
 
