@@ -87,9 +87,12 @@ re-export to carry or author the seam, nothing more.
   morphs, propagate name-variant morphs. **Ordering is a hard gate:**
   the edge references full-body seam bones (Head/Neck/Hand) the subset may not weight, so pruning first
   aborts the apply on missing bones.
-- **Prune** zero-weight bones. Over-pruning is safe — a pruned component anchor resurfaces later as
-  flagged-missing and is `force`-added or accepted. The **dropped meshes'** bones go here; the kept
-  subset's own bones (a tail's chain, a skirt's) survive because its meshes weight them.
+- **Prune** zero-weight bones (`--whatif` first — it groups the removals into rooted chains, mutating
+  nothing). Over-pruning a *bone* is recoverable: a pruned component anchor resurfaces later as
+  flagged-missing and is `force`-added or accepted. The **dropped meshes'** bones go here; the kept subset's
+  own bones (a tail's chain, a skirt's) survive because its meshes weight them. An *object* bone-parented to
+  a doomed bone is the exception and makes the prune **refuse** — nothing catches that one later, since the
+  object would be orphaned outright. Re-weight or re-parent it; see `own-base` for the contract.
 - **Name the armature distinctively** (`Armature.<Name>`) — set **here, in Blender**, a durable
   property of the owned FBX (collision avoidance against the base's `Armature` at the attach seam;
   the naming pair's home is `docs/nondestructive.md`). No avatarprep door — rename inline:

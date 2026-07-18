@@ -120,13 +120,21 @@ Normalize down to just the avatar:
 Then run the **avatarprep prune** function. This is **unconditional** — an owned base carries only the bones
 its own meshes need, whatever route it took to get here, and a base that dropped no meshes still prunes. A
 retained chain is not inert: it changes how every mergeable afterwards merges onto this base
-(`nondestructive.md`), and it rides in every avatar the fleet builds from the base. It keeps physbone tips,
-attachment parents, and ancestors of weighted bones, and preserves only depth-1
-zero-weight leaves (over-pruning is unrecoverable post-export, so it errs toward keeping). It prunes aggressively by design:
-weights alone can't distinguish dead clothing chains from a rare load-bearing helper chain (an intentionally
-unweighted chain used as a constraint target). Don't second-guess it from weights — if it removes a load-bearing
-bone, that surfaces in Phase 3 as a **flagged-missing host** (PASS, named) — `force` it (scaffold) or re-add
-the transform in Blender and re-export.
+(`nondestructive.md`), and it rides in every avatar the fleet builds from the base.
+
+It keeps two things and deletes the rest: physbone tips (a depth-1 zero-weight leaf of a weighted parent) and
+any ancestor of a weighted bone. It prunes aggressively by design — weights alone can't distinguish dead
+clothing chains from a rare load-bearing helper chain (an intentionally unweighted chain used as a constraint
+target). Don't second-guess it from weights: a wrongly removed bone surfaces in Phase 3 as a
+**flagged-missing host** (PASS, named), which you `force` (scaffold) or re-add in Blender and re-export.
+
+**Read `--whatif` first** — it groups the removals into rooted chains, the unit you actually spare or cut,
+and mutates nothing.
+
+The prune **refuses** (exit 1, `--out` unwritten, nothing mutated) on one thing: an object bone-parented to a
+bone it would delete, which pruning would orphan. Vendor avatars never trip this, so a refusal means the
+`.blend` acquired the attachment after import, merge, or hand-authoring — re-weight or re-parent the object
+rather than routing around it. `force` orphans it deliberately.
 
 Export back to Unity with the **avatarprep CATS-recipe export** (reuses the vendor materials rather than
 re-embedding).
