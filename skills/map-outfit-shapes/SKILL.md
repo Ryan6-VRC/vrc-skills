@@ -55,9 +55,14 @@ human will reuse it.
 
 ### 1. Inventory
 
-Identify the body mesh(es) — vendor-named, `Body`, `<Name>_body`. Enumerate every blendshape on them,
-and every garment mesh: the base's own clothing layers **and** every piece of each composed outfit.
-This is the surface you reason over.
+Identify the body-morph mesh(es) — the ones carrying the coupling cage (`Shrink_*`/`Breast*`/`Hip*`/
+`Stocking*`), **not** the mesh named `Body`, which by VRChat convention is the viseme mesh (the
+descriptor's `VisemeSkinnedMesh`) and often carries no cage (`outfits.md`). Both can be full-body
+skinned, so humanoid weighting can't disambiguate — the cage's shapes do, and during de-conflict the
+outfit's `ShapeChanger` targets name the mesh outright. The cage may span more than one mesh (identify
+the set) or coincide with the viseme mesh. Enumerate every blendshape on the body-morph mesh(es), and
+every garment mesh: the base's own clothing layers **and** every piece of each composed outfit. This is
+the surface you reason over.
 
 ### 2. Resolve each edge in the authority order
 
@@ -110,12 +115,15 @@ remove.
 Then, per overlapped garment: **disable the mesh** (never delete) and **set its coupled body shapes to
 their off values** from the map. A limb that vanishes means a coupled shape you left worn.
 
-**Confirm a suspected shrink double-subtraction mechanically.** A base `Shrink_*` left worn while a kept
-outfit `ShapeChanger` shrinks the same region stacks into an inverted limb the render sheet and the fit
-gates never show. Feed the co-active shapes on the body mesh — the base worn `Shrink_*` plus the outfit
-`ShapeChanger`'s targets — to `ReportShapeOverlap`; it reports which pairs deform the **same vertices**
-(containment `|A∩B| / min`). It locates the collision, it doesn't rule on it: release the base shrink
-where the outfit owns that region, keep it where they are independent.
+**Run the census as `ReportShapeOverlap`, not a hand-listed set.** Given the body-morph mesh and the
+**outfit root**, it reads the outfit's `ShapeChanger` reactions itself — including the weight-0 ones a
+scan and the fit gates never show — and emits the resolution table: per shape, its reaction
+(`Set=<v>`/`Delete`/none), current weight, **resolved-target** (declared value; a `Delete` bakes to 100;
+undeclared → 0), same-vertex overlap (the double-subtraction locator, `|A∩B| / min`), and a **MISMATCH**
+on any worn-but-undeclared shape. Add the FX-clip-tier co-active shapes the tool can't see (§2) to the
+set you pass. It reports; you rule: release a worn-but-undeclared shape toward its resolved-target,
+release a base `Shrink_*` where the outfit owns that region, keep independent shapes. Its RunLog records
+that the census ran.
 
 **Conform to the mechanism already in play — don't double-drive.** If the composed outfit already
 declares a reaction for an overlap (an MA `ObjectToggle` hiding the base underwear, a `ShapeChanger`
@@ -157,8 +165,9 @@ interrelate.
 - **`ReportController` / `ReportClip`** (agent-tools, via `execute_code`) — the FX-graph read of
   step 2.
 - **`AgentInspector`** — MA/VRCFury reactions and the mesh/component layout.
-- **`ReportShapeOverlap`** (agent-tools, via `execute_code`) — same-mesh blendshape overlap: does a base
-  worn `Shrink_*` deform the same vertices an outfit `ShapeChanger` also shrinks (the double-subtraction)?
-  Feed it the co-active set you named; it locates the collision, you rule on it.
+- **`ReportShapeOverlap`** (agent-tools, via `execute_code`) — the de-conflict census: given the body-morph
+  mesh and the outfit root, it ingests the outfit's `ShapeChanger` reactions (the weight-0 coupling a scan
+  misses) and emits the resolution table — reaction / weight / resolved-target / same-vertex overlap /
+  MISMATCH. A Report, not a verdict; you disposition each row.
 - **`RenderAvatar`** (agent-tools, via `execute_code`) — visual *confirmation* by before/after
   comparison (§2); NDMF preview-resolved; grab in a separate call from any edit.

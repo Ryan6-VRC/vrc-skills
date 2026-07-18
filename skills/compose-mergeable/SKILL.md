@@ -112,7 +112,10 @@ only the two reads above plus the broken-ref and physbone-collider bullets.
   surfaces here as NOT-PASS or a won't-resolve REFUSE. Three outcomes, routed differently:
   - **PASS** — the humanoid skeleton coincides; fit is certified, proceed to de-conflict. It certifies
     *only* the humanoid skeleton — not physics-cage / bust / hair / accessory placement, which stay the
-    operator's eye (step 6).
+    operator's eye (step 6). PASS carries `maxWithinEps`, the largest sub-ε bone offset: a peripheral bone
+    (a hand/finger) sitting near ε is the ambiguous pose-drift-vs-edit-bump case the NOT-PASS bullet
+    describes, now under the widened tolerance — **flag it to the operator, change nothing**; the widen
+    absorbs base-inherent drift, it does not license swallowing a real one.
   - **NOT-PASS** — humanoid bones offset past ε. A large offset, or one across most bones, is the **wrong
     base or a real misfit** (an agent-normalized root — the step-2 trap — is this signature): surface it,
     route out (`Scope`), don't force it. **A few peripheral bones just over ε** (a hand or finger, sub-mm)
@@ -143,7 +146,7 @@ only the two reads above plus the broken-ref and physbone-collider bullets.
   on the placed avatar: against the placed scene it names every MA scene ref and every clip/controller
   binding a rename left unresolved (`PASS`/`CLASSIFY`) — the whole reactive family included (`ShapeChanger`,
   `ObjectToggle`, `MaterialSetter`/`Swap`, `MeshDeleter`, `BlendshapeSync`, `BoneProxy`). The usual cause is
-  the **renamed seam**: `own-base` normalizes the primary body mesh to `Body_Base`, vendors ship `Body_base`.
+  a **renamed seam**: `own-base` may rename the primary body mesh (recommended `Body_Base`; vendors ship `Body_base`).
   CheckAvatar classifies and names; you route (a deliberately-null toggle target or a portability-redundant
   path where several point at one object is a legitimate non-offender — judge, don't blindly repath):
   - **`MA-scene-ref`** → **repath in-scene**: retarget the reference to the renamed object — a scene edit,
@@ -170,13 +173,31 @@ A whole gimmick/behavior module replaces nothing and keeps all its layers — st
 
 A full outfit replaces base clothing; overlapping meshes clip. Disabling those meshes is the quick,
 in-scope pass. But a base garment is often **coupled to body blendshapes** (`outfits.md`) — disable
-the mesh alone and the pre-collapsed body region it covered stays collapsed, a stuck shrink you won't
-see until you look. Whether a garment is coupled is not judgeable from this step: the coupling lives
-in the base's FX controller and on body meshes beyond the one named `Body`, invisible to an edit-time
-weight scan — "no coupling" is a conclusion only the map can reach. So whenever this step disables
-base clothing, **run `map-outfit-shapes` scoped to the disabled garments** — map their coupling edges
-and release their coupled shapes to the off values — before calling the compose done. The full-avatar
-map stays opt-in; the scoped read is part of the compose.
+the mesh alone and the pre-collapsed region it covered stays collapsed, a stuck shrink you won't see
+until you look. The coupling lives in FX clips and MA `ShapeChanger` reactions, on a **body-morph mesh
+that is not the one named `Body`** (identify it first — `map-outfit-shapes` step 1), and reads **weight
+0 at edit time**, invisible to a scan. So whenever this step disables base clothing, **delegate to
+`map-outfit-shapes` scoped to the disabled garments** (the full-avatar map stays opt-in). Two outputs
+are required before the geometry-path compose is done, both geometry-path only — a gimmick module has
+neither:
+
+1. its **`ReportShapeOverlap` resolution artifact** — the per-shape table (reaction / weight /
+   resolved-target / same-vertex overlap / MISMATCH), whose RunLog records the census ran; and
+2. the **named runtime-owned residue** (the runtime-ownership bullet below).
+
+**"No coupling" is a conclusion, not a default** — it holds only when the reaction read *and* the FX
+read both come up empty; a 0-weight audit over a driven mesh is residue to name, never absence.
+
+**Each MISMATCH row's resolved-target is a defeasible presumption — discharge it, never eyeball it.** A
+worn-but-undeclared shape resolves toward its target (declared value; a `Delete` bakes to 100;
+undeclared → 0) unless you **override with a named `CaptureDiff` differential** showing the target value
+defects — the base foot piercing the outfit sole, a gap, a clip over the region. **A render *look* is
+never override currency** (it reads clean over a real clip). Accept or override, both logged; an
+un-dispositioned MISMATCH stays **OPEN**. It cuts both ways: a footwear outfit that declares no foot-pose
+shape (`Heel_Feet`/`Foot_heel`) resolves it to 0, releasing a base heel a scan left worn (the exact
+`Heel_Feet=100`-kept-on-a-render failure); a heeled outfit that *forgot* the declaration also resolves to
+0, overridden back to 100 only when a `CaptureDiff` at 0 shows the flat foot piercing the sole. Inherits
+`CaptureDiff`'s caveats (empty-diff ≠ invisible, freshness certified — `verify.md`).
 
 - **Prefer the kisekae (undressed) base variant.** Many vendors ship a dedicated `<Name>_kisekae`
   prefab — body + underwear, no costume — beside the regular clothed base (`<Name>.prefab`); compose
@@ -240,10 +261,6 @@ where the element lives (feet read from `bottom`); a keep defended as "covered" 
 toggle-diff over the questioned region. A non-empty diff proves the element materially visible — argue
 the keep/release from the diff region, never from magnitude; an empty diff with freshness certified
 proves it immaterial (`verify.md`).
-
-**Foot-pose shapes** (a heel arch — `Heel_Feet`, `Foot_heel`) are coupled to the worn *footwear*, not
-to any stripped garment: resolve **declared-or-zero** — the outfit's own `ShapeChanger` declaration,
-else 0 — and never from a render (`outfits.md`).
 
 When keep and hide trade risks, the order is **exposure > hole > clip**: an uncovered avatar is worst, a
 visible absence (a hollow shoe glimpsed through a gap) next, a clip cheapest — the one failure the diff
