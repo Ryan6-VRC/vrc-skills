@@ -1,6 +1,6 @@
 ---
 name: fitting-session
-description: Use when stress-testing the workshop itself against the vendor asset library — "run a fitting session", "wear-test the tooling", a QA sweep dispatching worker agents on real avatar tasks to find where tools, docs, and skills chafe, ending in fixup kickoffs. Not a single avatar task (that task's own skill), nor measuring one skill (skill-assay).
+description: Use ONLY when the operator explicitly asks for this exercise — a fitting session, a wear-test or QA sweep of the workshop itself — dispatching worker agents across many tasks to find where our tools, docs, and skills chafe, ending in fixup kickoffs. It is meta-work on the workshop, never avatar work itself. Importing, composing, owning, fitting, or reproportioning assets, however many, is that task's own skill. Measuring one skill is skill-assay.
 ---
 
 # Fitting session — wear-test the workshop on real vendor work
