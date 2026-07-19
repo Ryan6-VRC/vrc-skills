@@ -68,6 +68,12 @@ belong inside a repo — use a scratch/output dir.
    complexity). Relay its returned cut path and verify frame to the operator; run
    `showcase.py teaser` if a ≤10MB embed is wanted. Done — hosting/upload is not this skill's
    job.
+6. **Offer to restore the venue.** The take left the project mutated, and a re-attempt starts by
+   untangling it — so offer (don't assume) to put it back roughly as you found it, reading your own
+   transcript for what the work created. Aim at the wall a fresh agent would hit: assets that
+   contradict the state they claim, and the RunLogs asserting them — delete outright, since anything
+   merely moved aside still turns up in a grep. Confirm the list before removing (these venues are
+   untracked), then say plainly what you left behind.
 
 ## The edit subagent
 
