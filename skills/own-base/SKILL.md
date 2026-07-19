@@ -211,24 +211,36 @@ Then, on the scene instance, in this order:
    root; **VRC constraints** group the same way. **Unity built-in constraints are never relocated** — they
    drive their own GameObject and stay on their bone (and Relocate refuses any type with no anchor in the
    VRC table — MA/VRCF/NDMF and Unity built-in constraints all FAIL loud rather than move). Each call mints
-   holder GOs under `AvatarDynamics/<folder>`, pins each component's anchor to its original bone
-   (behavior-neutral — no bone is moved), and echoes matches by name+count; reconcile the invariant
+   holder GOs under `AvatarDynamics/<folder>`, pins each component's anchor to its original bone, and
+   rewires inbound refs to each re-created component (behavior-neutral — no bone is moved, no
+   physbone→collider ref stranded), and echoes matches by name+count; reconcile the invariant
    **Σ(moved) + intentionally-left == total Copy reproduced** so a missing chain is computed, not missed.
+   **Order the calls broad→narrow** — matching is by **anchor, not current location**, so a later
+   broader call (e.g. Hips) re-captures physbones a narrower call already grouped and leaves stale
+   empty holders; a narrow region holds only when its call runs after the broad one.
    **Grouping is operator preference, not a gate** — ask whether to relocate the reproduced dynamics
    under `AvatarDynamics/` (`MoveComponents`) before prefabbing; the avatar is valid and uploadable
    after CopyComponents alone, so a skipped Relocate is ungrouped-but-valid, not a failure.
-   (`own-mergeable` takes the same ask.) **Must run before prefab conversion** (it removes the
-   original component, unreliable on a prefab instance). What-if is available here too.
+   (`own-mergeable` takes the same ask.) **Must run before prefab conversion** — removing a component
+   that is part of a saved prefab **asset** is unreliable; the components Copy added to the FBX scene
+   instance are plain instance overrides, so Relocate works there directly (**no unpack** — see the
+   conversion gate below). What-if is available here too.
 
 The CopyComponents run and **all** Relocate calls must complete **before** prefab conversion. Then **convert the
 built-up scene FBX into a prefab variant**, and move the FBX itself into the avatar's `Models/` folder.
+The instance must still **be** a prefab instance of the FBX when saved — **never unpack it** during the
+build-up (everything above works as instance overrides), and save with the root at identity. A
+fully-unpacked instance saves as a **Regular** prefab with no error, silently unlinked from the FBX, and
+the next re-export ships a stale rest pose (`unity.md`). **Gate the conversion:**
+`PrefabUtility.GetPrefabAssetType(prefab) == PrefabAssetType.Variant`.
 
 **Ask the operator to test-drive the avatar in-game** before the final cleanup.
 
 Final cleanup: produce a **clean FX** (the **CleanController** tool). It keeps only the layers you name in
-`keepLayerNames`; choose them with the **hand-gesture-relative heuristic** — locate the Left/Right Hand
-gesture layers, keep them plus every layer **at or above** them, drop the outfit/visibility toggles below
-(base layer 0 is always kept). The tool FAILs loud if a named layer is absent or ambiguous. If the head
+`keepLayerNames`; keep the layers that are the base body's **identity** — the Left/Right Hand gesture
+layers and the facial/expression layers they drive — and drop the outfit/visibility toggle layers,
+**judging each layer by what it animates, not by its index** (vendors stack toggles below the gesture
+layers *or* after them; base layer 0 is always kept). The tool FAILs loud if a named layer is absent or ambiguous. If the head
 mesh was renamed, the kept facial layers' clips bind it by its old name and stay **inert** — repath them
 with the **UC2** clip phase (`OwnControllerClips → RepathClips`, `animator.md`), here or deferred to compose
 where `CheckAvatar` surfaces the break; note it, don't block. Empty expression parameters + menu, wired into

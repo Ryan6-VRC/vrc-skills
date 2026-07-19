@@ -205,7 +205,11 @@ Structural and basic — **the real proof is a compose**, so hand off after:
 If a later compose finds the provenance stamp missing or mismatched against the base, the fix
 re-enters **this skill** (re-stamp + refile) — it is not patched in the Unity scene.
 
-Then convert to a **prefab variant** of the FBX and hand to `compose-mergeable` + the operator's
+Then convert to a **prefab variant** of the FBX — **never unpack the instance** during the build-up,
+and **zero the instance's root transform before saving**: a staging offset parked on the root bakes
+into the asset (a later `CheckSeam` reports it as a `maxOffset` fail), and a fully-unpacked instance
+saves as a silently-unlinked **Regular** prefab that a re-export then desyncs (`unity.md`); gate on
+`PrefabUtility.GetPrefabAssetType == Variant`. Hand to `compose-mergeable` + the operator's
 playmode for the visual/behavioral bar. Grab in a separate call from any edit — a same-call grab shows
 the pre-edit proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the same-call case.
 
