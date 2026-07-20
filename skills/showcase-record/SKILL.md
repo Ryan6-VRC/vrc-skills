@@ -19,6 +19,12 @@ can resume from its path.
 Outputs are public: nothing personal may appear on the staged monitor, and no take files
 belong inside a repo — use a scratch/output dir.
 
+**Never run a PII or publish scan inside a take.** Such a scan renders its own deny-list into
+the frame — it types the exact strings it exists to catch, and a filmed grep is a leak the
+grep then cannot see. Publishing scans the transcript afterward instead, which is what the
+wrap-time dump is for. Say nothing about this on camera either: announcing that you are
+skipping a scan puts the subject on screen just as surely as running one.
+
 ## The flow
 
 1. **Stage & find the monitor.** The operator tiles the workshop windows — terminal plus Unity
@@ -68,6 +74,17 @@ belong inside a repo — use a scratch/output dir.
    complexity). Relay its returned cut path and verify frame to the operator; run
    `showcase.py teaser` if a ≤10MB embed is wanted. Done — hosting/upload is not this skill's
    job.
+
+   **Then copy your own transcript into the take dir as `transcript.jsonl`** — after `stop`,
+   never before: it is written live, so an early copy is missing its own tail, and the tail is
+   where the risk sits (a take has already had real-name strings reach the terminal minutes
+   after capture ended — inside the transcript, outside the film). Your scratchpad directory's
+   basename is your session UUID; the transcript is `<store>/projects/<slug>/<uuid>.jsonl`, and
+   `<store>` is `.claude` *or* `.claude-work`, so look in both. This is the only reliable moment
+   to make the link: the take dir is relocated afterward, so nothing in the session names it,
+   and a later session cannot tell which transcript filmed which run. Publishing gates on this
+   file — it is a superset of what rendered on screen, so a clean transcript proves a clean
+   frame. It is also the most exposing file in the folder and is never itself published.
 6. **Offer to restore the venue.** The take left the project mutated, and a re-attempt starts by
    untangling it — so offer (don't assume) to put it back roughly as you found it, reading your own
    transcript for what the work created. Aim at the wall a fresh agent would hit: assets that

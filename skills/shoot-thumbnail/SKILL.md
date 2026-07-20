@@ -5,7 +5,9 @@ description: Use when taking a portrait/thumbnail shot of a composed avatar — 
 
 # Shoot an avatar thumbnail
 
-`RenderThumbnail` does the capture. Everything before the call is selection, and selection is the job.
+`RenderThumbnail` (edit mode) and `RenderThumbnailPlay` (play mode) do the capture — one caller
+vocabulary across both, contracted in `docs/unity-tools.md` §Thumbnails. Everything before the call is
+selection, and selection is the job.
 
 ## Draw, don't choose
 
@@ -82,10 +84,45 @@ dark crown and a pale hem legible in one frame.
 
 Shortlist and draw as for pose and expression, conditioned on the avatar's palette.
 
+## Pick the mode
+
+Both front-ends run the **full SDK bake** — that is the constant, not the differentiator. What differs:
+
+- **edit** (`RenderThumbnail`) — one synchronous call, one bake **per shot**, on a private clone in a
+  preview scene. The operator's live scene is never touched.
+- **play** (`RenderThumbnailPlay`) — one build at play entry, then **N shots amortized on it**, with the
+  real physbone solver running and FX toggles/materials **resolved**. It mutates the operator's live
+  scene — deactivates the other avatars, mints the emulator control, overrides the Enter-Play-Mode
+  Options — and only `End()` puts that back.
+
+**Ask the operator** (`AskUserQuestion`), edit first and recommended. **What play actually buys is the
+colliders:** with the solver running, hair and cloth get pushed out of the body instead of intersecting
+it, and that resolves in the first frames. So argue for play when an edit shot shows a fringe through
+the cheek or a skirt through a thigh — or when the look only exists once FX resolves. Otherwise edit. A
+request that already names the mode ("settled", "in play") **is** the answer; don't re-ask it.
+
+**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
+dispatched worker or background job still **has a channel** — the dispatcher — so surface the
+gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
+with no channel at all do you take the derivable default — **edit** — and even then the disclosure
+leads the report: name the mode you fell back to, and that play was not attempted.
+
+**Never enter play unattended.** It is global editor state, it trips PlayGate, and it mutates a live
+scene — three things nobody is there to watch.
+
 ## Shoot
 
 Draw a **compatible set** rather than each independently — a demure pose under a manic grin is two
 good choices pairing badly, and a pastel backdrop behind a gothic avatar is three.
+
+**With an operator present, shoot a set and let them pick.** The shortlist draw already produced N
+candidates; rendering one and discarding the rest throws the selection work away. Present them
+together, each labelled with its drawn pose, expression, and backdrop, so the pick is one word.
+
+- **Play defaults to a set** — 2–3 across the shortlist, unprompted. One build serves them all, so this
+  is where the mode earns its cost; a single play-mode frame leaves the amortization unspent.
+- **Edit offers a set** — the same 2–3, but each one re-bakes, so name that cost rather than assuming it.
+- **No operator ⇒ one shot.** A set nobody picks from is just N bakes.
 
 **Read at menu size, so the face has to dominate — default to `bust`.** Frame for what the pose puts
 in the shot, not the pose's category: reach for `half` only when the hands or a held gesture ARE the
@@ -94,10 +131,33 @@ whole-body figure's face vanishes at menu size, and the bundled clips carry no r
 standing pose hovers there anyway. None of this is gated: shoot it, open the PNG, re-crop tighter if
 the subject swims.
 
+**Edit** — one call per shot:
+
 ```
 RenderThumbnail.Render(target, pose: <token>, expression: <slot>, framing: <paired>, bg: <hex>,
                        fov: <deg>, yaw: <deg?>)
 ```
+
+**Play** — a session around that same vocabulary:
+
+```
+Begin(target)                        → READY-TO-PLAY  (refuses if any loaded scene is unsaved)
+manage_editor play                   → blocks for minutes while the SDK build runs
+Shoot(pose, expression, framing, …)  → STARTED tag=RTP-xxxxxxxx
+   poll Status() (or read_console on the tag) until it stops reporting "still settling"
+   …repeat Shoot for the rest of the set — one Begin serves many…
+manage_editor stop
+End()                                → reopens the venue scene from disk
+```
+
+`End()` is **mandatory on every path, including failure.** `Begin` overrode the operator's
+Enter-Play-Mode Options and deactivated the other avatars; only `End` restores them. Once `Begin`
+returns READY the exit is `stop` → `End()`, whatever happened in between.
+
+The venue is the **active scene**, lit by its own lights — not a generated one, and not edit's fixed
+rig. Two expression cases refuse in play and belong in edit: an avatar with **no FX controller**, and
+an FX slot holding an **override controller** the compositor cannot clone. Both fail loud and name
+edit mode.
 
 `fov` is vertical degrees (default ~30, [10,90]); distance is solved from it, so it changes the look,
 not the framing. `yaw` null is an automatic flattering oblique — a number is an **offset added to
@@ -106,8 +166,9 @@ orbiting toward screen-left. An explicit `yaw` carries the composition with it: 
 opposite the way the camera swung, to leave the gaze somewhere to go, and `yaw: 0` centres it.
 Both are taste dials: leave them alone unless the shot asks for it.
 
-**Serialize the calls** — the bake drives global editor state. Never two at once, never parallelized
-across subagents.
+**Serialize the calls** — the bake and play entry both drive global editor state, and the tool refuses a
+second session or an overlapping `Shoot` outright. Never two at once, never parallelized across
+subagents.
 
 **A render that times out has probably wedged the editor on a modal dialog**, not hung: the bake runs
 the full SDK chain, and VRCFury prompts per build on an avatar with a broken Write Defaults mix. Read
@@ -133,4 +194,8 @@ behalf — the prompt is reporting a real defect that is theirs to decide about.
 - A FAIL saying the expression *moved no blendshape* means the clip and the baked avatar disagree —
   usually a path/GUID escape hatch pointing at pre-bake shape names. Pass the slot instead.
 
-Name the drawn pose and expression when you show the PNG, so a re-roll is one sentence.
+Play adds `settled=<N>f moving=[…]` — frames waited, and any chains still swinging at capture. Neither
+is a gate and neither is usually worth acting on: a named chain means the hair is still in motion, which
+in a portrait reads as life, not a defect. Raise `settleFrames` only if the operator wants it stiller.
+
+Name the mode, the drawn pose, and the expression when you show the PNG, so a re-roll is one sentence.

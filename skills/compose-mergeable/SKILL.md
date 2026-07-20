@@ -30,8 +30,7 @@ a clean console (MA silently auto-creates phantom bones), so a green console pro
 dispatched worker or background job still **has a channel** — the dispatcher — so surface the
 gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
 with no channel at all do you take the derivable defaults, and even then the disclosure leads the
-report — every undecided call flagged at the top, never a silently minted convention (folder or
-category placement especially).
+report — every undecided call flagged at the top, never a silently minted convention.
 
 ## Scope — what this owns, and where it routes out
 
