@@ -101,11 +101,7 @@ it, and that resolves in the first frames. So argue for play when an edit shot s
 the cheek or a skirt through a thigh — or when the look only exists once FX resolves. Otherwise edit. A
 request that already names the mode ("settled", "in play") **is** the answer; don't re-ask it.
 
-**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
-dispatched worker or background job still **has a channel** — the dispatcher — so surface the
-gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
-with no channel at all do you take the derivable default — **edit** — and even then the disclosure
-leads the report: name the mode you fell back to, and that play was not attempted.
+**No operator to ask?** The no-operator protocol (`workflow.md`); the derivable default is **edit**, disclosed as play-not-attempted.
 
 **Never enter play unattended.** It is global editor state, it trips PlayGate, and it mutates a live
 scene — three things nobody is there to watch.

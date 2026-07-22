@@ -12,11 +12,7 @@ design rules this skill sequences), `docs/runtime.md` (the physics), `vrc-patter
 module/pattern entries), the mechanisms survey for worked examples. This skill owns the process
 and its gates only.
 
-**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
-dispatched worker or background job still **has a channel** — the dispatcher — so surface the
-gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
-with no channel at all do you take the derivable defaults, and even then the disclosure leads the
-report — every undecided call flagged at the top, never a silently minted convention.
+**No operator to ask?** Follow the no-operator protocol (`workflow.md`).
 
 ## The sequence
 

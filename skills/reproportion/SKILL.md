@@ -16,11 +16,7 @@ the path to the target and validate its edge(s) against the live scene (missing 
 as named offenders **before** any mutation), then walk the path — object transform + per-bone scales +
 shapekey values, baked, re-stamped. Authoring precedes it; Unity reconciliation follows.
 
-**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
-dispatched worker or background job still **has a channel** — the dispatcher — so surface the
-gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
-with no channel at all do you take the derivable defaults, and even then the disclosure leads the
-report — every undecided call flagged at the top, never a silently minted convention.
+**No operator to ask?** Follow the no-operator protocol (`workflow.md`).
 
 ## Author or load a profile
 

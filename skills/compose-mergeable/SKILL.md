@@ -26,11 +26,7 @@ eyeball, gate fit on the seam check where it scores, do the mechanical in-scene 
 the way so the operator looks. **"Merges without error" ≠ "composed"** — a wrong-base mergeable merges with
 a clean console (MA silently auto-creates phantom bones), so a green console proves nothing.
 
-**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
-dispatched worker or background job still **has a channel** — the dispatcher — so surface the
-gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
-with no channel at all do you take the derivable defaults, and even then the disclosure leads the
-report — every undecided call flagged at the top, never a silently minted convention.
+**No operator to ask?** Follow the no-operator protocol (`workflow.md`).
 
 ## Scope — what this owns, and where it routes out
 
@@ -102,13 +98,10 @@ arises in a compose. The geometry bullets below apply to the humanoid-skinned ca
 only the two reads above plus the broken-ref and physbone-collider bullets.
 
 - **Seam fit + resolution — `CheckSeam` (the mechanical gate).** `CheckSeam.Check(baseRoot, mergeableRoot)`
-  reflects the seam's own MA/VRCFury bone mapping and gates the **world-space coincidence** of the
-  mergeable's *weighted humanoid bones* against the base's (world-space, because a compensating root scale
-  is legitimate authoring). A correctly authored mergeable duplicates the base armature, so those bones
-  land coincident; a real offset is a misfit MA ships as-is and VRCFury snaps at bake. Because it reflects
-  the real resolver, it subsumes a naive name-match: the wrong-base merge that MA hides by auto-creating
-  phantom bones (`nondestructive.md`) — a clean console while the outfit skins to bones that never move —
-  surfaces here as NOT-PASS or a won't-resolve REFUSE. Three outcomes, routed differently:
+  — mechanism and verdict grammar in `unity-tools.md`. Because it reflects the real resolver, the
+  wrong-base merge MA hides by auto-creating phantom bones (`nondestructive.md`) — a clean console while
+  the outfit skins to bones that never move — surfaces here as NOT-PASS or a won't-resolve REFUSE. Route
+  the three outcomes:
   - **PASS** — the humanoid skeleton coincides; fit is certified, proceed to de-conflict. It certifies
     *only* the humanoid skeleton — not physics-cage / bust / hair / accessory placement, which stay the
     operator's eye (step 6). PASS carries `maxWithinEps`, the largest sub-ε bone offset: a peripheral bone
@@ -142,9 +135,8 @@ only the two reads above plus the broken-ref and physbone-collider bullets.
     reproportion the base). This is the same misfit `CheckSeam` flags as NOT-PASS — `reshaped` moves the
     rest pose without renaming bones — named at the stamp level so the fix routes to the right side.
 - **Broken refs — classify with `CheckAvatar`, then route by class.** Run `CheckAvatar.Inspect(<avatar root>)`
-  on the placed avatar: against the placed scene it names every MA scene ref and every clip/controller
-  binding a rename left unresolved (`PASS`/`CLASSIFY`) — the whole reactive family included (`ShapeChanger`,
-  `ObjectToggle`, `MaterialSetter`/`Swap`, `MeshDeleter`, `BlendshapeSync`, `BoneProxy`). The usual cause is
+  on the placed avatar (contract in `unity-tools.md`): against the placed scene it names every MA scene
+  ref and clip/controller binding a rename left unresolved. The usual cause is
   a **renamed seam**: `own-base` may rename the primary body mesh (recommended `Body_Base`; vendors ship `Body_base`).
   CheckAvatar classifies and names; you route (a deliberately-null toggle target or a portability-redundant
   path where several point at one object is a legitimate non-offender — judge, don't blindly repath):
@@ -187,6 +179,22 @@ the geometry-path compose is done. A gimmick module has neither:
    explicitly **OPEN**, whose RunLog records the census ran; and
 2. the **named runtime-owned residue** — every edge an always-on FX layer drives from an expression
    parameter.
+
+**This delegation is the step that gets skipped.** Every recorded skip substituted a cheaper
+edit-time read and rationalized it; two shipped defects. A justification matching a row below is
+wrong for the stated reason — run the map:
+
+| Rationalization | Why it fails |
+|---|---|
+| "No `ShapeChanger`, zero edit-time weights — no coupling" | Weight-0 under FX drive is the exact invisible case; "no coupling" is a conclusion only after the FX read also comes up empty, and that read is the map's. |
+| "The render will catch a collapsed region" | NDMF preview resolves the driven state into the render — it shows fine while masking the residue. |
+| "It matches the base's parameter default — leave it worn" | A worn-but-undeclared shape resolves declared-or-zero, never from a default or a render. |
+| "Proportionate for a non-shipped / trivial compose" | The recorded defects shipped on exactly such composes; non-shipping changes nothing the map checks. |
+
+**Claiming the read is not running it.** The compose checkpoint names the `ReportShapeOverlap`
+RunLog path and the named-residue list — or carries the literal line `MAP SKIPPED: <reason>`,
+always the operator's to see, never silent. A checkpoint with neither is an unfinished compose.
+A genuine deviation takes the form in `workflow.md` §Deviating from a mandated step.
 
 **What this skill does with them.** `map-outfit-shapes` commits the statics on unowned edges; what comes
 back here is what it could not. Runtime-owned residue forks on what the runtime edge *targets*:
@@ -313,14 +321,10 @@ Reach for these by role; open each to learn its exact entry point.
   broken reference, disable or delete a conflicting mesh, set a static blendshape weight. Raw MA component edits via
   `SerializedObject`; no dedicated compose tool exists (and none is warranted — this is judgment, not
   mechanics).
-- **`RenderAvatar`** (agent-tools, via `execute_code`) — drives the Scene View to render **one** avatar
-  in isolation, headlight-lit, **NDMF preview-resolved** (reactive fit applied), from named axis angles
-  to a temp contact-sheet PNG. An **operator-facing** resolved-fit look (step 6) — not a
-  baked-upload proof and not an agent fit verdict (`verify.md`); fit is gated mechanically (`CheckSeam`).
-  Grab in a separate call from any edit — a same-call edit either settles in-call or the grab FAILs
-  transiently (re-grab), never a silent stale sheet; OK carries `gate=armed` (rendered-current) or
-  `gate=exempt` (nothing to certify). Its `CaptureDiff` differential door is `map-outfit-shapes`' to
-  drive, not this skill's (`unity-tools.md`).
+- **`RenderAvatar`** (agent-tools, via `execute_code`) — the operator-facing resolved-fit look for
+  step 6; contract and freshness rules in `unity-tools.md`. Never an agent fit verdict (`verify.md`) —
+  fit is `CheckSeam`'s. Its `CaptureDiff` differential door is `map-outfit-shapes`' to drive, not this
+  skill's.
 - **avatarprep `report_stamps`** (Blender, via MCP or `cli/report_stamps.py`) — the baked-morph read in
   step 5, and also step 3's provenance routing: the same call returns each armature's `avatarprep_base`/
   `avatarprep_state` pair alongside the bound-mesh `avatarprep_baked` map grouped **under its owning
@@ -333,6 +337,5 @@ Reach for these by role; open each to learn its exact entry point.
 - **`ReportGimmick`** (agent-tools, via `execute_code`) — the gimmick-module integrity read at step 3:
   subtree topology (receivers, PB chains, constraint rigs, params) to diff a placed module against its
   standalone shape. Inspection-only.
-- **`CheckSeam`** (agent-tools, via `execute_code`) — the step-3 mechanical fit gate:
-  `Check(baseRoot, mergeableRoot)` reflects the MA/VRCFury seam mapping and gates world-space coincidence
-  of weighted humanoid bones → PASS / NOT-PASS / REFUSE, before any render; inspection-only.
+- **`CheckSeam`** (agent-tools, via `execute_code`) — the step-3 mechanical fit gate; contract in
+  `unity-tools.md`.

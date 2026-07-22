@@ -11,11 +11,7 @@ model this skill executes (where menus live, control vocabulary, defaults, subst
 **Read it first.** The output is authoring components on the in-scene avatar; everything
 compiles to FX/menu/params on the build clone.
 
-**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
-dispatched worker or background job still **has a channel** — the dispatcher — so surface the
-gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
-with no channel at all do you take the derivable defaults, and even then the disclosure leads the
-report — every undecided call flagged at the top, never a silently minted convention.
+**No operator to ask?** Follow the no-operator protocol (`workflow.md`).
 
 ## Scope — what this owns, and where it routes out
 
@@ -73,7 +69,10 @@ shape can skip re-confirmation for additions that match it.
 
 A toggle is a dependency closure (`menus.md`): which body shapes the garment drives, resolved in
 authority order, is exactly the `map-outfit-shapes` read — produce or reuse that map rather than
-re-deriving the edges here. Unresolvable edges go in the plan as open questions, not guesses.
+re-deriving the edges here. Re-deriving "no coupling" from zero edit-time weights or absent
+reactions is the recorded failure mode — weight-0 under FX drive reads as absence
+(`compose-mergeable` step 4's rationalization table); the map, or an existing map artifact, is
+the only admissible source. Unresolvable edges go in the plan as open questions, not guesses.
 Duplicated blendshape names across meshes are driven in lockstep; whole-outfit edges attach to the
 outfit root's node, not a piece toggle.
 

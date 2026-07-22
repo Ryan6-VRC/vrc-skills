@@ -13,12 +13,7 @@ menu is only the visible face — so a partial take is surgery with a defect che
 in-scene strip. Any edit to a vendor gimmick's controller/params enters here first (the
 `own-material` pattern: materialize the owned copy, then change it).
 
-**No operator to ask?** A gate you can't put to an operator is expected, not a blocker. A
-dispatched worker or background job still **has a channel** — the dispatcher — so surface the
-gate by ending the turn with `needs input:` and wait; a background job is not "no operator." Only
-with no channel at all do you take the derivable defaults, and even then the disclosure leads the
-report — every undecided call flagged at the top, never a silently minted convention (folder or
-category placement especially).
+**No operator to ask?** Follow the no-operator protocol (`workflow.md`).
 
 ## Scope — what this owns, and the boundary
 
@@ -41,8 +36,8 @@ whole**) — any cut, trim, or param surgery on that controller is this skill.
   controller copies and orphan sub-asset graveyards.
 - **Capture the pre-cut baseline now**: one bake read (`verify.md` — play entry is the bake) of
   param count, true synced-bit total, and layer provenance. Phase 2's proof is a diff against
-  this; without it the "only the intended cut moved" claim costs a git-stash round-trip and an
-  extra minutes-long play entry.
+  this — no baseline, no cut: a checkpoint that can't name the baseline read is an unfinished
+  surgery, not a cost call to skip.
 - Operator gates: **which subsystem** (by observed behavior, mapped to the layers/params/rig that
   produce it); **trim-whole vs extract-part**; **seam target** (mixed MA-anchor/VRCF-behavior
   ruling: `gimmicks.md` §Packaging).
