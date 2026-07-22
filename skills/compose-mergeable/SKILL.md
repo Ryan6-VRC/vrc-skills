@@ -178,7 +178,7 @@ named `Body`**, and reads **weight 0 at edit time** — invisible to any scan yo
 which garments are overlapped, ruling on each shape, and gathering the evidence for a contested keep is
 `map-outfit-shapes`' domain, not this skill's.
 
-So whenever this step disables base clothing, **delegate to `map-outfit-shapes`, scoped to the composed
+So whenever this step disables or deletes base clothing, **delegate to `map-outfit-shapes`, scoped to the composed
 outfit and the base clothing layers it could replace** (the full-avatar map stays opt-in) — naming which
 of those are actually overlapped is map's call, not this step's — and require two artifacts back before
 the geometry-path compose is done. A gimmick module has neither:
@@ -189,23 +189,37 @@ the geometry-path compose is done. A gimmick module has neither:
    parameter.
 
 **What this skill does with them.** `map-outfit-shapes` commits the statics on unowned edges; what comes
-back here is what it could not. **Runtime-owned residue is
-residue this skill must not fix**: what ships there is the **parameter default**, so a static disable is
-edit-time cosmetics invisible to every gate and render — the default flip is `author-menu`'s, FX-layer
-surgery `own-gimmick`'s. Name it in the checkpoint (params, meshes, shapes, off values) with the line
-**the compose is not runtime-wearable until the routed follow-up lands**, and carry every OPEN call
-across with its evidence, for the operator or the play-mode build. Never a derivable default: with no
-operator channel, name it and stop.
+back here is what it could not. Runtime-owned residue forks on what the runtime edge *targets*:
+
+- **Targets the overlapped garment itself** (a toggle that re-enables the mesh, shapes on the garment) —
+  the **sanctioned delete** below resolves it structurally: a deleted GameObject has nothing for the FX
+  to re-enable, and its bindings become silent runtime no-ops.
+- **Targets a surviving mesh** (the body-shape coupling under the removed garment) — **residue this
+  skill must not fix**: what ships there is the **parameter default**, so a static disable is edit-time
+  cosmetics invisible to every gate and render — the default flip is `author-menu`'s, FX-layer surgery
+  `own-gimmick`'s. Name it in the checkpoint (params, meshes, shapes, off values) with the line **the
+  compose is not runtime-wearable until the routed follow-up lands**, and carry every OPEN call across
+  with its evidence, for the operator or the play-mode build. Never a derivable default: with no
+  operator channel, name it and stop.
 
 - **Prefer the kisekae (undressed) base variant.** Many vendors ship a dedicated `<Name>_kisekae`
   prefab — body + underwear, no costume — beside the regular clothed base (`<Name>.prefab`); compose
   onto that and there is little to strip (`outfits.md`). If the vendor ships only a clothed base (or
   only shader variants of it), strip it here. A base locked in a complete *fixed* outfit with no
   toggle surface is the refuse case — ask for the kisekae variant.
-- **An operator-sanctioned delete needs an unpack first.** De-conflict disables rather than deletes, but
-  a sanctioned delete (a gimmick-subtree strip, a dangling menu item) requires **unpacking** the vendor
-  prefab instance in-scene — a packed instance no-ops structural deletes (`unity.md`). That is safe: the
-  build unpacks a clone regardless and the vendor asset on disk stays byte-identical.
+- **Disable by default; delete where the FX can undo a disable.** A garment the map names overlapped
+  *and* a runtime edge re-enables (the garment-targeting residue above) cannot be held off by a static
+  disable — **delete its GameObject on the packed instance**, flagged to the operator like any contested
+  call. Deleting a child of a packed prefab instance works and is **revertible**: Unity records it as a
+  removed-GameObject override (the Overrides dropdown, or
+  `PrefabUtility.GetRemovedGameObjects()[i].Revert()`), and the vendor asset on disk stays byte-identical
+  — no unpack; the reparent no-op (`unity.md`) does not extend to deletes. Delete only meshes the map
+  named, and record every removal in the checkpoint.
+- **Report the FX the deletions strand.** A removed mesh's bindings are silent runtime no-ops — harmless,
+  but dead weight the operator should know about. After deleting, run `CheckAvatar` + `ReportController`
+  and name the now-useless FX sections: layers whose every binding targeted a removed mesh, params
+  driving only those layers, and the menu controls behind them. Informational only — controller cleanup
+  is `own-gimmick`'s surgery, a parameter-default flip `author-menu`'s.
 - **Partial use of a module carrying `MergeAnimators`:** stripping its menu leaves the merged layers'
   **default-active params** free to re-enable the meshes you just disabled at runtime (invisible to
   every gate). Don't need the merged controller? Remove it with the menu. Need part of it? That's an
@@ -296,7 +310,7 @@ the firing counterpart to the outfit's clipping look, not a gate here.
 Reach for these by role; open each to learn its exact entry point.
 
 - **Unity MCP `execute_code`** — all in-scene work: drop the prefab, read the seam/scene-refs, repath a
-  broken reference, disable a conflicting mesh, set a static blendshape weight. Raw MA component edits via
+  broken reference, disable or delete a conflicting mesh, set a static blendshape weight. Raw MA component edits via
   `SerializedObject`; no dedicated compose tool exists (and none is warranted — this is judgment, not
   mechanics).
 - **`RenderAvatar`** (agent-tools, via `execute_code`) — drives the Scene View to render **one** avatar
