@@ -30,7 +30,7 @@ If that and the mesh/material names come up thin, look with `RenderAvatar` — *
 
 Vendors scatter expressions across several FX layers and ship suffixed variants (`Open_1/_2/_3`), so read the whole controller, not the first layer. **The tool holds no opinion about what an expression is** — the filtering is yours; only you can tell `Peace` from `Shirt`.
 
-**Poses:** pass a bare **token**, not a clip path — the tool owns the vocabulary. You need not know it: any unrecognized token fails with the current bundled set listed, so a throwaway guess is how you read the list. Matching ignores case and punctuation — but not a dropped letter.
+**Poses:** pass a bare **token**, not a clip path — the tool owns the vocabulary (the `RTPose_*.anim` glob in the avatar-tools `Editor/Poses/`, so it drifts as files are added). **To see the current set, don't read source** — a `RenderThumbnail.Render(target, pose: "?", whatIf: true)` resolves the pose before any bake and fails fast listing every bundled name, free. That junk-token whatIf is the list; run it once up front to shortlist against. Matching ignores case and punctuation — but not a dropped letter.
 
 ## Pass the state name
 
