@@ -16,7 +16,11 @@ and its gates only.
 
 ## The sequence
 
-**Clone or intent?** Settle this first — it changes how every step below runs. Proven precedent,
+**Clone or intent?** Settle this first — it changes how every step below runs. **Either way, scan
+the `vrc-patterns` catalog before building.** A full match makes it a clone; short of that,
+adjacent entries still carry precedent to lift — how a similar mechanism organizes its states,
+names its params, shapes its contacts — the narrow convention that never rose into `gimmicks.md`.
+A from-intent build starts from what the scan surfaces, not from scratch. Full-clone precedent,
 when it exists, comes in this order of authority: a `vrc-patterns` module → a routed ancestry
 asset (`references/README.md`) → a measured example off a working avatar or the mechanisms survey.
 **Cloning a known mechanism** (the common case): confirm it against that source *before* step 1 —
