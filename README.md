@@ -21,4 +21,4 @@ The skills are rostered in the meta-repo `README.md` (`## Skills` section); each
 
 New skills drop into `skills/<name>/SKILL.md` and are auto-discovered by the plugin — no registration here. The meta-repo `README.md` (`## Skills`) still needs the skill's row (the meta-repo pre-commit hook verifies the key exists).
 
-Skills with **ask-the-operator gates** carry a canonical no-operator block verbatim — what a dispatched or headless worker does when there's no one to ask. Copy it from any gated skill (e.g. `compose-mergeable`) so the wording stays identical across skills.
+Skills with **ask-the-operator gates** carry the one-line no-operator pointer to the protocol in `workflow.md`, wording kept identical across skills — the validator's `required_no_operator_pointer` constant (`CONVENTIONS.md`) checks each body carries it.

@@ -11,6 +11,8 @@ The last mile: a composed avatar from "works in play mode" to live on VRChat —
 
 **The agent pulls the trigger.** No human clicks the upload button — the skill calls `UploadAvatar` programmatically. So the operator's explicit go *is* the button. That shapes the whole flow: the ask that starts a session authorizes *readiness*, never execution; execution needs its own distinct word (step 4). Getting this wrong publishes something the operator never approved.
 
+**No operator to ask?** The no-operator protocol (`workflow.md`); an irreversible publish has no derivable default, so run every readiness step (`whatIf`) and then stop at the execution gate and report — never upload unattended.
+
 **Public-repo hygiene (firm).** No `blueprintId` and no account identifier lands in anything tracked — tool output, RunLogs, this SKILL, commits. The tool redacts IDs from its own output and keys rows by substrate handle (scene / prefab path) and `state` (`first-upload`/`update`), never the ID; don't reintroduce one when you relay a report.
 
 ## The flow
