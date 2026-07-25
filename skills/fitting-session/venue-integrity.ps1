@@ -2,10 +2,10 @@
   venue-integrity.ps1 — grade what a fitting-session worker changed on disk.
 
   The venue (the Unity avatar project a worker is turned loose in) is an UNTRACKED working folder,
-  not a git repo (see AvatarProject/Sandbox git policy) — `git diff`/`git restore` silently report
-  "clean" against it and detect nothing. This tool replaces that grading step with a filesystem
-  walk: snapshot before, diff after. There is no revert; the venue is disposable and just
-  accumulates. Pure filesystem — no Unity, no MCP, no git.
+  not a git repo — `git diff`/`git restore` silently report "clean" against it and detect nothing.
+  This tool replaces that grading step with a filesystem walk: snapshot before, diff after. There
+  is no revert; the venue is disposable and just accumulates. Pure filesystem — no Unity, no MCP,
+  no git.
 
   Scope (deliberately kept out of the calling skill, not a caller-supplied parameter):
     include  <venue>/Assets/**                    + the single file <venue>/Packages/vpm-manifest.json
