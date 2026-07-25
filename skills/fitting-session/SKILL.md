@@ -19,7 +19,7 @@ The vendor library root comes from `CLAUDE.local.md` (machine-local). It is **re
 
 ## The assay record
 
-Everything durable lives in the Atelier root's `docs/assay/` (gitignored — create the directory and seed an empty ledger if missing; being untracked, it needs no worktree to write):
+Everything durable lives in the Atelier root's `docs/local/assay/` (gitignored — create the directory and seed an empty ledger if missing; being untracked, it needs no worktree to write):
 
 - `LEDGER.md` — cross-run state. It opens with a **run registry** — one line per run, `run-N — <project> — <date>`; claim your N by appending your line before any dispatch, so concurrent sessions never share a number and a bare `run-N` in any status routes to its report and project. A run may instead **adopt an interrupted predecessor** — reuse its N and report rather than claim a fresh one, note the adoption, and resample its unexecuted frontier under Phase 1's fresh-sample rule. Below that, one row per **capability claim**, keyed
   `arc | claim | asset-class`. The class is the key; what a row *records* depends on the
@@ -61,7 +61,7 @@ Strictly serial for anything that touches the Unity Editor — concurrent editin
 
 Give the worker one more standing instruction: **stop and ask on any operator gate** rather than guessing. Both read as ordinary operator requests — the worker is still told nothing about being graded, nor anything else about the harness.
 
-A task that produces a written artifact gets a drop-path **outside `docs/assay/`**: a worker who can read the run reports there can absorb a prior verdict, contaminating the independent-grade premise.
+A task that produces a written artifact gets a drop-path **outside `docs/local/assay/`**: a worker who can read the run reports there can absorb a prior verdict, contaminating the independent-grade premise.
 
 **Operator-proxy.** The workshop's skills contain first-class *ask-the-operator* gates, but a dispatched worker has no operator — so the fitter is the proxy. When the worker stops on a gate, answer in the operator's voice via agent-resume: from the queue's pre-authored script if the gate was expected, otherwise a sane default plus a log line. Settle one thing at launch: the gates **no tool or same-tier grader can settle** — fit, clipping, the vision calls the grade step bars — either escalate to a live operator, or in a **fully autonomous** run you answer them yourself; such a call stands as the run's ground truth, not because it's verified but because nothing same-tier can falsify it (so the grade step can't fail a worker who proceeded on it). Do **not** pre-resolve gates inside the opening prompt — that makes the worker skip the gate's *other* checks and hides whether it would have asked at all. The asking is itself under test: a skipped gate and a gate-question the docs already answer are both findings (grade below). The general skills-side rule for a worker with no ask channel is the no-operator protocol in `workflow.md` that each gated skill cites; this is only the fitting-session harness half, and the two must agree.
 
@@ -87,7 +87,7 @@ Two filters gate a finding into a kickoff. **The bar:** a worker who complains b
 Then produce three artifacts:
 
 - Finish the run report: predictions vs outcomes, updated ledger, and each finding with its evidence pointers — task id, RunLog, and a **backing anchor** (a distinctive verbatim phrase from the transcript that recorded it) so the row routes a later agent to the moment, not a re-description it would re-derive.
-- Distill the findings into kickoff blocks appended to the Atelier root's `kickoffs.md`, authored with the **kickoff** + **lapidary** skills — each scoped to one future session, each citing the finding IDs it closes, each recorded in the ledger row it should flip.
+- Distill the findings into kickoff blocks appended to the Atelier root's `docs/local/kickoffs.md`, authored with the **kickoff** + **lapidary** skills — each scoped to one future session, each citing the finding IDs it closes, each recorded in the ledger row it should flip.
 - Leave the run's surviving avatars standing side by side in **one saved review scene**, so the operator's end-of-run check is a single eyeball pass over everything the session built. Vision-illegible passes (a controller graph, a shape map) get no stand-in; only avatars that should *look* right belong there. Pair the scene with an **operator handoff**: per surviving avatar, a line on what was done and what to check or test and how ("enter play mode and drive the Hair Color radial").
 
 Do not fix anything yourself mid-run — a fitting session measures; the kickoffs fix. The one exception is operator-sanctioned: a run-*stopping* tool bug the operator explicitly rules on may be fixed mid-run (its own worktree, a normal PR), recorded as a run-report addendum — and even then the ledger row flips only on verified evidence once the fix lands, never on the fix alone.
