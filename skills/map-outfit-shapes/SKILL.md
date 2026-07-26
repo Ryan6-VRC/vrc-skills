@@ -41,6 +41,8 @@ Identify the body-morph mesh(es) — the ones carrying the coupling cage (`Shrin
 
 Follow the base-coupling authority order (`outfits.md` §The FX controller), reading each tier with its tool: **FX clips** (`ReportController` / `ReportClip`) over **MA/VRCFury reactions** on the composed pieces (`AgentInspector`) over **naming** (a hint, never acted on alone) over **asking the user** (first-class when the graph is silent — a garment with no declared coupling has none until confirmed; don't invent one).
 
+**Read the whole binding table, not the `blendShape.*` rows.** A base's size-radial clip commonly carries stepped `m_IsActive`/`m_Enabled` curves over sibling physbone variants alongside its continuous shape curves (`outfits.md`) — filter to shapes and the edge is silently half-mapped, because the dynamics half releases on the same parameter.
+
 **Reading a `ShapeChanger` raw** (`AgentInspector` / SerializedProperty): its `ShapeChangeType` prints as an enum index — **Delete=0, Set=1** — so a bare `enum[0]` is *Delete* (geometry deletion), the more consequential mode, not the harmless-looking default. Resolve the name before acting on it.
 
 **Vision is a check, not a source.** If the graph and the user leave an edge open, `RenderAvatar` confirms it only by **before/after comparison** — the shape worn vs. zeroed, the mesh on vs. off; read the *difference*, never a single capture. Vision confirms a hypothesis, it doesn't originate one.

@@ -94,6 +94,8 @@ The CopyComponents run and **all** Relocate calls must complete **before** prefa
 
 Final cleanup: produce a **clean FX** (the **CleanController** tool). It keeps only the layers you name in `keepLayerNames`; keep the layers that are the base body's **identity** — the Left/Right Hand gesture layers and the facial/expression layers they drive — and drop the outfit/visibility toggle layers, **judging each layer by what it animates, not by its index** (vendors stack toggles below the gesture layers *or* after them; base layer 0 is always kept). The tool FAILs loud if a named layer is absent or ambiguous. If the head mesh was renamed, the kept facial layers' clips bind it by its old name and stay **inert** — repath them with the **UC2** clip phase (`OwnControllerClips → RepathClips`, `animator.md`), here or deferred to compose where `CheckAvatar` surfaces the break; note it, don't block. Empty expression parameters + menu, wired into the descriptor.
 
+**A clean FX is a blank slate, not a filter** — a dropped layer leaves independent statics wherever it was the only thing holding values in agreement, and the vendor FX (still on disk) stays the map for reconstructing any you still need. What a body-morph layer holds together, and how to bake one down instead of stranding it, is `outfits.md` §The FX controller.
+
 ## Tools
 
 Reach for these by role; open the tool to learn its exact entry point.
