@@ -11,7 +11,9 @@ Coverage means **breadth**, not a single success. A tool that passed on one outf
 
 ## Parameters and venue
 
-At launch: a **task budget** (default ~10 *dispatches* — a batch is one dispatch no matter how many assets it carries, so ~10 dispatches should exercise far more than 10 assets) and the Unity project the session was started in. The whole envelope is in scope every run — geometry, behavior, and the handoffs between them; an operator-suggested focus in the prompt weights the sample, nothing more. Two sessions may run concurrently only in **different projects** — and even then they share state: re-read `LEDGER.md` before each write and edit only rows your own run touched, and treat physical singletons (Blender, each Editor) as claimed by operator coordination rather than grabbed on sight.
+At launch: a **task budget** (default ~10 *dispatches* — a batch is one dispatch no matter how many assets it carries, so ~10 dispatches should exercise far more than 10 assets) and the Unity project the session was started in. The whole envelope is in scope every run — geometry, behavior, and the handoffs between them; an operator-suggested focus in the prompt weights the sample, nothing more.
+
+Two sessions may run concurrently only in **different projects**, and **overlap between them is fine — don't build lane separation to avoid it.** Two runs drawing the same arc land on different vendors and assets, because the corpus is varied enough that the asset, not the arc, is what a draw really selects; coverage compounds rather than duplicating. What they genuinely share is the register: re-read `LEDGER.md` before each write, and where a sibling may have touched the same row, merge its note instead of overwriting and let the later date stand. Physical singletons (Blender, each Editor) are claimed by operator coordination rather than grabbed on sight.
 
 Behavior arcs (controller round-trips, gimmick and menu authoring, emulator verification per `verify.md`) need vendor assets already **imported**, not composed: a shipped vendor FX is itself a round-trip/rebuild target, and a simple compose done as the task's setup is a test in its own right. When the project starts empty, run the corpus-building imports as graded setup tasks in their own right, not a silent pre-step.
 
@@ -19,10 +21,10 @@ The vendor library root comes from `CLAUDE.local.md` (machine-local). It is **re
 
 ## The assay record
 
-Two files, both under the Atelier root's `docs/local/assay/` (gitignored — seed either if missing; untracked, so neither needs a worktree to write):
+Two files under the Atelier root's `docs/local/assay/` (gitignored — seed either if missing; untracked, so neither needs a worktree to write):
 
 - **`LEDGER.md`** — the register: one row per capability claim, keyed `arc | claim | asset-class`, carrying the date that arc was last exercised and **one line** on what is known thin or fragile there. It is a live view of where the workshop is weak, never a history: a **fragile** note is deleted when a run re-tests it clean, while a **thin** note is a degree rather than a defect — re-narrow it to what breadth still lacks, and delete it only when it lacks nothing. Its header states the column contract; read it before writing, and keep keys stable so a later fitter recognizes its predecessor's rows.
-- **`repairs.md`** — the fix queue. Append **as you go**, never at the end: this is what survives an interrupted run. The task queue does not — a successor re-derives it from Phase 1. Its header states what belongs there and how dispatch drains it.
+- **`repairs-<project>.md`** — the fix queue, one file per Unity project so two runs never write the same one. A bare list, one line each: `- **<repo>** · <where the fix lands> — <the defect, one line>. <date> · anchor: "<phrase>"`. Append **as you go**, never at the end: this is what survives an interrupted run, where the task queue does not — a successor re-derives that from Phase 1. Phase 3 rules on what belongs; `dispatch` drains every such file and owns what happens then.
 
 **A run writes no report, by design.** Its narrative already lives in the session transcript, which is durable and greppable — so every finding records a **backing anchor** instead, a distinctive verbatim phrase from the transcript that recorded it, and a later agent greps the session store rather than reading someone's re-description of it.
 

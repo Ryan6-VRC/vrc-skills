@@ -6,7 +6,7 @@
     {
       "name": "vrc-skills",
       "description": "Reusable skills for the VRChat avatar/outfit workflow.",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "source": "./",
       "author": { "name": "Ryan6-VRC", "email": "236273965+Ryan6-VRC@users.noreply.github.com" }
     }
