@@ -62,7 +62,7 @@ Strictly serial for anything that touches the Unity Editor — concurrent editin
 > skills that said something untrue or unhelpful, workarounds you resorted to, and anything about
 > this asset that surprised you.
 
-Give the worker one more standing instruction: **stop and ask on any operator gate** rather than guessing — except on a **batch** dispatch, where the gate instruction becomes *queue, never default*: work not depending on the answer proceeds, work that does depend on it is left undone and named in the block — never completed on a guess — and every gate question surfaces in one `needs input:` block at return. Never phrase a batch prompt to override the gates — "note it and move on rather than stalling" reads as license to default them. Both read as ordinary operator requests — the worker is still told nothing about being graded, nor anything else about the harness.
+Give the worker one more standing instruction: **stop and ask on any operator gate** rather than guessing — except on a **batch** dispatch, where it becomes *queue, never default* (`workflow.md` owns both forms, and the warning that a "note it and move on" phrasing reads as license to default the gates). Both read as ordinary operator requests — the worker is still told nothing about being graded, nor anything else about the harness.
 
 A task that produces a written artifact gets a drop-path **outside `docs/local/assay/`**: a worker who reads the register absorbs its verdicts and its fragility hypotheses, and the repair queue names defects by tool — either contaminates the independent-grade premise.
 
