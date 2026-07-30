@@ -56,13 +56,13 @@ Each entry: asset, arc, the worker prompt, an assigned **tier**, a `mutating | r
 
 Strictly serial for anything that touches the Unity Editor — concurrent editing churns NDMF rebuilds and poisons `RenderAvatar`. Graph-only, Blender-headless, or doc-reading work may overlap.
 
-**Dispatch.** Worker on the tier the queue entry assigned (below). The prompt is a natural operator request, phrased as the repo's owner would ask it, and it names the venue: build in the run's one shared scene, placing the avatar in the row/grid beside the others — never a fresh scene per task (real scenes hold multiple avatars, and the end-of-run eyeball is one pass). It ends with one standing instruction:
+**Dispatch.** Worker on the tier the queue entry assigned (below). The prompt is a natural operator request, phrased as the repo's owner would ask it, and for any task that builds or places an avatar it names the venue: build in the run's one shared scene — the same scene Phase 3 leaves saved as the review scene — placing the avatar in the row/grid beside the others, never a fresh scene per task (real scenes hold multiple avatars, and the end-of-run eyeball is one pass). It ends with one standing instruction:
 
 > When done, end with a FRICTION REPORT: tools that misbehaved or refused unexpectedly, docs or
 > skills that said something untrue or unhelpful, workarounds you resorted to, and anything about
 > this asset that surprised you.
 
-Give the worker one more standing instruction: **stop and ask on any operator gate** rather than guessing — except on a **batch** dispatch, where the gate instruction becomes *queue, never default*: work not depending on the answer proceeds, and every gate question surfaces in one `needs input:` block at return. Never phrase a batch prompt to override the gates — "note it and move on rather than stalling" reads as license to default them. Both read as ordinary operator requests — the worker is still told nothing about being graded, nor anything else about the harness.
+Give the worker one more standing instruction: **stop and ask on any operator gate** rather than guessing — except on a **batch** dispatch, where the gate instruction becomes *queue, never default*: work not depending on the answer proceeds, work that does depend on it is left undone and named in the block — never completed on a guess — and every gate question surfaces in one `needs input:` block at return. Never phrase a batch prompt to override the gates — "note it and move on rather than stalling" reads as license to default them. Both read as ordinary operator requests — the worker is still told nothing about being graded, nor anything else about the harness.
 
 A task that produces a written artifact gets a drop-path **outside `docs/local/assay/`**: a worker who reads the register absorbs its verdicts and its fragility hypotheses, and the repair queue names defects by tool — either contaminates the independent-grade premise.
 
@@ -90,6 +90,6 @@ Two filters gate a finding into either destination. **The bar:** a worker who co
 Then close the run:
 
 - **Reconcile the register.** Clear or re-narrow every note the run tested, add the new ones, and date each row it exercised.
-- **Leave the run's surviving avatars standing side by side in one saved review scene**, so the operator's end-of-run check is a single eyeball pass over everything the session built. Vision-illegible passes (a controller graph, a shape map) get no stand-in; only avatars that should *look* right belong there. Pair the scene with an **operator handoff**: per surviving avatar, a line on what was done and what to check or test and how ("enter play mode and drive the Hair Color radial").
+- **Save the run's shared scene as the review scene**, the surviving avatars standing side by side, so the operator's end-of-run check is a single eyeball pass over everything the session built. Vision-illegible passes (a controller graph, a shape map) get no stand-in; only avatars that should *look* right belong there — clear anything else from the scene before saving. Pair the scene with an **operator handoff**: per surviving avatar, a line on what was done and what to check or test and how ("enter play mode and drive the Hair Color radial").
 
 Do not fix anything yourself mid-run — a fitting session measures; the queue fixes. The one exception is operator-sanctioned: a run-*stopping* tool bug the operator explicitly rules on may be fixed mid-run (its own worktree, a normal PR) — and even then the register's note clears only on verified evidence once the fix lands, never on the fix alone.
