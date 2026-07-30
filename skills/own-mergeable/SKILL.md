@@ -23,7 +23,7 @@ In scope: own an **operator-designated geometry subset** as a standalone mergeab
 
 ## Phase 0 — Graph & decide
 
-Inventory the source (`ReportPackage` on its vendor folder — the same read-only graph `own-base` Phase 1 works from; its per-FBX mesh inventory and MA/VRCFury detection carry over, the head/body/superset questions don't). As in `own-base`, `import-vendor-asset`'s `CheckPackage` PASS is this phase's precondition — re-run it if health isn't already known-good. Then **surface these to the operator** — each decides a later branch:
+Inventory the source (`ReportPackage` on its vendor folder — the same read-only graph `own-base` Phase 1 works from; its per-FBX mesh inventory carries over and the head/body/superset questions don't). Framework presence reads off **`nonSdkNs=`**, a verbatim namespace census that names no framework and claims no support — an entry means *go read that prefab*; a nonzero `unresolvedScripts=` means the census is incomplete, so resolve those before concluding a package is framework-free. As in `own-base`, `import-vendor-asset`'s `CheckPackage` PASS is this phase's precondition — re-run it if health isn't already known-good. Then **surface these to the operator** — each decides a later branch:
 
 - **The subset** — which meshes become this mergeable. A standalone vendor mergeable is all of it; a monolithic avatar is the operator's pick.
 - **Dynamics layout** — physbones/colliders on the armature bones (→ `CopyComponents`) or grouped in organizational holder GOs like `PB/…`, `Collider/…` (→ `GraftHierarchy`). This picks the transplant tool.

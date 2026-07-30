@@ -102,7 +102,7 @@ The venue is the **active scene**, lit by its own lights — not a generated one
 
 **Serialize the calls** — the bake and play entry both drive global editor state, and the tool refuses a second session or an overlapping `Shoot` outright. Never two at once, never parallelized across subagents.
 
-**A render that times out has probably wedged the editor on a modal dialog**, not hung: the bake runs the full SDK chain, and VRCFury prompts per build on an avatar with a broken Write Defaults mix. Read it with `tools/unity-dialog.ps1 -List` and press by label; never retry blindly. Don't take an avatar-mutating option (`Auto-Fix`) or a persistent one (`Skip and stop asking`) on the operator's behalf — the prompt is reporting a real defect that is theirs to decide about.
+**A render that times out has probably wedged the editor on a modal dialog**, not hung: the bake runs the full SDK chain, and VRCFury prompts per build on an avatar with a broken Write Defaults mix. Read it with `unity-dialog.ps1 -List` — it lives in the **Atelier workspace root's** `tools/`, the session cwd, not this repo's — and press by label; never retry blindly. Don't take an avatar-mutating option (`Auto-Fix`) or a persistent one (`Skip and stop asking`) on the operator's behalf — the prompt is reporting a real defect that is theirs to decide about.
 
 ## Read the verdict
 

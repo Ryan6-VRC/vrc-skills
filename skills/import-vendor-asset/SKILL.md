@@ -9,7 +9,7 @@ Get a vendor package into `AvatarProject` cleanly: untouched under `Assets/Vendo
 
 ## Gates — hard stops, ask the operator
 
-Resolve each **as it comes up** — not every asset hits every gate, and there is no silent default; if the option exists, ask. In a **batch** of imports, a gate you can't resolve queues instead of stalling the batch: work not depending on the answer proceeds, work that does depend on it is left undone and named in the block — never completed on a guess — and every queued question surfaces in one `needs input:` block at the end; still never a silent default.
+Resolve each **as it comes up** — not every asset hits every gate, and there is no silent default; if the option exists, ask. In a **batch** of imports, that becomes *queue, never default* — the batch form of the no-operator protocol (`workflow.md`), which owns it.
 
 **No operator to ask?** Follow the no-operator protocol (`workflow.md`).
 
