@@ -1,6 +1,7 @@
 ---
 name: showcase-record
 description: Use when a work session should be filmed and cut into a short showcase video — "record this demo", "film this take", "make a trailer of the session". ffmpeg screen capture + edit. Not in-scene verification stills → RenderAvatar; the filmed avatar task itself runs normally under its own skill.
+disable-model-invocation: true
 ---
 
 # Showcase-record

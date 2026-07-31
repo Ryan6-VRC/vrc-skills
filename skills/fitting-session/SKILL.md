@@ -1,6 +1,7 @@
 ---
 name: fitting-session
 description: Use ONLY when the operator explicitly asks for this exercise — a fitting session, a wear-test or QA sweep of the workshop itself — dispatching worker agents across many tasks to find where our tools, docs, and skills chafe, ending in a queue of fixes and, where a capability is genuinely missing, kickoffs. It is meta-work on the workshop, never avatar work itself. Importing, composing, owning, fitting, or reproportioning assets, however many, is that task's own skill. Measuring one skill is skill-assay.
+disable-model-invocation: true
 ---
 
 # Fitting session — wear-test the workshop on real vendor work
