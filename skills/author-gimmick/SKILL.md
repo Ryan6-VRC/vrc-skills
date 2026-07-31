@@ -1,11 +1,11 @@
 ---
 name: author-gimmick
-description: Use when building a NEW gimmick from intent — "make it react when someone touches the tail", "a prop I can drop in the world", "a pettable head", "sync this state to everyone" — anything wiring contacts, physbone grabs, constraints, or synced params into interactive behavior, including a new gimmick cloned from a pattern or another avatar's idea. Not starting from an existing module you'll keep — cutting/trimming one is own-gimmick; not composing a ready-made gimmick module (compose-mergeable); not menu controls alone (author-menu).
+description: Use when building a NEW gimmick from intent — "make it react when someone touches the tail", "a prop I can drop in the world", "a pettable head", "sync this state to everyone" — or when authoring a new `vrc-patterns` library entry ("add a pattern", "write this up as an entry"). Covers anything wiring contacts, physbone grabs, constraints, or synced params into interactive behavior, including a new gimmick cloned from a pattern or another avatar's idea. Not starting from an existing module you'll keep — cutting/trimming one is own-gimmick; not composing a ready-made gimmick module (compose-mergeable); not menu controls alone (author-menu).
 ---
 
 # Author a gimmick
 
-Design and build a new gimmick as one self-contained module: transport design → mode machine → affordances → menu front, authored as recompilable text, verified up the ladder. The *taxonomy* lives elsewhere and is the required reading — `docs/gimmicks.md` (the pattern vocabulary and design rules this skill sequences), `docs/runtime.md` (the physics), `vrc-patterns` (grown module/pattern entries). This skill owns the process and its gates only.
+Design and build a new gimmick as one self-contained module: transport design → mode machine → affordances → menu front, authored as recompilable text, verified up the ladder. The *taxonomy* lives elsewhere and is the required reading — `docs/gimmicks.md` (the pattern vocabulary and design rules this skill sequences), `docs/runtime.md` (the physics), `vrc-patterns` (grown module/pattern entries). This skill owns the process and its gates only. A library entry runs the same sequence with the same gates — `vrc-patterns/CONVENTIONS.md` owns its shape on disk and `tools/gate.ps1` is its admission bar, so read that file before step 1 when the deliverable is an entry.
 
 **No operator to ask?** Follow the no-operator protocol (`workflow.md`).
 
@@ -23,6 +23,8 @@ Against `gimmicks.md` §Choosing a transport + §First principles: what state ex
 
 `gimmicks.md` §State machine patterns and §Packaging own the shapes (banded-int fusion when states are exclusive, off-is-reset, deterministic resume from param values alone). Author as `CompileController` YAML from the start (`animator-schema.md`) — the controller half's source of truth is the document, compiled in, never hand-built graphs decompiled out. A clip whose binding the compiler refuses (`animator-schema.md` §clips) is hand-authored as a human-owned `.anim`, not forced inline or into a hand-built graph — the first-class fork, framed in `animator.md`.
 
+**The layer inventory is an operator gate — present it before you compile anything.** Give the layer count and, per layer, its state count and the one thing a Direct tree cannot express that earns it (memory, dwell, an entry ladder, a parameter driver). `gimmicks.md` §State machine patterns owns that rule; what the operator is signing off is that every layer survives it and that trivial toggles are already folded rather than left for an upload pass. A layer added after this gate re-opens it.
+
 ### 3. Physical affordances
 
 Affordances (grab, touch, gesture-near-contact) are the primary interface — but **never invent affordance geometry from scratch**: clone a proven shape with its constants (the source order above). Cross-base cloning verifies placement in world space (`gimmicks.md` §Contact patterns). Two operator gates live here:
@@ -35,6 +37,8 @@ The **scene half** (receivers, constraint rigs, PB chains, freeze roots) is asse
 ### 4. Menu front
 
 Last, per `gimmicks.md` §Packaging: enable/options/failsafe, menu-parallel-path for every affordance intent, frontless as a valid outcome. The front ships **inside** the module; placing or redirecting it on an avatar is `author-menu`.
+
+**The control layout is an operator gate — present it before authoring the asset.** Give every control with its type, the parameter it drives, and where it sits in the hierarchy, including the frontless verdict when that is the answer. What a wearer wants to reach in one hop is operator knowledge, not derivable from the state table, and a menu rebuilt after the fact drags its parameter names with it.
 
 ### 5. Package & verify
 
