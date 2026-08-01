@@ -2,7 +2,13 @@
 """Lint the skills in this repo against CONVENTIONS.md's anatomy contract.
 
   validate_skills.py            lint every skill directory under skills/
-  validate_skills.py DIR        lint one skill directory
+  validate_skills.py DIR...     lint the named skill directories instead
+
+The contract reaches past this repo: a consuming repo's project skills under its
+`.claude/skills/` are held to the same anatomy (CONVENTIONS.md "The gate"), and
+the workspace's check_prose.py names both enumerations in one invocation. Each
+skill's relative links are bounded by the git repo that skill lives in, not by
+this one.
 
 Mechanical, load-bearing facts are ERRORS: a skill that would not load (missing
 SKILL.md, broken frontmatter, missing name/description, malformed name), a name
@@ -172,11 +178,30 @@ class Findings:
         self._emit('WARN', rel, line, msg)
 
 
-def _display(p):
-    try:
-        return p.relative_to(REPO).as_posix()
-    except ValueError:
-        return p.as_posix()
+def _display(p, home=None):
+    """Path relative to the repo it belongs in — REPO for our own skills, the
+    consuming repo for a project skill. Without the home argument every finding
+    on a project skill prints an absolute machine path, which is now the normal
+    case for a consuming repo's skills rather than a hand-run curiosity."""
+    for base in (home, REPO):
+        if base is not None:
+            try:
+                return p.relative_to(base).as_posix()
+            except ValueError:
+                pass
+    return p.as_posix()
+
+
+def repo_root(d):
+    """The git repo the skill dir lives in — the boundary its relative links may
+    not escape. Deriving this from __file__ instead would call every link in a
+    consuming repo's .claude/skills/ an escape, since that skill's docs are in
+    ITS repo, not ours. A skill under no repo at all is bounded by itself: our
+    REPO is not its containment, and claiming otherwise would be a false error."""
+    for p in (d, *d.parents):
+        if (p / '.git').exists():   # a file in a worktree, a dir in a clone
+            return p
+    return REPO if REPO in (d, *d.parents) else d
 
 
 def parse_frontmatter(lines, out, rel):
@@ -220,11 +245,12 @@ def parse_frontmatter(lines, out, rel):
 
 
 def check_skill(d, consts, out):
+    home = repo_root(d)
     md = d / 'SKILL.md'
     if not md.is_file():
-        out.error(_display(d), None, 'no SKILL.md')
+        out.error(_display(d, home), None, 'no SKILL.md')
         return
-    rel = _display(md)
+    rel = _display(md, home)
     lines = md.read_text(encoding='utf-8').splitlines()
     fields, body_start, desc_line = parse_frontmatter(lines, out, rel)
 
@@ -270,8 +296,12 @@ def check_skill(d, consts, out):
             target = (d / tgt).resolve()
             if not target.exists():
                 out.error(rel, line, f"linked file '{tgt}' does not exist")
-            elif REPO != target and REPO not in target.parents:
-                out.error(rel, line, f"link '{tgt}' resolves outside the repo")
+            elif home != target and home not in target.parents:
+                # Name the boundary by path, not by folder name: in a worktree the
+                # folder is a disposable machine-local name ("atelier-w10") that
+                # tells the reader nothing about which repo is meant.
+                out.error(rel, line, f"link '{tgt}' escapes the repo this skill ships in "
+                                     f"({home.as_posix()})")
 
     # Anatomy warnings. Routing quality (does the description name its adjacent
     # siblings?) and tool-citation adequacy are judgment calls the workspace
@@ -298,18 +328,20 @@ def check_skill(d, consts, out):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Lint skill anatomy against CONVENTIONS.md's contract.")
-    ap.add_argument('skill_dir', nargs='?',
-                    help='one skill directory (default: every directory under skills/)')
+    ap.add_argument('skill_dirs', nargs='*', metavar='DIR',
+                    help='skill directories to lint (default: every directory under skills/)')
     args = ap.parse_args(argv)
     if hasattr(sys.stdout, 'reconfigure'):
         sys.stdout.reconfigure(encoding='utf-8')  # findings quote UTF-8 prose; pipes default to cp1252 on Windows
 
     consts = load_constants()
-    if args.skill_dir:
-        one = Path(args.skill_dir).resolve()
-        if not one.is_dir():
-            raise GateError(f'{one}: not a directory')
-        dirs = [one]
+    if args.skill_dirs:
+        dirs = []
+        for raw in args.skill_dirs:
+            d = Path(raw).resolve()
+            if not d.is_dir():
+                raise GateError(f'{d}: not a directory')
+            dirs.append(d)
     else:
         family = REPO / 'skills'
         if not family.is_dir():
