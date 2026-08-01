@@ -178,22 +178,30 @@ class Findings:
         self._emit('WARN', rel, line, msg)
 
 
-def _display(p):
-    try:
-        return p.relative_to(REPO).as_posix()
-    except ValueError:
-        return p.as_posix()
+def _display(p, home=None):
+    """Path relative to the repo it belongs in — REPO for our own skills, the
+    consuming repo for a project skill. Without the home argument every finding
+    on a project skill prints an absolute machine path, which is now the normal
+    case for a consuming repo's skills rather than a hand-run curiosity."""
+    for base in (home, REPO):
+        if base is not None:
+            try:
+                return p.relative_to(base).as_posix()
+            except ValueError:
+                pass
+    return p.as_posix()
 
 
 def repo_root(d):
     """The git repo the skill dir lives in — the boundary its relative links may
     not escape. Deriving this from __file__ instead would call every link in a
     consuming repo's .claude/skills/ an escape, since that skill's docs are in
-    ITS repo, not ours. Falls back to REPO when nothing above d is a repo."""
+    ITS repo, not ours. A skill under no repo at all is bounded by itself: our
+    REPO is not its containment, and claiming otherwise would be a false error."""
     for p in (d, *d.parents):
         if (p / '.git').exists():   # a file in a worktree, a dir in a clone
             return p
-    return REPO
+    return REPO if REPO in (d, *d.parents) else d
 
 
 def parse_frontmatter(lines, out, rel):
@@ -237,11 +245,12 @@ def parse_frontmatter(lines, out, rel):
 
 
 def check_skill(d, consts, out):
+    home = repo_root(d)
     md = d / 'SKILL.md'
     if not md.is_file():
-        out.error(_display(d), None, 'no SKILL.md')
+        out.error(_display(d, home), None, 'no SKILL.md')
         return
-    rel = _display(md)
+    rel = _display(md, home)
     lines = md.read_text(encoding='utf-8').splitlines()
     fields, body_start, desc_line = parse_frontmatter(lines, out, rel)
 
@@ -274,7 +283,6 @@ def check_skill(d, consts, out):
         return
 
     # Mechanical body errors (every non-exempt skill).
-    home = repo_root(d)
     h1s = [i for i, ln in enumerate(visible) if H1_RE.match(ln)]
     if len(h1s) != 1:
         at = body_start + h1s[1] + 1 if len(h1s) > 1 else None
@@ -289,8 +297,11 @@ def check_skill(d, consts, out):
             if not target.exists():
                 out.error(rel, line, f"linked file '{tgt}' does not exist")
             elif home != target and home not in target.parents:
-                out.error(rel, line, f"link '{tgt}' resolves outside {home.name}/, "
-                                     "the repo this skill ships in")
+                # Name the boundary by path, not by folder name: in a worktree the
+                # folder is a disposable machine-local name ("atelier-w10") that
+                # tells the reader nothing about which repo is meant.
+                out.error(rel, line, f"link '{tgt}' escapes the repo this skill ships in "
+                                     f"({home.as_posix()})")
 
     # Anatomy warnings. Routing quality (does the description name its adjacent
     # siblings?) and tool-citation adequacy are judgment calls the workspace
