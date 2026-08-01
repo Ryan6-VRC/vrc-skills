@@ -2,7 +2,13 @@
 """Lint the skills in this repo against CONVENTIONS.md's anatomy contract.
 
   validate_skills.py            lint every skill directory under skills/
-  validate_skills.py DIR        lint one skill directory
+  validate_skills.py DIR...     lint the named skill directories instead
+
+The contract reaches past this repo: a consuming repo's project skills under its
+`.claude/skills/` are held to the same anatomy (CONVENTIONS.md "The gate"), and
+the workspace's check_prose.py names both enumerations in one invocation. Each
+skill's relative links are bounded by the git repo that skill lives in, not by
+this one.
 
 Mechanical, load-bearing facts are ERRORS: a skill that would not load (missing
 SKILL.md, broken frontmatter, missing name/description, malformed name), a name
@@ -179,6 +185,17 @@ def _display(p):
         return p.as_posix()
 
 
+def repo_root(d):
+    """The git repo the skill dir lives in — the boundary its relative links may
+    not escape. Deriving this from __file__ instead would call every link in a
+    consuming repo's .claude/skills/ an escape, since that skill's docs are in
+    ITS repo, not ours. Falls back to REPO when nothing above d is a repo."""
+    for p in (d, *d.parents):
+        if (p / '.git').exists():   # a file in a worktree, a dir in a clone
+            return p
+    return REPO
+
+
 def parse_frontmatter(lines, out, rel):
     """Return (fields, body_start, desc_line) — fields is None when the block is
     structurally broken (the specific error is already recorded, so downstream
@@ -257,6 +274,7 @@ def check_skill(d, consts, out):
         return
 
     # Mechanical body errors (every non-exempt skill).
+    home = repo_root(d)
     h1s = [i for i, ln in enumerate(visible) if H1_RE.match(ln)]
     if len(h1s) != 1:
         at = body_start + h1s[1] + 1 if len(h1s) > 1 else None
@@ -270,8 +288,9 @@ def check_skill(d, consts, out):
             target = (d / tgt).resolve()
             if not target.exists():
                 out.error(rel, line, f"linked file '{tgt}' does not exist")
-            elif REPO != target and REPO not in target.parents:
-                out.error(rel, line, f"link '{tgt}' resolves outside the repo")
+            elif home != target and home not in target.parents:
+                out.error(rel, line, f"link '{tgt}' resolves outside {home.name}/, "
+                                     "the repo this skill ships in")
 
     # Anatomy warnings. Routing quality (does the description name its adjacent
     # siblings?) and tool-citation adequacy are judgment calls the workspace
@@ -298,18 +317,20 @@ def check_skill(d, consts, out):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Lint skill anatomy against CONVENTIONS.md's contract.")
-    ap.add_argument('skill_dir', nargs='?',
-                    help='one skill directory (default: every directory under skills/)')
+    ap.add_argument('skill_dirs', nargs='*', metavar='DIR',
+                    help='skill directories to lint (default: every directory under skills/)')
     args = ap.parse_args(argv)
     if hasattr(sys.stdout, 'reconfigure'):
         sys.stdout.reconfigure(encoding='utf-8')  # findings quote UTF-8 prose; pipes default to cp1252 on Windows
 
     consts = load_constants()
-    if args.skill_dir:
-        one = Path(args.skill_dir).resolve()
-        if not one.is_dir():
-            raise GateError(f'{one}: not a directory')
-        dirs = [one]
+    if args.skill_dirs:
+        dirs = []
+        for raw in args.skill_dirs:
+            d = Path(raw).resolve()
+            if not d.is_dir():
+                raise GateError(f'{d}: not a directory')
+            dirs.append(d)
     else:
         family = REPO / 'skills'
         if not family.is_dir():
