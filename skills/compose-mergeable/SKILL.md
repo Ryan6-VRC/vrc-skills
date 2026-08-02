@@ -68,10 +68,13 @@ Firing (does it trigger, latch, release) is **not gated here**: the module's aut
     to the **operator's eye and a baked-result check**, not a refit. A *seams-disagree* or
     *won't-resolve-onto-this-base* reason is the **wrong base** → route to refit (`Scope`), not a fit you force.
 - **Provenance routing (owned mergeables only).** `CheckSeam` detects the misfit; the provenance stamps say *which side to fix*. For an owned mergeable (asset path under `Assets/…`, not `Assets/Vendor/…`), read its mirrored `(base, state)` via avatarprep **`report_stamps`** (Decision 2's mirror):
-  - **Refit bucket first** (a provenance sidecar beside the prefab, no `.blend` mirror — `docs/LAYOUT.md`):
-    stamps are absent **by design**, never the re-stamp case — read the sidecar instead. Its target base
-    must equal the base being composed onto; a mismatch means the refit served a different base — route
-    back to `mochifit` for a re-run, not to a scene fix or a stamp repair.
+  - **Refit bucket** — a refit sidecar (`refit-provenance.json`, keys in `docs/LAYOUT.md`) beside the
+    prefab with **no** `.blend` mirror. Resolve the mirror first: if it exists, read its stamps normally —
+    a sidecar retained after an in-place own is lineage, not provenance. Only with no mirror do stamps
+    count as absent by design — read the sidecar's `(target_base, target_state)` instead. A **base**
+    mismatch means the refit served a different base — route back to `mochifit` for a re-run; a same-base
+    **state** mismatch (a stock-proportion refit against a reshaped base) is the in-place own +
+    `reproportion` outfit-fit, never a scene fix or a stamp repair.
   - **Owned base** (own blend under `Assets/…`): read the base's `(base, state)` too. An exact mismatch, or
     a genuinely-absent stamp on an owned side, is a **loud may-block WARNING — write nothing**: a
     missing/mismatched *outfit* stamp is `own-mergeable`'s re-stamp-and-refile loop, a missing *base* stamp
@@ -135,7 +138,7 @@ A body morph (breast size, a proportion tweak) is a **same-set coherence value**
 - **Live** — a non-zero shape-key *value* on the body mesh. An MA `BlendshapeSync` mirrors it onto the identically-named shape on the mergeable at runtime — coherent automatically only where a sync exists. Many real mergeables carry none: there, confirm the mergeable carries the shapes and set the matching live weight yourself.
 - **Baked** — folded into Basis by `shapekey_bake`. The bake leaves the morph block behind with its live weight zeroed, so there is **no in-scene signal** — the provenance stamp is the only truth.
 
-**The baked read.** For each owned side (asset path under `Assets/…`, not `Assets/Vendor/…` — vendor sides are never baked and have no blend; skip them): resolve its co-located provenance blend — an **outfit** is base-first, `Blender/Outfits/<Base>/<Outfit>/<Outfit>.blend`; an **avatar** stays `Blender/Avatars/<Name>/<Name>.blend` — and read it via avatarprep **`report_stamps`** (`cli/report_stamps.py --in <blend>`, or `report_stamps(bpy.context.scene)` live over the Blender MCP). It groups each baked mesh under its owning armature (`armatures[].meshes[]`); meshes with no single owner fall to top-level `unbound`.
+**The baked read.** A **refit bucket** (sidecar, no `.blend` mirror — `docs/LAYOUT.md`) has no baked read: its shapes are solver output at the stock target proportions, not an avatarprep bake — take the shape-variant list from its sidecar (step 3's read), skip `report_stamps` for that side, and treat it as unbaked for the collapse. For each other owned side (asset path under `Assets/…`, not `Assets/Vendor/…` — vendor sides are never baked and have no blend; skip them): resolve its co-located provenance blend — an **outfit** is base-first, `Blender/Outfits/<Base>/<Outfit>/<Outfit>.blend`; an **avatar** stays `Blender/Avatars/<Name>/<Name>.blend` — and read it via avatarprep **`report_stamps`** (`cli/report_stamps.py --in <blend>`, or `report_stamps(bpy.context.scene)` live over the Blender MCP). It groups each baked mesh under its owning armature (`armatures[].meshes[]`); meshes with no single owner fall to top-level `unbound`.
 
 **Key the read by the side's own armature — never "every baked mesh in the blend."** A mergeable's blend also holds the appended fit-reference base body (`own-mergeable`), a second armature whose morphs a read-everything would fuse into the mergeable's. The handle: a **mergeable (Outfits)** is the entry named `Armature.<Outfit>` (the blend path's own leaf token — the `<Outfit>` name, not the `<Base>` folder segment it sits under); a **base (Avatars)** is the lone `Armature` entry — an `Armature.<Name>` lookup there matches nothing and silently drops the base's own morph.
 

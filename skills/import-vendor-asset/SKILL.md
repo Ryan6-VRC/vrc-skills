@@ -1,6 +1,6 @@
 ---
 name: import-vendor-asset
-description: Use when bringing a vendor VRChat avatar, outfit, hair, or accessory into the Unity AvatarProject — "import this avatar", "get X into the project", a `.unitypackage` from the asset library (often zipped, sometimes with a separate MaterialPack).
+description: Use when bringing a vendor VRChat avatar, outfit, hair, or accessory into the Unity AvatarProject — "import this avatar", "get X into the project", a `.unitypackage` from the asset library (often zipped, sometimes with a separate MaterialPack). Not installing MochiFitter or a conversion profile (mochifit).
 ---
 
 # Import a vendor asset
