@@ -20,11 +20,12 @@ Take a garment authored for base A and land it owned, seamed, and verified on a 
 
 ### 1. Dependencies, detected loud
 
-The tool and each conversion profile are detected dependencies: absent, fail loud naming exactly what is missing — never degrade, never substitute.
+The tool, its Blender, and each conversion profile are detected dependencies: absent, fail loud naming exactly what is missing — never degrade, never substitute.
 
 - Detect the tool by its window type loading; detect a route in step 2's graph, not by grepping filenames.
 - **Install the tool from the operator's asset library** (a zip wrapping a `.unitypackage`; extract to scratch first — `import-vendor-asset` owns the zip hygiene and the `ImportPackage` door, but **not its relocate/flatten step: this tool stays at its native install path and is never moved under `Vendor/`**, `docs/LAYOUT.md`'s self-scanning-tool exception). Import **over** any existing install and never delete the tool's or profiles' own files first: installed profiles are not all reproducible from the library (community profiles exist), and an over-import leaves profile-class files untouched (measured).
 - **A profile is a `.unitypackage` that installs into the tool's own scan folder** — `docs/mochifitter.md`'s placement rule; relocating it blinds the tool. Some avatars ship sibling shape-variant packages because the tool holds only two shape slots at a time — which sibling to install is a route decision, step 2's.
+- **The tool's Blender is per-venue, and it installs its own** — under `<ProjectRoot>/BlenderTools/`, nothing to do with the machine's Blender (`docs/mochifitter.md`). A venue that has never run a refit holds `Execute Retargeting` disabled until it lands, so detect it by the window's own `Blender Status:` row before configuring anything, install from the `Download & Install` button beside that row, and report the download as a step of its own — a few hundred MB over the network, not a click.
 - The installed tool version is whatever is on disk: record it in step 5's sidecar and don't chase the vendor's release cadence — step 3's re-derivation is what absorbs it.
 
 ### 2. Resolve the route
