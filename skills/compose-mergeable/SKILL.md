@@ -1,6 +1,6 @@
 ---
 name: compose-mergeable
-description: Use when placing a ready-made outfit, hair, accessory, or gimmick module (vendor or already-owned) onto an avatar base — "put this outfit on my avatar", "add this hair to the base", "compose/wear this mergeable". Not owning or creating a mergeable's geometry, and not adding a seam to a bare prefab (both own-mergeable); not cross-base refitting.
+description: Use when placing a ready-made outfit, hair, accessory, or gimmick module (vendor or already-owned) onto an avatar base — "put this outfit on my avatar", "add this hair to the base", "compose/wear this mergeable". Not owning or creating a mergeable's geometry, and not adding a seam to a bare prefab (both own-mergeable); not cross-base refitting (mochifit).
 ---
 
 # Compose a mergeable onto an avatar base
@@ -18,7 +18,7 @@ Place one seam-authored mergeable (outfit / hair / accessory / gimmick module) o
 Owns: the cheap, non-destructive, **in-scene** work — drop, seam verification, scene-ref repath, mesh de-conflict, blendshape/baked coherence. Does **not** choose or add seams, own geometry, or refit across bases. When a compose needs any of those, do the in-scope part and **surface the boundary to the operator** rather than improvising:
 
 - **Bare mergeable** (armature but no MA/VRCFury attach component) → `own-mergeable`. This skill never *adds* a seam; it only verifies an authored one. Choosing MA vs VRCFury is `own-mergeable`'s job.
-- **Wrong-base mergeable** (armature seam doesn't resolve — see step 3) → a **refit**, not a compose. Route to the refit path (roadmap: `docs/mochifitter.md`; or manual Blender work). Do not try to force it.
+- **Wrong-base mergeable** (armature seam doesn't resolve — see step 3) → a **refit**, not a compose. Route to `mochifit`. Do not try to force it.
 - **Mergeable missing a shape the base needs** (step 5 can't reconcile) → `own-mergeable` to bake it.
 - **Menu / animator / parameter coherence** → `author-menu` (step 7). Required, but out of scope here. Step 4's runtime-owned residue routes there too: flipping a shipped parameter default changes the avatar's menu defaults — the operator's call, never composed in silently.
 - **Gimmick/behavior module** → composed here whole, on the behavior-integrity gates of step 3. Editing its behavior — trim, param surgery, a with/without variant — is `own-gimmick`; grafting new behavior is `author-gimmick`. This skill places a finished module; it never re-authors one.
@@ -68,6 +68,10 @@ Firing (does it trigger, latch, release) is **not gated here**: the module's aut
     to the **operator's eye and a baked-result check**, not a refit. A *seams-disagree* or
     *won't-resolve-onto-this-base* reason is the **wrong base** → route to refit (`Scope`), not a fit you force.
 - **Provenance routing (owned mergeables only).** `CheckSeam` detects the misfit; the provenance stamps say *which side to fix*. For an owned mergeable (asset path under `Assets/…`, not `Assets/Vendor/…`), read its mirrored `(base, state)` via avatarprep **`report_stamps`** (Decision 2's mirror):
+  - **Refit bucket first** (a provenance sidecar beside the prefab, no `.blend` mirror — `docs/LAYOUT.md`):
+    stamps are absent **by design**, never the re-stamp case — read the sidecar instead. Its target base
+    must equal the base being composed onto; a mismatch means the refit served a different base — route
+    back to `mochifit` for a re-run, not to a scene fix or a stamp repair.
   - **Owned base** (own blend under `Assets/…`): read the base's `(base, state)` too. An exact mismatch, or
     a genuinely-absent stamp on an owned side, is a **loud may-block WARNING — write nothing**: a
     missing/mismatched *outfit* stamp is `own-mergeable`'s re-stamp-and-refile loop, a missing *base* stamp
