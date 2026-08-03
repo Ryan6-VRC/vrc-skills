@@ -23,6 +23,8 @@ Call `UploadAvatar` with `whatIf: true` on the batch. It runs every precondition
 
 A **REFUSE** means the *environment* isn't ready, not that an avatar is bad — not in Play mode, not logged into the SDK, the Build Control Panel window closed, wrong build target, or **CAU absent**. Fix the named condition and re-run. CAU (`com.anatawa12.continuous-avatar-uploader`) is an optional dependency: absent, the tool can't self-drive → **fall back to a manual SDK-panel handoff** (hand the operator the avatar and the panel; the rest of this skill's judgment steps still apply to what they do).
 
+**"not logged into the VRChat SDK" usually self-heals — try that before escalating.** `APIUser.IsLoggedIn` starts false every editor session until something restores the saved credentials, and the door's precondition fires before CAU's own per-batch restore (`UploadOrchestrator` → `Uploader.TryLogin()`) would have run, so this REFUSE is mostly the check being early, not a missing login. Remedy: await CAU's `Uploader.TryLogin()` via `execute_code` (or open the Control Panel — its account page runs the same restore) and re-run the preflight once. Escalate to the operator only when `TryLogin` returns false: that means no saved credentials, and the interactive sign-in is theirs alone.
+
 ### 2. Optimizer pre-step (opt-in) — below
 
 Offer before the batch settles, or skip entirely. Never after a failure (step 4).
