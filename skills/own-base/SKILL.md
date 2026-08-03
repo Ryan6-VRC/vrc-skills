@@ -28,7 +28,7 @@ From the graph, establish: each FBX's mesh inventory, which mesh is the **head**
 
 Then make these decisions and **surface them to the operator**:
 
-- **Vendor FBX import settings that differ from our preferred ones** — raise them; do not silently "fix". The operator decides whether the vendor's setting is deliberate.
+- **Vendor FBX import settings that differ from our preferred ones** — raise them; do not silently "fix". The operator decides whether the vendor's setting is deliberate. **Except the settings that block an upload outright** (read/write off, blendshape normals at `Calculate` without legacy): those are not a judgment call — the SDK refuses the upload — and `ConformImportSettings` corrects them at the import door (`docs/LAYOUT.md` §Vendor mutation). Everything else still routes to the operator.
 - **No single FBX is a superset** (variations split across files) — surface it, then build the superset by merging the relevant FBX armatures in Phase 2 (avatarprep `compare_armatures` + `merge_armatures`). Note which FBX is the merge base (the most complete) and which are merged in.
 - **MA / VRCFury / NDMF present** — note that copying those systems is deferred; the owned base won't be functionally equivalent to the vendor until that later arc. Proceed with the base body only.
 - **Base mesh naming** — rename head→`Body`, primary body→`Body_Base` (Phase 2 carries the mechanics and the variant naming), or keep the vendor names. **Recommended: rename** — downstream owner systems (shader/ material toggles, animation shared across the fleet) key on the canonical `Body_Base` name, so consistent naming is load-bearing across every owned base even though no installed package requires it. The cost is real: renaming breaks vendor clip/MA refs that point at the old name (`CheckAvatar` flags them after placement), and Phase 2 repaths them. Keep the vendor name only for a throwaway you won't add to the fleet; with no operator, rename (the workspace convention) and flag it.
@@ -73,7 +73,7 @@ Build up from the **scene instance** of our freshly-exported FBX, in order, and 
 
 A **flagged-missing *host*** is **not** a gate — it is the expected subset case (PASS). The transplant tools list, by name, every component whose host bone/GO was pruned out of our rig; you read that list and **decide**: `force` it (scaffold the missing chain), re-prune in Blender and re-export, or accept the loss. Don't treat a nonzero flagged-missing count as a stop signal.
 
-First, apply our **standard FBX import settings** (Read/Write on; Normals = Import, blend-shape normals = None — or match the vendor when the graph flagged a deliberate difference). **Do not assign materials at the FBX-importer level** — that spawns junk local material copies; materials go on at the scene/prefab level.
+First, apply our **standard FBX import settings** — the upload-blocking half of which `ConformImportSettings` already applied unattended at the import door, so expect it set — (Read/Write on; Normals = Import, blend-shape normals = None — or match the vendor when the graph flagged a deliberate difference). **Do not assign materials at the FBX-importer level** — that spawns junk local material copies; materials go on at the scene/prefab level.
 
 Then, on the scene instance, in this order:
 
