@@ -42,12 +42,12 @@ Last, per `gimmicks.md` §Packaging: enable/options/failsafe, menu-parallel-path
 
 ### 5. Package & verify
 
-One self-contained module (`gimmicks.md` §Packaging: mixed MA-anchor/VRCF-behavior seam, config-default params for variant knobs). Verify to `gimmicks.md` §Verification via `verify.md`: compile + `Check*` are cheap and continuous; play-mode entry costs minutes on a heavy avatar, so **batch emulator work into few sessions** on the firing questions the emulator can settle. A question can change identity as you measure — a "settle time" that turns out to be low-FPS sample delivery — so reframe it rather than forcing the original sweep. Name the in-game residue (network timing, IK, culling, feel) explicitly as handoff.
+One self-contained module (`gimmicks.md` §Packaging: mixed MA-anchor/VRCF-behavior seam, config-default params for variant knobs). Verify to `gimmicks.md` §Verification via `verify.md`: compile + `Check*` are cheap and continuous; play-mode entry costs minutes on a heavy avatar, so **batch emulator work into few sessions** (`emulator.md` §Cost) on the firing questions the emulator can settle. A question can change identity as you measure — a "settle time" that turns out to be low-FPS sample delivery — so reframe it rather than forcing the original sweep. Name the in-game residue (network timing, IK, culling, feel) explicitly as handoff.
 
 ## Tools
 
 - **`CompileController` / `DecompileController`** — the controller medium (`animator.md`, `animator-schema.md`).
 - **Unity MCP `execute_code`** — scene-half assembly, scripted and re-runnable.
 - **`ReportGimmick` / `ReportController` / `CheckAnimator` / `Check*`** — structure reads + lint.
-- **av3emulator** — the drive/observe venue (`verify.md` §Observation channels).
+- **av3emulator** — the drive/observe venue (`emulator.md` §Drive / observe).
 - **`RenderAvatar`** — operator-facing stills of driven states.
