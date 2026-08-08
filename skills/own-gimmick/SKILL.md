@@ -47,7 +47,7 @@ The cut checklist — every item is a defect class observed ≥2× across indepe
     bits, layers).
   - **Resurrect check** — in the emulator, drive every remaining control through its states and
     let the module sit through play entry (the default-active class fires bare at load): nothing
-    removed comes back. Read through `verify.md` §Observation channels — removed params are
+    removed comes back. Read through `emulator.md` §Drive / observe — removed params are
     checked against **post-build names** (VRCFury prefixes module params), and driver vs AAP
     values live in different channels (crossing them reads all-zero).
 - Cross-base moves re-verify contact/PB placement in world space (`gimmicks.md` §Contact patterns) — bone rolls differ per base.
@@ -58,4 +58,4 @@ The cut checklist — every item is a defect class observed ≥2× across indepe
 - **`ReportGimmick` / `ReportController` / `ReportPackage`** — the Phase 0 graph; liveness, typed drivers/behaviours, seam layout.
 - **`AgentInspector`** — MA Parameters + loose expression-params reads for the drift diff.
 - **`CleanController` / `OwnControllerClips` / `RepathClips`** — the no-decompile fallback layer and clip ownership (`animator.md`).
-- **`CheckAnimator` (basis=auto) / `Check*`** — post-surgery lint; **av3emulator** — the resurrect check (`verify.md`).
+- **`CheckAnimator` (basis=auto) / `Check*`** — post-surgery lint; **av3emulator** — the resurrect check (`emulator.md`).
