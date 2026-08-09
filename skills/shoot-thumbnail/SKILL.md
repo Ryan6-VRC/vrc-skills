@@ -114,7 +114,7 @@ The venue is the **active scene**, lit by its own lights — not a generated one
 - **`headYaw`** — what the *pose* did, measured off the posed head. Zero on an unposed render.
 - **`camYaw`** — the *resolved* camera angle: `headYaw` plus the oblique, so it names the shot you got. The pair is what makes it decomposable — `camYaw − headYaw` is the offset to pass as `yaw` to reproduce the shot, and a gap wider than that offset means tracking saturated its ±60° clamp.
 - **`head=(x,y)`** — the view point in viewport coords, origin bottom-left, centre `(0.5,0.5)`. Reported, never gated; an off-centre head is something you can see in the PNG. A blank frame does fail loud, so an `OK` verdict means something was rendered.
-- **`| log=`** — the session RunLog, written by every verb but `Status`. `png=` stays ahead of it: that is the token an upload reads.
+- **`| log=`** — the session RunLog, written by each verb but `Status` on a clean success (refusal and exception paths write none, so a missing log is not proof a door went undriven). `png=` stays ahead of it: that is the token an upload reads, and a failed log write can never displace it.
 - A FAIL saying the expression *moved no blendshape* means the clip and the baked avatar disagree — usually a path/GUID escape hatch pointing at pre-bake shape names. Pass the slot instead.
 
 Play adds `settled=<N>f moving=[…]` — frames waited, and any chains still swinging at capture. Neither is a gate and neither is usually worth acting on: a named chain means the hair is still in motion, which in a portrait reads as life, not a defect. Raise `settleFrames` only if the operator wants it stiller.
