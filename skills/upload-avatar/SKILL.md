@@ -1,6 +1,6 @@
 ---
 name: upload-avatar
-description: Use when driving a VRChat upload — "upload this avatar", "re-upload these", or the batch re-upload after a base-prefab change that N avatars inherit. First upload (mint blueprint/name/thumbnail) or re-upload of already-live avatars. NOT correctness validation (the play-mode bake already did that), NOT authoring menus/gimmicks, NOT renaming an already-uploaded avatar (an upload cannot — that is RenameAvatarRecord).
+description: Use when driving a VRChat upload — "upload this avatar", "re-upload these", or the batch re-upload after a base-prefab change that N avatars inherit. First upload (mint blueprint/name/thumbnail) or re-upload of already-live avatars. NOT correctness validation (the play-mode bake already did that), NOT authoring menus/gimmicks, NOT editing an already-uploaded avatar's name/description/tags (an upload cannot rename — that is UpdateAvatarRecord).
 ---
 
 # Upload an avatar to VRChat
@@ -37,7 +37,7 @@ After the list settles, require a **distinct, explicit "upload now"** before cal
 
 **Confirm the literal published name** for each first-upload before that go: surface the exact string that will be published (CAU defaults it to the GameObject name) and get explicit confirmation. A placeholder or persona-bearing name must not go public unnoticed — "a name is set" is vacuous (always true); the operator must see and approve the actual string.
 
-**A first upload is the only moment an upload can set a name.** On a re-upload CAU sends the *live* name and discards anything staged, so a renamed GameObject republishes under the old published name with no warning — and the scene never tells you what that name is. Asked to rename an already-uploaded avatar, do not re-upload: `RenameAvatarRecord` renames the live record directly (metadata only, no bundle), and `ReportAvatarRecord` is what tells you the current published name. Contract: `unity-tools.md` §Publish.
+**A first upload is the only moment an upload can set a name**, and a re-upload silently republishes under the old one (`unity-tools.md` §Publish owns why). So the scene never tells you what is actually published: read it with `ReportAvatarRecord`. Asked to change a live avatar's name, description or tags, do not re-upload — that is `UpdateAvatarRecord`.
 
 ### 5. Upload
 
