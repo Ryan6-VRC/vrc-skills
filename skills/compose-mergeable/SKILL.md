@@ -105,7 +105,7 @@ A full outfit replaces base clothing; overlapping meshes clip. Disabling those m
 
 So whenever this step disables or deletes base clothing, **delegate to `map-outfit-shapes`, scoped to the composed outfit and the base clothing layers it could replace** (the full-avatar map stays opt-in) — naming which of those are actually overlapped is map's call, not this step's — and require two artifacts back before the geometry-path compose is done. A gimmick module has neither:
 
-1. its **`ReportShapeOverlap` resolution artifact**, every `MISMATCH` row accepted, overridden (a `shared-morph` category override included), or left explicitly **OPEN**, whose RunLog records the census ran; and
+1. its **`ReportShapeOverlap` resolution artifact**, every `MISMATCH` row accepted, overridden (a `shared-morph` or `stranded-declaration` category override included), or left explicitly **OPEN**, whose RunLog records the census ran; and
 2. the **named runtime-owned residue** — every edge an always-on FX layer drives from an expression parameter — or, when the map ran and the FX read came back clean, the literal line **`RESIDUE: none — nothing routes out`**: an empty residue is a completed delegation and a compose that is runtime-wearable as delivered, not a skipped step, and it still cites the RunLog.
 
 **This delegation is the step that gets skipped.** Every recorded skip substituted a cheaper edit-time read and rationalized it; two shipped defects. A justification matching a row below is wrong for the stated reason — run the map:
