@@ -31,9 +31,9 @@ The tool, its Blender, and each conversion profile are detected dependencies: ab
 ### 2. Resolve the route
 
 - Read the conversion graph from the window's own route-record list, or from each config's contents — never from filenames (`docs/mochifitter.md`; shipped names contain typos the tool itself ignores).
-- **Direction is a gate**: dressing a base needs its inbound config, undressing one its outbound, and most profiles ship one way only (`docs/mochifitter.md`) — confirm the direction exists before promising the conversion.
+- **Direction is a gate**: dressing a base needs its inbound config, undressing one its outbound, and most profiles ship one way only (`docs/mochifitter.md`) — confirm the direction exists before promising the conversion. The route is decidable from the profile packages' contents alone (list the `.unitypackage`), so check it before installing the tool when the route is in doubt.
 - Multiple viable routes: the graph is hub-and-spoke, so a pair normally has exactly one two-hop route — but a **direct profile beats via-template when one exists** (fewer warps compound less error), and ties break to the newest profile version. Shape-variant siblings are not hop arithmetic — derive the needed variants from the target base's driven morphs (`docs/outfits.md`) and **surface the choice to the operator with the differences named**; a silent default is a silent fidelity loss.
-- No route after installing what the library offers → fail loud naming the missing profile and direction.
+- No route after installing what the library offers → check the vendor library for sibling variants of the outfit before declaring blocked (a multi-variant package often ships other base targets, most of them routable); then fail loud naming the missing profile, direction, and any routable siblings found.
 
 ### 3. Configure by reflection, verify every write
 
@@ -44,7 +44,7 @@ The tool, its Blender, and each conversion profile are detected dependencies: ab
 
 ### 4. Fire and observe
 
-- Pre-fire gate: **delete every `_temp.json` under the tool's folder** — disposable residue every fire regenerates (`docs/mochifitter.md`); firing over leftovers risks a silently-consumed stale hop.
+- Pre-fire gate: **delete every `_temp.json` under the tool's folder** — disposable residue every fire regenerates (`docs/mochifitter.md`); firing over leftovers risks a silently-consumed stale hop. Locate with Glob (the `*_temp.json` pattern under the tool root); `execute_code`'s `safety_checks` blocks `File.Delete` and Bash sweeps are denied by the harness classifier.
 - The execute entry point is async and returns immediately: poll the window's progress state and watch the output folder — **completion is the finalized prefab landing on disk**, not a callback.
 - The completion modal wedges the Editor's tool queue (`docs/mochifitter.md` has the measured identity): pre-arm the vendor's static result-dialog suppression flag by reflection, or dismiss it with `tools/unity-dialog.ps1`. Budget ~5 minutes for a ~10-mesh outfit and poll rather than block.
 
