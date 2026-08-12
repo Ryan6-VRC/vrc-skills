@@ -23,11 +23,12 @@ fenced constants block in CONVENTIONS.md "## The gate"; this script embeds no
 copies. A skill in the exempt list (its sole authority — meta-skills earn the exemption by
 being listed, not by mentioning "meta-skill" in prose) gets frontmatter identity checks only.
 
-Frontmatter is parsed with PyYAML when installed, so anything the skill loader
-would reject is an ERROR here too; without PyYAML the parse degrades to
-line-regex scalars plus a WARNING that YAML validity was not verified.
+Frontmatter is parsed with PyYAML, so anything the skill loader would reject is
+an ERROR here too. PyYAML is a prerequisite (CONVENTIONS.md "## The gate"): the
+gate refuses to run without it rather than reading its own constants block with
+a hand-rolled parser that agrees with YAML only on the shapes it was tried on.
 
-Runs standalone in a bare clone. Exit 0 when only warnings, 1 on any error,
+Exit 0 when only warnings, 1 on any error,
 2 on an internal failure (e.g. the constants block is missing).
 """
 import argparse
@@ -52,57 +53,6 @@ class GateError(Exception):
     """Fail-loud error; message names what is missing."""
 
 
-def _strip_comment(line):
-    out, quote = [], None
-    for ch in line:
-        if quote:
-            out.append(ch)
-            if ch == quote:
-                quote = None
-        elif ch in '"\'':
-            quote = ch
-            out.append(ch)
-        elif ch == '#':
-            break
-        else:
-            out.append(ch)
-    return ''.join(out).rstrip()
-
-
-def _scalar(s):
-    s = s.strip()
-    if s[:1] in ('"', "'") and s.endswith(s[0]) and len(s) > 1:
-        return s[1:-1]
-    if s.lower() in ('true', 'false'):
-        return s.lower() == 'true'
-    try:
-        return int(s)
-    except ValueError:
-        return s
-
-
-def _parse_flat_yaml(block):
-    """Stdlib fallback for the constants block: flat `key: value` lines with
-    inline [...] / {...} collections only."""
-    out = {}
-    for raw in block.splitlines():
-        line = _strip_comment(raw).strip()
-        if not line or ':' not in line:
-            continue
-        key, val = line.split(':', 1)
-        val = val.strip()
-        if val.startswith('['):
-            out[key.strip()] = [_scalar(x) for x in val.strip('[]').split(',') if x.strip()]
-        elif val.startswith('{'):
-            d = {}
-            for pair in val.strip('{}').split(','):
-                if ':' in pair:
-                    pk, pv = pair.split(':', 1)
-                    d[pk.strip()] = _scalar(pv)
-            out[key.strip()] = d
-        else:
-            out[key.strip()] = _scalar(val)
-    return out
 
 
 def _validate_constants(consts):
@@ -136,7 +86,7 @@ def load_constants():
     text = conv.read_text(encoding='utf-8')
     for block in re.findall(r'^\s{0,3}```ya?ml[^\n]*\n(.*?)^\s{0,3}```\s*$', text, re.M | re.S):
         if 'description_prefix' in block:
-            consts = yaml.safe_load(block) if yaml else _parse_flat_yaml(block)
+            consts = yaml.safe_load(block)
             _validate_constants(consts)
             return consts
     raise GateError(f'{conv}: no fenced yaml constants block found (see "## The gate")')
@@ -218,29 +168,20 @@ def parse_frontmatter(lines, out, rel):
     block = lines[1:close]
     desc_line = next((i + 2 for i, ln in enumerate(block) if ln.startswith('description:')), None)
 
-    if yaml:
-        try:
-            data = yaml.safe_load('\n'.join(block))
-        except yaml.YAMLError as e:
-            mark = getattr(e, 'problem_mark', None)
-            line = mark.line + 2 if mark else 1
-            problem = getattr(e, 'problem', None) or str(e).splitlines()[0]
-            out.error(rel, line, f'frontmatter is not valid YAML: {problem}')
-            return None, close + 1, None
-        if data is None:
-            data = {}
-        if not isinstance(data, dict):
-            out.error(rel, 1, 'frontmatter must be a mapping (key: value pairs)')
-            return None, close + 1, None
-        fields = {k: '' if v is None else str(v) for k, v in data.items()}
-    else:
-        out.warn(rel, None, 'PyYAML not installed - frontmatter checked by line regex only; '
-                            'YAML validity NOT verified')
-        fields = {}
-        for ln in block:
-            m = re.match(r'^([A-Za-z0-9_-]+):\s*(.*)$', ln)
-            if m:
-                fields[m.group(1)] = m.group(2).strip()
+    try:
+        data = yaml.safe_load('\n'.join(block))
+    except yaml.YAMLError as e:
+        mark = getattr(e, 'problem_mark', None)
+        line = mark.line + 2 if mark else 1
+        problem = getattr(e, 'problem', None) or str(e).splitlines()[0]
+        out.error(rel, line, f'frontmatter is not valid YAML: {problem}')
+        return None, close + 1, None
+    if data is None:
+        data = {}
+    if not isinstance(data, dict):
+        out.error(rel, 1, 'frontmatter must be a mapping (key: value pairs)')
+        return None, close + 1, None
+    fields = {k: '' if v is None else str(v) for k, v in data.items()}
     return fields, close + 1, desc_line
 
 
@@ -333,6 +274,14 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if hasattr(sys.stdout, 'reconfigure'):
         sys.stdout.reconfigure(encoding='utf-8')  # findings quote UTF-8 prose; pipes default to cp1252 on Windows
+
+    # Checked once here, before any call site: yaml is read by load_constants and
+    # again by parse_frontmatter, and an import-time failure would land outside
+    # this module's GateError handler as a traceback at exit 1 — the code
+    # reserved for lint findings.
+    if yaml is None:
+        raise GateError('pyyaml not installed — pip install pyyaml '
+                        '(prerequisite: CONVENTIONS.md "## The gate")')
 
     consts = load_constants()
     if args.skill_dirs:
