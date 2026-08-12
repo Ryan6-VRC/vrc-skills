@@ -19,7 +19,7 @@ In order; the exemplars are `compose-mergeable` (the fullest instance) and `own-
 
 ## The gate
 
-`tools/validate_skills.py` is the repo-local gate: it lints skill anatomy against this contract and runs in a bare clone. The meta-workspace's `tools/check_prose.py` is the cross-repo pass — it invokes this gate, then resolves each skill's doc pointers and Tools-section names against the assembled workspace.
+`tools/validate_skills.py` is the repo-local gate: it lints skill anatomy against this contract, and needs Python plus `pyyaml` (`pip install pyyaml`) — it refuses to run without it rather than reading the constants below with a hand-rolled parser. The meta-workspace's `tools/check_prose.py` is the cross-repo pass — it invokes this gate, then resolves each skill's doc pointers and Tools-section names against the assembled workspace.
 
 **The anatomy governs a consuming repo's project skills too**, not this repo's alone: `check_prose.py` names both `vrc-skills/skills/*` and the meta-repo's `.claude/skills/*` in one invocation, and a skill written into either enumeration owes the same shape. A project skill's relative links are bounded by *its* repo, which the gate derives per skill rather than from its own location — a project skill linking its own repo's docs is not an escape.
 
@@ -30,9 +30,16 @@ Both linters read their constants from this block; the scripts embed no copies:
 ```yaml
 # skill-anatomy constants — read by tools/validate_skills.py and the workspace prose checks
 description_prefix: "Use when"
-description_length: {warn_min: 200, warn_max: 700, error_max: 1024}
-exempt_skills: [fitting-session]          # anatomy-exempt: frontmatter identity checks only
-autonomous_skills: [showcase-record, kickoff, write-for-agents]   # no operator gate by design: no no-operator block owed
+description_length:
+  warn_min: 200
+  warn_max: 700
+  error_max: 1024
+exempt_skills:              # anatomy-exempt: frontmatter identity checks only
+  - fitting-session
+autonomous_skills:          # no operator gate by design: no no-operator block owed
+  - showcase-record
+  - kickoff
+  - write-for-agents
 required_no_operator_pointer: "workflow.md"
-terminal_section: "Tools"                  # the Tools section's name (check_prose resolves its entries against TOOLS.md)
+terminal_section: "Tools"   # the Tools section's name (check_prose resolves its entries against TOOLS.md)
 ```

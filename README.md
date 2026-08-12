@@ -4,7 +4,7 @@
 
 Reusable Claude Code skills for VRChat avatar/outfit workflows. Skills here are primarily short, triggerable instruction lists that capture judgment and gotchas, not software.
 
-This repo is a self-hosted Claude Code plugin (single-plugin marketplace).
+This repo is a self-hosted Claude Code plugin (single-plugin marketplace). Installing skills needs nothing; running the anatomy gate over them needs Python and `pyyaml` (`CONVENTIONS.md` §The gate).
 
 ## Skills
 
