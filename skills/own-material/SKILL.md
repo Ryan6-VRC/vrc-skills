@@ -22,16 +22,8 @@ In scope: any change to a material's look, static or animated, and the materiali
 - **(a) Edit the `.mat` asset** — most asks land here: property values, enabling a shader feature block, switching rendering mode/shader, filling a texture slot. Glitter, emission (AudioLink included), hue/HSV shift, decals, matcap, rim, and dissolve are **feature blocks** both shader families ship — a `_Use*`/`_Enable*` toggle plus a property group, not a texture to paint; read the shader package source for the exact properties. Shader-clock and AudioLink-driven effects land here too — they *look* runtime but are enabled by static writes; clips never drive them. **Any edit to the `.mat` asset requires owning it**; texture slots stay vendor.
 - **(b) Repaint a texture** — only when the change lives in the texture itself. Own the `.mat` and fork exactly the slots being edited. Check what the vendor shipped before painting: color masks, matcap libraries, UV-layout PNGs, and layered PSD/CLIP sources (these ship beside the package in the vendor library, almost never inside `Assets/`). Reading a vendor texture's pixel data goes through `Graphics.Blit` → temporary `RenderTexture` → `ReadPixels` — never `TextureImporter.isReadable`, whose toggle + reimport round-trip is a vendor write (`unity.md` §Sharp edges).
 - **(c) Clip-driven property** — an animation clip drives the value (defined by the driver — shader-clock/AudioLink effects are (a)). First check what the vendor shipped: complete anim grids and gimmick controllers are common, and placing one is placement work (`compose-mergeable` for the module, `author-menu` for the front), not construction. Ownership splits by shader family:
-  - **lilToon — no fork, bounded.** The clip drives the renderer's material instance and the
-    build keeps clip-driven uniforms alive (below); the vendor `.mat` is never written. The
-    bound: this holds for properties of feature blocks the material already has enabled.
-    Enabling a block the vendor never turned on, switching rendering mode, or filling a texture
-    slot is a `.mat` write → (a). **lilToonMulti is excepted entirely** — the build can save
-    keywords into the material asset, so own a Multi material before clip-driving it. A
-    persistent look-change can ride this path as a constant always-on clip, when the `.mat`
-    itself needs no edit.
-  - **Poiyomi — fork required.** Marking a property animated is a write to the `.mat`, so own
-    first; the owned copy carries the tags and stays unlocked while authoring (see Poiyomi).
+  - **lilToon — no fork, bounded.** The clip drives the renderer's material instance and the build keeps clip-driven uniforms alive (below); the vendor `.mat` is never written. The bound: this holds for properties of feature blocks the material already has enabled. Enabling a block the vendor never turned on, switching rendering mode, or filling a texture slot is a `.mat` write → (a). **lilToonMulti is excepted entirely** — the build can save keywords into the material asset, so own a Multi material before clip-driving it. A persistent look-change can ride this path as a constant always-on clip, when the `.mat` itself needs no edit.
+  - **Poiyomi — fork required.** Marking a property animated is a write to the `.mat`, so own first; the owned copy carries the tags and stays unlocked while authoring (see Poiyomi).
 - Real asks compose and cascade: "add glitter" = (a) + a (b) mask only if the look needs a custom one; a slider that also needs a new default = (a) + (c) — owned either way.
 
 ## Decisions — surface these to the operator
