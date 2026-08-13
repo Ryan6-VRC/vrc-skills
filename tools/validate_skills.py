@@ -117,6 +117,15 @@ class Findings:
 
     def _emit(self, sev, rel, line, msg):
         loc = f'{rel}:{line}' if line else rel
+        # One finding, one line — an invariant, not an accident. Messages interpolate
+        # skill-authored text (a name, a description, a link target), and YAML will
+        # hand us a value containing a newline whenever the author writes one as an
+        # escape or a block scalar. Left alone, that splits one finding across two
+        # ERROR-prefixed lines, and the meta-repo's check_prose.py (which counts
+        # ERROR/WARN lines and cross-checks them against the summary below) reads the
+        # mismatch as this gate having crashed mid-run. Collapse here, at the single
+        # chokepoint, so every present and future message inherits it.
+        msg = ' '.join(str(msg).split())
         print(f'{sev:<5} {loc}: {msg}')
 
     def error(self, rel, line, msg):
