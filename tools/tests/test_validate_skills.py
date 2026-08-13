@@ -395,9 +395,15 @@ class TestMainContract(Fixture):
         rc, stdout, stderr = self.run_gate(d)
         self.assertEqual(rc, 1, stdout + stderr)
         self.assertRegex(stdout, self.SUMMARY_RE)
-        # The parent cross-checks the tally against the emitted lines; they must agree.
-        self.assertEqual(stdout.count('\nERROR') + stdout.startswith('ERROR'), 1)
-        self.assertIn('1 error(s)', stdout)
+        # The parent cross-checks BOTH counts against the emitted lines
+        # (errs != seen_err or warns != seen_warn), so assert both — an assertion on the
+        # ERROR half alone leaves a regression on the WARN half green.
+        # GOOD_DESC sits outside the shipped 200-700 band, so this fixture carries exactly
+        # one WARN alongside its one ERROR — both halves of the cross-check exercised.
+        lines = stdout.splitlines()
+        self.assertEqual(len([l for l in lines if l.startswith('ERROR')]), 1)
+        self.assertEqual(len([l for l in lines if l.startswith('WARN')]), 1)
+        self.assertIn('1 error(s), 1 warning(s)', stdout)
 
     def test_internal_failure_exits_two_and_prints_no_summary(self):
         # "traceback on stderr, never a partial summary" is contract text the parent relies
@@ -418,6 +424,33 @@ class TestMainContract(Fixture):
         self.assertEqual(rc, 1, stdout + stderr)
         self.assertEqual(len([l for l in stdout.splitlines() if l.startswith('ERROR')]), 1)
         self.assertIn('1 error(s)', stdout)
+
+    def test_a_forged_line_break_in_the_DIRECTORY_name_is_also_collapsed(self):
+        # loc is the other half that interpolates authored text. A directory name can hold
+        # a line separator outright — Windows accepts U+2028 in one — and str.splitlines(),
+        # which is what the parent counts with, splits on it. Without collapsing loc too,
+        # this reopens the tally forgery the msg fix closed, now as a hard exit 2.
+        # The .git matters: repo_root walks up for it, and without one home is the skill
+        # directory itself, so _display returns a bare "SKILL.md" and the crafted name
+        # never reaches loc at all. This test passed for that reason before the anchor was
+        # checked against a mutation — a green over an unreached path.
+        (self.tmp / '.git').mkdir()
+        d = self.skill('bad' + chr(0x2028) + 'ERROR forged', self.md(name='whatever'))
+        rc, stdout, stderr = self.run_gate(d)
+        self.assertEqual(rc, 1, stdout + stderr)
+        self.assertIn(chr(0x2028), d.name)   # the filesystem kept it; the fixture is real
+        self.assertEqual(len([l for l in stdout.splitlines() if l.startswith('ERROR')]), 1)
+        self.assertIn('1 error(s)', stdout)
+
+    def test_a_non_breaking_space_survives_the_collapse(self):
+        # The reason the collapse is splitlines() and not split(). A NBSP in a name is a
+        # real reason NAME_RE rejects it; rewriting it to a plain space would print a
+        # message whose quoted name looks perfectly valid.
+        nbsp = 'bad' + chr(0xA0) + 'name'
+        d = self.skill('demo', self.md(name=f'"{nbsp}"'))
+        rc, stdout, _ = self.run_gate(d)
+        self.assertEqual(rc, 1)
+        self.assertIn(nbsp, stdout)
 
     def test_the_live_skills_tree_is_clean(self):
         rc, stdout, stderr = self.run_gate()

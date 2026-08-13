@@ -116,16 +116,24 @@ class Findings:
         self.warnings = 0
 
     def _emit(self, sev, rel, line, msg):
-        loc = f'{rel}:{line}' if line else rel
-        # One finding, one line — an invariant, not an accident. Messages interpolate
-        # skill-authored text (a name, a description, a link target), and YAML will
-        # hand us a value containing a newline whenever the author writes one as an
-        # escape or a block scalar. Left alone, that splits one finding across two
-        # ERROR-prefixed lines, and the meta-repo's check_prose.py (which counts
-        # ERROR/WARN lines and cross-checks them against the summary below) reads the
-        # mismatch as this gate having crashed mid-run. Collapse here, at the single
-        # chokepoint, so every present and future message inherits it.
-        msg = ' '.join(str(msg).split())
+        # One finding, one line — an invariant, not an accident. Both halves interpolate
+        # skill-authored text: msg quotes a name, a description or a link target, and loc
+        # carries a directory name. YAML hands back a value containing a line break
+        # whenever an author writes one as an escape or a block scalar, and a directory
+        # name can hold one outright. Left alone that splits one finding across two
+        # ERROR-prefixed lines, and the meta-repo's check_prose.py — which counts those
+        # lines and cross-checks them against the summary below — reads the mismatch as
+        # this gate having crashed mid-run. Collapse both, at the single chokepoint.
+        #
+        # splitlines(), not split(): only line breaks threaten the invariant, and
+        # splitlines covers every separator it itself splits on (NEL, LINE and PARAGRAPH
+        # SEPARATOR, vertical tab, form feed) — the same call the parent counts with, so
+        # the two agree by construction. split() would additionally eat a non-breaking
+        # space, silently rewriting the very character that tripped NAME_RE and leaving
+        # the author reading "name 'a b' must match [A-Za-z0-9-]+" with nothing visibly
+        # wrong.
+        loc = ' '.join((f'{rel}:{line}' if line else str(rel)).splitlines())
+        msg = ' '.join(str(msg).splitlines())
         print(f'{sev:<5} {loc}: {msg}')
 
     def error(self, rel, line, msg):
