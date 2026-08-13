@@ -43,13 +43,8 @@ The cut checklist — every item is a defect class observed ≥2× across indepe
   <module folder>, scope=VendorOnly)`. The round-trip doesn't do this for you: a standalone
   `.anim` decompiles as a path `ref:` back to the same vendor asset, so recompile alone leaves the controller vendor-coupled — and `RepathClips` is owned-clips-only, so the seam repath a module usually needs is blocked until the fork. Leave vendor-coupled only clips you'd never change or repath (face-expression / gesture-set animations).
 - Verify to `gimmicks.md` §Verification's bar, plus the two surgery-specific proofs:
-  - **Baseline diff** — the Phase 0 bake vs a fresh bake: only the intended cut moved (params,
-    bits, layers).
-  - **Resurrect check** — in the emulator, drive every remaining control through its states and
-    let the module sit through play entry (the default-active class fires bare at load): nothing
-    removed comes back. Read through `emulator.md` §Drive / observe — removed params are
-    checked against **post-build names** (VRCFury prefixes module params), and driver vs AAP
-    values live in different channels (crossing them reads all-zero).
+  - **Baseline diff** — the Phase 0 bake vs a fresh bake: only the intended cut moved (params, bits, layers).
+  - **Resurrect check** — in the emulator, drive every remaining control through its states and let the module sit through play entry (the default-active class fires bare at load): nothing removed comes back. Read through `emulator.md` §Drive / observe — removed params are checked against **post-build names** (VRCFury prefixes module params), and driver vs AAP values live in different channels (crossing them reads all-zero).
 - Cross-base moves re-verify contact/PB placement in world space (`gimmicks.md` §Contact patterns) — bone rolls differ per base.
 
 ## Tools

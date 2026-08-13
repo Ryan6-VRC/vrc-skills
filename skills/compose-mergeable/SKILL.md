@@ -49,54 +49,18 @@ All cheap and mechanical, each catching a silent failure a green console hides. 
 Firing (does it trigger, latch, release) is **not gated here**: the module's author already proved it in the emulator, so the compose confirms only that placement didn't break it statically, then names an **emulator smoke** as the play-mode handoff (step 7) — consistent with step 6's operator's-call stance. A cross-base placement is a refit, out of scope (`Scope`), so world-space contact re-verification never arises in a compose. The geometry bullets below apply to the humanoid-skinned case; a gimmick module runs only the two reads above plus the broken-ref and physbone-collider bullets.
 
 - **Seam fit + resolution — `CheckSeam` (the mechanical gate).** `CheckSeam.Check(baseRoot, mergeableRoot)` — mechanism and verdict grammar in `unity-tools.md`. Because it reflects the real resolver, the wrong-base merge MA hides by auto-creating phantom bones (`nondestructive.md`) — a clean console while the outfit skins to bones that never move — surfaces here as NOT-PASS or a won't-resolve REFUSE. Route the three outcomes:
-  - **PASS** — the humanoid skeleton coincides; fit is certified, proceed to de-conflict. It certifies
-    *only* the humanoid skeleton — not physics-cage / bust / hair / accessory placement, which stay the
-    operator's eye (step 6). PASS carries `maxWithinEps`, the largest sub-ε bone offset: a peripheral bone
-    (a hand/finger) sitting near ε is the ambiguous pose-drift-vs-edit-bump case the NOT-PASS bullet
-    describes, now under the widened tolerance — **flag it to the operator, change nothing**; the widen
-    absorbs base-inherent drift, it does not license swallowing a real one.
-  - **NOT-PASS** — humanoid bones offset past ε. A large offset, or one across most bones, is the **wrong
-    base or a real misfit** (an agent-normalized root — the step-2 trap — is this signature): surface it,
-    route out (`Scope`), don't force it. **A few peripheral bones just over ε** (a hand or finger, sub-mm)
-    is ambiguous and **not yours to fix blind**: `CheckSeam` measures position only, so it can't tell a
-    pose-mode bake drift (re-aligning the bone fixes it) from an edit-mode bump where the mesh is already
-    aligned to the moved bone (re-aligning drags the mesh *off*) — opposite handling, indistinguishable
-    from the number. **Flag it to the operator and change nothing.** Correct only a misfit whose cause you
-    know, with a **deliberate, flagged, re-verified** edit — never the reflexive normalization step 2
-    forbids.
-  - **REFUSE** — can't certify this seam, for a reason it names, and the reason picks the route. An
-    offset-tolerant proxy (≤1 humanoid bone — hair/accessory), or a *VRCFury-scales-at-bake* seam
-    (`forceOneWorldScale` / non-unit scale — legitimate authoring the edit-time pose can't certify), routes
-    to the **operator's eye and a baked-result check**, not a refit. A *seams-disagree* or
-    *won't-resolve-onto-this-base* reason is the **wrong base** → route to refit (`Scope`), not a fit you force.
+  - **PASS** — the humanoid skeleton coincides; fit is certified, proceed to de-conflict. It certifies *only* the humanoid skeleton — not physics-cage / bust / hair / accessory placement, which stay the operator's eye (step 6). PASS carries `maxWithinEps`, the largest sub-ε bone offset: a peripheral bone (a hand/finger) sitting near ε is the ambiguous pose-drift-vs-edit-bump case the NOT-PASS bullet describes, now under the widened tolerance — **flag it to the operator, change nothing**; the widen absorbs base-inherent drift, it does not license swallowing a real one.
+  - **NOT-PASS** — humanoid bones offset past ε. A large offset, or one across most bones, is the **wrong base or a real misfit** (an agent-normalized root — the step-2 trap — is this signature): surface it, route out (`Scope`), don't force it. **A few peripheral bones just over ε** (a hand or finger, sub-mm) is ambiguous and **not yours to fix blind**: `CheckSeam` measures position only, so it can't tell a pose-mode bake drift (re-aligning the bone fixes it) from an edit-mode bump where the mesh is already aligned to the moved bone (re-aligning drags the mesh *off*) — opposite handling, indistinguishable from the number. **Flag it to the operator and change nothing.** Correct only a misfit whose cause you know, with a **deliberate, flagged, re-verified** edit — never the reflexive normalization step 2 forbids.
+  - **REFUSE** — can't certify this seam, for a reason it names, and the reason picks the route. An offset-tolerant proxy (≤1 humanoid bone — hair/accessory), or a *VRCFury-scales-at-bake* seam (`forceOneWorldScale` / non-unit scale — legitimate authoring the edit-time pose can't certify), routes to the **operator's eye and a baked-result check**, not a refit. A *seams-disagree* or *won't-resolve-onto-this-base* reason is the **wrong base** → route to refit (`Scope`), not a fit you force.
 - **Provenance routing (owned mergeables only).** `CheckSeam` detects the misfit; the provenance stamps say *which side to fix*. For an owned mergeable (asset path under `Assets/…`, not `Assets/Vendor/…`), read its mirrored `(base, state)` via avatarprep **`report_stamps`** (Decision 2's mirror):
-  - **Refit bucket** — a refit sidecar (`refit-provenance.json`, keys in `docs/LAYOUT.md`) beside the
-    prefab with **no** `.blend` mirror. Resolve the mirror first: if it exists, read its stamps normally —
-    a sidecar retained after an in-place own is lineage, not provenance. Only with no mirror do stamps
-    count as absent by design — read the sidecar's `(target_base, target_state)` instead. A **base**
-    mismatch means the refit served a different base — route back to `mochifit` for a re-run; a same-base
-    **state** mismatch (a stock-proportion refit against a reshaped base) is the in-place own +
-    `reproportion` outfit-fit, never a scene fix or a stamp repair.
-  - **Owned base** (own blend under `Assets/…`): read the base's `(base, state)` too. An exact mismatch, or
-    a genuinely-absent stamp on an owned side, is a **loud may-block WARNING — write nothing**: a
-    missing/mismatched *outfit* stamp is `own-mergeable`'s re-stamp-and-refile loop, a missing *base* stamp
-    is `own-base`'s `stamp_base` seed (Decision 3) — route to whichever side is off.
-  - **Vendor base** (under `Assets/Vendor/…`, no blend or stamp — expected): a vendor base is
-    `unproportioned` by construction. A mergeable in state `unproportioned` is the blessed "own the outfit,
-    not the base" case; a **`reshaped`** mergeable can't fit a stock base → route to `own-base` (own +
-    reproportion the base). This is the same misfit `CheckSeam` flags as NOT-PASS — `reshaped` moves the
-    rest pose without renaming bones — named at the stamp level so the fix routes to the right side.
+  - **Refit bucket** — a refit sidecar (`refit-provenance.json`, keys in `docs/LAYOUT.md`) beside the prefab with **no** `.blend` mirror. Resolve the mirror first: if it exists, read its stamps normally — a sidecar retained after an in-place own is lineage, not provenance. Only with no mirror do stamps count as absent by design — read the sidecar's `(target_base, target_state)` instead. A **base** mismatch means the refit served a different base — route back to `mochifit` for a re-run; a same-base **state** mismatch (a stock-proportion refit against a reshaped base) is the in-place own + `reproportion` outfit-fit, never a scene fix or a stamp repair.
+  - **Owned base** (own blend under `Assets/…`): read the base's `(base, state)` too. An exact mismatch, or a genuinely-absent stamp on an owned side, is a **loud may-block WARNING — write nothing**: a missing/mismatched *outfit* stamp is `own-mergeable`'s re-stamp-and-refile loop, a missing *base* stamp is `own-base`'s `stamp_base` seed (Decision 3) — route to whichever side is off.
+  - **Vendor base** (under `Assets/Vendor/…`, no blend or stamp — expected): a vendor base is `unproportioned` by construction. A mergeable in state `unproportioned` is the blessed "own the outfit, not the base" case; a **`reshaped`** mergeable can't fit a stock base → route to `own-base` (own + reproportion the base). This is the same misfit `CheckSeam` flags as NOT-PASS — `reshaped` moves the rest pose without renaming bones — named at the stamp level so the fix routes to the right side.
 - **Broken refs — classify with `CheckAvatar`, then route by class.** Run `CheckAvatar.Inspect(<avatar root>)` on the placed avatar (contract in `unity-tools.md`): against the placed scene it names every MA scene ref and clip/controller binding a rename left unresolved. The usual cause is a **renamed seam**: `own-base` may rename the primary body mesh (recommended `Body_Base`; vendors ship `Body_base`). CheckAvatar classifies and names; you route (a deliberately-null toggle target or a portability-redundant path where several point at one object is a legitimate non-offender — judge, don't blindly repath):
-  - **`MA-scene-ref`** → **repath in-scene**: retarget the reference to the renamed object — a scene edit,
-    **no asset write**; non-aborting.
-  - **`clip-binding`** → asset surgery, routed by the offender's **`clipAssetPath`** (not its scene `path`,
-    which always looks writable): an **owned/writable** `.anim` is repathed **inline** (the
-    `OwnControllerClips → RepathClips` clip phase, `animator.md` UC2); an **unowned vendor** clip (`clipAssetPath`
+  - **`MA-scene-ref`** → **repath in-scene**: retarget the reference to the renamed object — a scene edit, **no asset write**; non-aborting.
+  - **`clip-binding`** → asset surgery, routed by the offender's **`clipAssetPath`** (not its scene `path`, which always looks writable): an **owned/writable** `.anim` is repathed **inline** (the `OwnControllerClips → RepathClips` clip phase, `animator.md` UC2); an **unowned vendor** clip (`clipAssetPath`
     under `Assets/Vendor/`|`Packages/`) needs a geometry round-trip compose can't do — **abort the compose and
-    route to `own-mergeable`**, but **only when the compose introduced the break.** A vendor binding already
-    dangling on the bare base (it shows in a `CheckAvatar` run *before* you compose — e.g. a base's own
-    `Breast_Size → Costume_*` ref) is vendor-shipped, not your regression — flag it and proceed; only a
-    break a rename or move in *this* compose created routes out.
+    route to `own-mergeable`**, but **only when the compose introduced the break.** A vendor binding already dangling on the bare base (it shows in a `CheckAvatar` run *before* you compose — e.g. a base's own `Breast_Size → Costume_*` ref) is vendor-shipped, not your regression — flag it and proceed; only a break a rename or move in *this* compose created routes out.
 - **Physbone collider refs — relink null base-collider slots.** A placed physbone whose `colliders[]` holds a **null** slot collided against a *base-owned* collider the mergeable doesn't carry (`own-mergeable` leaves it null by design — the collider is the base's). Re-point each null at the base's collider on the physbone's anchor bone (`execute_code` on the placed instance; in-scene, no asset write) — left null, the physbone collides against nothing. Act on the null slot regardless of provenance — vendor mergeables can ship null slots too (Li-ne ships 13 per variant). **Escape hatch: when the base lacks a collider on the anchor bone**, the null slot is un-repairable in-scene — flag it to the operator with the bone name and leave it null; do not fabricate a collider or silently skip it.
 
 ### 4. De-conflict the meshes — delegate, then dispose

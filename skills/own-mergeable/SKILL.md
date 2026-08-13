@@ -62,26 +62,10 @@ Work on the **scene instance** of the owned FBX; prefab only at the end (Phase 3
 
 - **Modular vendor mergeable → copy its seam** (the conservative tier of the same transplant). A correctly copied seam auto-targets the base exactly like the vendor's — that *is* drop-in-equivalence.
 - **Bare / non-modular → author the seam.** Choose MA vs VRCFury by the robustness rule in `docs/nondestructive.md` (MA by default). **Default settings, one prefab, one seam**; the shape follows what the piece binds to:
-  - **Skins the humanoid skeleton (clothing)** → MA `MergeArmature` on the **armature GO** +
-    `MeshSettings` on the prefab root. VRCFury alt: `ArmatureLink` on the armature GO with align
-    position/rotation/scale **off** (the geometry is already proportioned; VRCFury applies align at build).
-  - **Rides one bone (hair, hat, earring)** → MA `BoneProxy` on the **armature root, never the
-    top-level prefab GO** (only the rig should reparent under the bone; the renderers stay at
-    avatar-root level), `target` the humanoid bone, `attachmentMode = AsChildKeepWorldPose` — left
-    `Unset` it builds as `AsChildAtRoot` and snaps the piece to the bone's origin — plus `MeshSettings`
-    on the prefab root. Alternative on a topo-shared base: append the base armature into the accessory's
-    `.blend`, delete the base geometry, prune to the accessory's own bones, and it then seams by
-    `MergeArmature` like clothing.
-  - **Build the MA components directly; do not drive the "Setup Outfit" UI add-path.** Set the fields a
-    successful `SetupOutfit.SetupOutfitUI` writes (its source is the authority) — the load-bearing ones:
-    `MergeArmature.mergeTarget` → the base `Armature` with `LockMode = BaseToMerge`, and `MeshSettings`
-    in `SetOrInherit` (not `Inherit`: a vendor base has no parent settings to inherit from) with the
-    probe anchor → Hips. The add-path's bone-rename and A-pose passes are no-ops on the rig Phase 1
-    already gave the base's bone names and a distinct `Armature.<Name>`, and its one headless hazard — a
-    modal error window — fires only on a validation failure, never a valid setup; the internal-suppress
-    reflection some workers reach for was treating a symptom, not the cause.
-  - Two variants (MA *and* VRCFury) are a deliberate exception: build a dynamics-only base prefab and
-    make each seam a thin variant of it, so the dynamics aren't grafted twice.
+  - **Skins the humanoid skeleton (clothing)** → MA `MergeArmature` on the **armature GO** + `MeshSettings` on the prefab root. VRCFury alt: `ArmatureLink` on the armature GO with align position/rotation/scale **off** (the geometry is already proportioned; VRCFury applies align at build).
+  - **Rides one bone (hair, hat, earring)** → MA `BoneProxy` on the **armature root, never the top-level prefab GO** (only the rig should reparent under the bone; the renderers stay at avatar-root level), `target` the humanoid bone, `attachmentMode = AsChildKeepWorldPose` — left `Unset` it builds as `AsChildAtRoot` and snaps the piece to the bone's origin — plus `MeshSettings` on the prefab root. Alternative on a topo-shared base: append the base armature into the accessory's `.blend`, delete the base geometry, prune to the accessory's own bones, and it then seams by `MergeArmature` like clothing.
+  - **Build the MA components directly; do not drive the "Setup Outfit" UI add-path.** Set the fields a successful `SetupOutfit.SetupOutfitUI` writes (its source is the authority) — the load-bearing ones: `MergeArmature.mergeTarget` → the base `Armature` with `LockMode = BaseToMerge`, and `MeshSettings` in `SetOrInherit` (not `Inherit`: a vendor base has no parent settings to inherit from) with the probe anchor → Hips. The add-path's bone-rename and A-pose passes are no-ops on the rig Phase 1 already gave the base's bone names and a distinct `Armature.<Name>`, and its one headless hazard — a modal error window — fires only on a validation failure, never a valid setup; the internal-suppress reflection some workers reach for was treating a symptom, not the cause.
+  - Two variants (MA *and* VRCFury) are a deliberate exception: build a dynamics-only base prefab and make each seam a thin variant of it, so the dynamics aren't grafted twice.
 
 ## Phase 2C — Own the seam's clips (skip if none)
 

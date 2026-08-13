@@ -36,23 +36,10 @@ There are not three modes — **one operation whose reconciliation tail scales w
 1. **Reproportion the Blender asset** (the spine) and re-export the FBX. If the owned viewpoint was ever hand-tuned, instantiate the current prefab into the scene **before this re-export** — it overwrites the not-kept geometry, and step 3's viewpoint fix needs that pre-reshape reference (unrecoverable after). **Author at world origin** — position (0,0,0); never bake a position offset into the owned asset (reproportion pivots about origin; the coherence checks compare world positions). Rotation is exempt: the importer parks the source FBX's axis conversion as an object rotation on the armature — expected residue the export clears unapplied — so don't assert full transform identity or "fix" that rotation.
 2. **(Re)establish the humanoid rig.** Fresh avatar → the first rig-conform lands on already-scaled geometry. Already-built avatar → **re-run the humanoid-rig conformer — a hard invariant:** the bind is rebuilt from current geometry, and skipping it reintroduces folded hips. (The rig is reproportion-safe *because* the skeleton derives from our own model, not the vendor's.)
 3. **Reconcile the rest, weighted by what exists** (these stale-state facts are canonical in `unity.md`):
-   - **ViewPosition (eye height)** is a descriptor meters-vector that does **not** track baked geometry
-     scale, and unlike component radii it is **not** sub-notice — a few-percent height change visibly
-     floats the viewpoint off the eyes. **Recompute it on any height-changing reproportion** (both the
-     fresh-handoff and in-place cases); verify in-game. Mechanism: the viewpoint-fix tool
-     (`FixViewpoint` — recomputes from the reference's known-good viewpoint + both rigs' eyes/head)
-     needs any `referenceRoot` whose viewpoint is true to its geometry. Instantiate
-     the **untouched vendor prefab** (always on disk, original alignment) — unless the owned viewpoint was
-     deliberately adjusted after owning, in which case the reference is the **pre-reshape instance
-     captured at step 1**, before the re-export overwrote the FBX. Destroy the temp instance after; a
-     missing/renamed eye bone FAILs named rather than guessing.
-   - **Blendshape sanity-check.** After the round-trip, verify cross-mesh blendshape coherence: a driven
-     body morph must have its matching morph driven on **every** mesh that has one (incl. name-variant
-     outfit morphs). Watch for prefab-persisted SMR weights that **unlinked/reset to 0 because a mesh was
-     renamed or re-exported** — re-apply them.
+   - **ViewPosition (eye height)** is a descriptor meters-vector that does **not** track baked geometry scale, and unlike component radii it is **not** sub-notice — a few-percent height change visibly floats the viewpoint off the eyes. **Recompute it on any height-changing reproportion** (both the fresh-handoff and in-place cases); verify in-game. Mechanism: the viewpoint-fix tool (`FixViewpoint` — recomputes from the reference's known-good viewpoint + both rigs' eyes/head) needs any `referenceRoot` whose viewpoint is true to its geometry. Instantiate the **untouched vendor prefab** (always on disk, original alignment) — unless the owned viewpoint was deliberately adjusted after owning, in which case the reference is the **pre-reshape instance captured at step 1**, before the re-export overwrote the FBX. Destroy the temp instance after; a missing/renamed eye bone FAILs named rather than guessing.
+   - **Blendshape sanity-check.** After the round-trip, verify cross-mesh blendshape coherence: a driven body morph must have its matching morph driven on **every** mesh that has one (incl. name-variant outfit morphs). Watch for prefab-persisted SMR weights that **unlinked/reset to 0 because a mesh was renamed or re-exported** — re-apply them.
    - **Component gate** (below).
-   - Fresh avatar → steps 2–3 are just the normal owning rig + descriptor work on scaled geometry;
-     the component tail is empty.
+   - Fresh avatar → steps 2–3 are just the normal owning rig + descriptor work on scaled geometry; the component tail is empty.
 
 **Component risk model — conclusions, not action by default.** avatarprep bakes scale into the rest pose, so after baking a bone's runtime `localScale` is back to 1 but its head/tail moved. Components on bones follow **positionally** (remapped by path), but their **absolute dimensions** — physbone / collider / contact radii, in meters — do **not** track a rescale; that drift is **linear in the proportion magnitude** and below notice at typical small reproportions. Helper constraint targets **self-correct** through hierarchy inheritance (a helper rides the accumulated parent deltas, landing most of the way on its own). Helpers *in the Blender armature* are moved by the edge-walk + bake on re-export — only **Unity-only helpers** (added after the round-trip) never see the bake and stay exposed.
 
