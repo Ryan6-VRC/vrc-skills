@@ -21,7 +21,7 @@ Keep authoring **thin and model-driven** — no template, checklist, or Q&A scri
 - `local` / `individual` for per-bone scales; `normal` / `median` for together-from-the-midline ops.
 - **Author against the live armature's real bone names and re-run scene-validation until offenders clear.** This is the whole instruction — "author a validated edge JSON for what the user describes." How to converse (one surgical tweak vs. a from-scratch rebuild) is your discretion.
 
-**Naming gate:** reject a bare-adjective target (`custom`, `base`, `final`) and name the rule — the naming *policy* is canonical in `docs/LAYOUT.md`; don't restate it here.
+**Naming gate:** reject a bare-adjective target (`custom`, `base`, `final`) and name the rule — the naming *policy* is canonical in `docs/blender.md` §State stamps; don't restate it here.
 
 **Where the profile lives:** the authored edge is co-located with the avatar it drives — `docs/LAYOUT.md` owns the rule. Never drive an apply from the shared `vrc-blender-tools/edges/`.
 

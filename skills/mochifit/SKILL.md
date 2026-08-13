@@ -51,7 +51,7 @@ The tool, its Blender, and each conversion profile are detected dependencies: ab
 ### 5. Own the output
 
 - File the FBX into `Assets/Outfits/<TargetBase>/<Outfit>/Models/` and the finalized prefab at the bucket root — `docs/LAYOUT.md`'s refit bucket, the same shape as an owned one; never `Vendor/`, never a refit-specific tree.
-- **Write the refit sidecar** (`refit-provenance.json`) beside the prefab — filename and required keys are `docs/LAYOUT.md`'s; fill every key from this run, the recorded shape selections included.
+- **Write the refit sidecar** (`refit-provenance.json`) beside the prefab, keys `target_base`, `target_state`, `source_base`, `outfit`, `tool_version`, `profiles[]`, `route[]`, `shape_selections[]`, `date` — this list is the canon (`compose-mergeable` reads it); fill every key from this run, the recorded shape selections included.
 - **Independence gate**: `AssetDatabase.GetDependencies` on the prefab reaches nothing under the tool's folder — the refit must survive uninstalling MochiFitter. Both OMOCHI checkbox states pass this in the measured runs (`docs/mochifitter.md`); assert it anyway.
 - The output has carried its MA seam across on every verified run — **confirm the seam rather than author it**; a bare output routes to `own-mergeable` Phase 2B.
 - Read `PrefabUtility.GetPrefabAssetType` — don't assume Variant and don't force it; a `Regular` reconstruction is fine here, and only `Model`/`MissingAsset`/`NotAPrefab` fails. Zero any non-zero root transform on the asset before verifying (`own-mergeable` Phase 3's staging-offset rule).
