@@ -30,7 +30,7 @@ In scope: any change to a material's look, static or animated, and the materiali
 
 - **Which vendor edition to own.** Some vendors ship both lilToon and Poiyomi editions of the same asset; which to own is the operator's call (poi-exclusive features vs the lilToon-default ecosystem). Absent any channel, lilToon is the derivable default — flag it. When the operator wants Poiyomi and a vendor poi edition exists, own that edition directly; it beats converting (see the converter's fidelity limits below).
 - **Never a Unity material variant (`m_Parent`) — always a standalone deep copy.** Three mechanisms, all from shader-package source: Poiyomi locking silently redirects a variant to its **root** material (variants can't carry a locked shader); the lil→poi converter severs a variant's parent, flattening it; and lilToon's variant/preset semantics batch-rewrite linked properties with no back-link, which misleads humans and agents alike. A vendor or legacy variant encountered on the way in is flattened into the owned copy — `OwnMaterial` does this.
-- **Naming.** The owned `.mat` keeps the vendor material's name — the bucket namespaces it; no `_Custom` token. A deliberate new look (not a 1:1 ownership) takes a variant token (`<Name>_White`). Forked textures keep their source texture's filename — the material's subfolder is the namespace.
+- **Naming.** A deliberate new look (not a 1:1 ownership) takes a variant token (`<Name>_White`). A 1:1 ownership keeps the vendor material's name — the bucket namespaces it; no `_Custom` token. Forked textures keep their source texture's filename — the material's subfolder is the namespace.
 
 ## Filing — the two-tree mirror
 
