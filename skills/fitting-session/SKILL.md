@@ -62,9 +62,9 @@ Strictly serial for anything that touches the Unity Editor — concurrent editin
 > skills that said something untrue or unhelpful, workarounds you resorted to, and anything about
 > this asset that surprised you.
 
-Three constraints ride in every worker prompt, because the run is unattended:
+Three constraints ride in every worker prompt:
 
-- **Everything the worker runs must clear the auto classifier**: absolute paths, no `cd`-compounds, PowerShell for file operations, stay in-tree, Python helpers as `.py` files invoked by absolute path. A command that stalls for a permission decision nobody is there to make burns the dispatch.
+- **Python helpers are `.py` files invoked by absolute path.** `python -c` does not survive the quoting on the way through the Bash tool, and a worker debugging its own mangled one-liner is spending the dispatch on nothing.
 - **No Unity-touching subagents.** A worker may fan out for reads, Blender work, and transcript digging; every Unity call goes through the one worker holding the Editor (CLAUDE.md rule 9).
 - **Name the shared scene's play cost.** The PlayGate refuses on more than one active avatar and names its own fix; what it says nothing about is restoring the others afterward, which the next task needs.
 
