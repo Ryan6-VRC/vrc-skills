@@ -81,9 +81,9 @@ Only when the seam carries its **own animator** (an MA MergeAnimator / VRCFury F
 
 Structural and basic — **the real proof is a compose**, so hand off after:
 
-- **Seam fit — `CheckSeam`** — place onto the target base and run `CheckSeam.Check(base, mergeable)`. It reflects the seam mapping and gates world-position coincidence of the weighted humanoid bones, so a PASS proves the owned piece lands on the target base's (reshaped) skeleton — subsuming the by-name hit-rate and the eyeballed "compare a few". NOT-PASS is a reproportion/seam problem to fix before hand-off; a hair or single-bone accessory REFUSEs (offset-tolerant proxy) — its fit is the operator's at compose, as expected.
+- **Seam fit — `CheckSeam`** — place onto the target base and run `CheckSeam.Run(base, mergeable)`. It reflects the seam mapping and gates world-position coincidence of the weighted humanoid bones, so a PASS proves the owned piece lands on the target base's (reshaped) skeleton — subsuming the by-name hit-rate and the eyeballed "compare a few". NOT-PASS is a reproportion/seam problem to fix before hand-off; a hair or single-bone accessory REFUSEs (offset-tolerant proxy) — its fit is the operator's at compose, as expected.
 - **Clean transplant diagnostics** — flagged-missing 0 for kept hosts, anchors bound, no vendor leak.
-- **Placement proof (`CheckAvatar`)** — place onto the target base and run `CheckAvatar.Inspect(<root>)`; expect `PASS`. A `CLASSIFY` names a seam scene-ref or a Phase-2C clip binding still unresolved against the placed scene — fix it before hand-off rather than eyeballing the pairing.
+- **Placement proof (`CheckAvatar`)** — place onto the target base and run `CheckAvatar.Run(<root>)`; expect `PASS`. A `CLASSIFY` names a seam scene-ref or a Phase-2C clip binding still unresolved against the placed scene — fix it before hand-off rather than eyeballing the pairing.
 
 If a later compose finds the provenance stamp missing or mismatched against the base, the fix re-enters **this skill** (re-stamp + refile) — it is not patched in the Unity scene. (A refit bucket is the exception: it has no `.blend` mirror by design and `compose-mergeable` reads its sidecar instead — never this loop.)
 
