@@ -30,7 +30,7 @@ If that and the mesh/material names come up thin, look with `RenderAvatar` — *
 
 Vendors scatter expressions across several FX layers and ship suffixed variants (`Open_1/_2/_3`), so read the whole controller, not the first layer. **The tool holds no opinion about what an expression is** — the filtering is yours; only you can tell `Peace` from `Shirt`.
 
-**Poses:** pass a bare **token**, not a clip path — the tool owns the vocabulary (the `RTPose_*.anim` glob in the avatar-tools `Editor/Poses/`, so it drifts as files are added). **To see the current set, don't read source** — a `RenderThumbnail.Render(target, pose: "?", whatIf: true)` resolves the pose before any bake and fails fast listing every bundled name, free. That junk-token whatIf is the list; run it once up front to shortlist against. Matching ignores case and punctuation — but not a dropped letter.
+**Poses:** pass a bare **token**, not a clip path — the tool owns the vocabulary (the `RTPose_*.anim` glob in the avatar-tools `Editor/Poses/`, so it drifts as files are added). **To see the current set, don't read source** — a `RenderThumbnail.Run(target, pose: "?", whatIf: true)` resolves the pose before any bake and fails fast listing every bundled name, free. That junk-token whatIf is the list; run it once up front to shortlist against. Matching ignores case and punctuation — but not a dropped letter.
 
 ## Pass the state name
 
@@ -78,23 +78,24 @@ Draw a **compatible set** rather than each independently — a demure pose under
 **Edit** — one call per shot:
 
 ```
-RenderThumbnail.Render(target, pose: <token>, expression: <slot>, framing: <paired>, bg: <hex>,
+RenderThumbnail.Run(target, pose: <token>, expression: <slot>, framing: <paired>, bg: <hex>,
                        fov: <deg>, yaw: <deg?>)
 ```
 
 **Play** — a session around that same vocabulary:
 
 ```
-Begin(target)                        → READY-TO-PLAY  (refuses if any loaded scene is unsaved)
+RenderThumbnailPlay.Run(target)      → READY-TO-PLAY  (refuses if any loaded scene is unsaved)
 manage_editor play                   → blocks for minutes while the SDK build runs
-Shoot(pose, expression, framing, …)  → STARTED tag=RTP-xxxxxxxx
-   poll Status() (or read_console on the tag) until it stops reporting "still settling"
-   …repeat Shoot for the rest of the set — one Begin serves many…
+RenderThumbnailPlay.Shoot(pose, expression, framing, …)
+                                     → STARTED tag=RTP-xxxxxxxx
+   poll RenderThumbnailPlay.Status() (or read_console on the tag) until it stops reporting "still settling"
+   …repeat Shoot for the rest of the set — one Run serves many…
 manage_editor stop
-End()                                → reopens the venue scene from disk
+RenderThumbnailPlay.End()            → reopens the venue scene from disk
 ```
 
-`End()` is **mandatory on every path, including failure.** `Begin` overrode the operator's Enter-Play-Mode Options and deactivated the other avatars; only `End` restores them. Once `Begin` returns READY the exit is `stop` → `End()`, whatever happened in between.
+`End()` is **mandatory on every path, including failure.** `Run` overrode the operator's Enter-Play-Mode Options and deactivated the other avatars; only `End` restores them. Once `Run` returns READY the exit is `stop` → `End()`, whatever happened in between.
 
 The venue is the **active scene**, lit by its own lights — not a generated one, and not edit's fixed rig. Two expression cases refuse in play and belong in edit: an avatar with **no FX controller**, and an FX slot holding an **override controller** the compositor cannot clone. Both fail loud and name edit mode.
 
