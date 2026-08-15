@@ -64,7 +64,7 @@ Run every check against an **instance of the saved prefab** — the delivered ar
   - `NOT-PASS` → the likeliest cause is step 3's two-fields trap: don't hand off, re-confirm the route against the window-derived config, re-fire, re-own.
   - `REFUSE` → the gate abstained rather than scored, and there is no fallback measurement to fall back to. Read which refusal it is — wrong roots, no shared bone names (the output kept its *source* base's names), a duplicated armature under the output (an inactive one counts), or too few shared weighted bones (a failed transfer, not a near miss) — and fix that before re-running. Never hand off on a REFUSE: nothing was certified.
 
-  `Check` scores later, placed on the real base at compose.
+  The seam door scores later, placed on the real base at compose.
 - Then sweep poses per `docs/verify.md` — rest pose proves nothing here, and mesh reads go through `BakeMesh`, never `renderer.bounds`.
 - Blendshape census: the source's shapes minus the consumed shape fields, plus the target's variant additions (`docs/mochifitter.md`), exact names per mesh — diff against the selection recorded in step 3.
 - **The orphan report is a duty, not a fix**: name each source bone the target base lacks and the meshes whose weights renormalized away — a property of the base pair (`docs/mochifitter.md`); surface the report, attempt no repair, and continue to the hand-off.
