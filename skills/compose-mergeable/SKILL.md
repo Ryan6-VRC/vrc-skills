@@ -87,6 +87,8 @@ So whenever this step disables or deletes a superseded base-feature layer, **del
 
 **Claiming the read is not running it.** The compose checkpoint takes one of three sanctioned forms: the `ReportShapeOverlap` RunLog path plus the named-residue list, the RunLog path plus `RESIDUE: none — nothing routes out`, or the literal line `MAP SKIPPED: <reason>` — always the operator's to see, never silent. A checkpoint with none of them is an unfinished geometry-path compose. A gimmick/behavior module has **no checkpoint obligation from this step** — it skipped the step entirely at the top. A genuine deviation from the geometry path takes the form in `workflow.md` §Deviating from a mandated step.
 
+**A garment that covers a base region declares that region's hide on its own prefab** (`outfits.md`) — never leaning on a cutter on the body or a rest weight the base happens to carry, both of which bind the hide to the base and break the next composition that swaps this garment out. Where the garment replaces a base piece, the `ObjectToggle` turning that piece off belongs on the garment too, so the hide travels with the coverage.
+
 **What this skill does with them.** `map-outfit-shapes` commits the statics on unowned edges; what comes back here is what it could not. Runtime-owned residue forks on what the runtime edge *targets*:
 
 - **Targets the overlapped layer itself** (a toggle that re-enables the mesh, shapes on the superseded layer) — the **sanctioned delete** below resolves it structurally: a deleted GameObject has nothing for the FX to re-enable, and its bindings become silent runtime no-ops.
