@@ -57,4 +57,4 @@ Some DLCs ship a patcher that rewrites a base FBX **in place** so their variant 
 
 ## No git trace — verify with CheckPackage, not a diff
 
-The Unity project is an **untracked working venue** (no `.git`; CLAUDE.md §Layout), so an import produces no commit and no git footprint. Don't look for a diff or tracked asset files to confirm it — the `CheckPackage` PASS above is the confirmation; `Vendor/` content just lands on disk (reproducible, backed up externally — `docs/LAYOUT.md`).
+The venue has a git repo, but it tracks only hand-authored text and denies `Assets/Vendor/` outright (`docs/LAYOUT.md` §Principles), so an import leaves `git status` clean and produces nothing to diff. Don't read that as a failed import, and don't go looking for tracked asset files — the `CheckPackage` PASS above is the confirmation; `Vendor/` content just lands on disk, reproducible by re-importing from the asset library and covered by the external backup.
