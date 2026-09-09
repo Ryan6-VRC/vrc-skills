@@ -19,7 +19,7 @@ The last mile: a composed avatar from "works in play mode" to live on VRChat —
 
 ### 1. Readiness — `whatIf`
 
-Call `UploadAvatar` with `whatIf: true` on the batch. It runs every precondition and, per avatar, classifies `first-upload` vs `update` and surfaces the literal publish name — uploading nothing. There is no separate readiness ritual; this preflight is it. Surface the per-avatar would-do report.
+Call `UploadAvatar` with `whatIf: true` on the batch. It runs every precondition and, per avatar, classifies `first-upload` vs `update` and surfaces the literal publish name — uploading nothing. There is no separate readiness ritual; this preflight is it. Surface the per-avatar would-do report. Alongside it, `ConformImportSettings.Run(<avatar root>, whatIf: true)` per avatar previews the SDK panel's importer errors with the paths the panel's own error text omits — read its `would conform:` row list (`none` is clean), not the verdict token. The SDK runs those validations inside the build too, so an offender left here is a multi-minute build spent to learn a `.meta` setting; conform it before the go (`docs/unity-tools.md` owns the door).
 
 A **REFUSE** means the *environment* isn't ready, not that an avatar is bad — not in Play mode, not logged into the SDK, the Build Control Panel window closed, wrong build target, or **CAU absent**. Fix the named condition and re-run. CAU (`com.anatawa12.continuous-avatar-uploader`) is an optional dependency: absent, the tool can't self-drive → **fall back to a manual SDK-panel handoff** (hand the operator the avatar and the panel; the rest of this skill's judgment steps still apply to what they do).
 

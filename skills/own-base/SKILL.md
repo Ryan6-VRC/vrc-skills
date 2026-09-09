@@ -74,7 +74,7 @@ Build up from the **scene instance** of our freshly-exported FBX, in order, and 
 
 A **flagged-missing *host*** is **not** a gate — it is the expected subset case (PASS). The transplant tools list, by name, every component whose host bone/GO was pruned out of our rig; you read that list and **decide**: `force` it (scaffold the missing chain), re-prune in Blender and re-export, or accept the loss. Don't treat a nonzero flagged-missing count as a stop signal.
 
-First, apply our **standard FBX import settings** (Read/Write on; Normals = Import, blend-shape normals = None — or match the vendor when the graph flagged a deliberate difference). **Do not assign materials at the FBX-importer level** — that spawns junk local material copies; materials go on at the scene/prefab level.
+First, apply our **preferred FBX import settings** (Normals = Import, blend-shape normals = None — or match the vendor when the graph flagged a deliberate difference); the settings the SDK *refuses an upload over* are not a preference but `ConformImportSettings`'s rows (`docs/unity-tools.md`), so run it on the owned folder rather than setting them by hand. **Do not assign materials at the FBX-importer level** — that spawns junk local material copies; materials go on at the scene/prefab level.
 
 Then, on the scene instance, in this order:
 
