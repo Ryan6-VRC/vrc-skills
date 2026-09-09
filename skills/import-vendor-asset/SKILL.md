@@ -57,4 +57,4 @@ Some DLCs ship a patcher that rewrites a base FBX **in place** so their variant 
 
 ## No git trace — verify with CheckPackage, not a diff
 
-The venue has a git repo, but it tracks only hand-authored text and denies `Assets/Vendor/` outright (`docs/LAYOUT.md` §The venue's git repo), so an import leaves `git status` clean and produces nothing to diff. Don't read that as a failed import, and don't go looking for tracked asset files — the `CheckPackage` PASS above is the confirmation; `Vendor/` content just lands on disk, reproducible by re-importing from the asset library and covered by the external backup.
+The venue has a git repo, but it tracks only hand-authored text and denies `Assets/Vendor/` outright (`docs/LAYOUT.md` §Principles), so an import leaves `git status` clean and produces nothing to diff. Don't read that as a failed import, and don't go looking for tracked asset files — the `CheckPackage` PASS above is the confirmation; `Vendor/` content just lands on disk, reproducible by re-importing from the asset library and covered by the external backup.
