@@ -37,7 +37,9 @@ After the list settles, require a **distinct, explicit "upload now"** before cal
 
 **Confirm the literal published name** for each first-upload before that go: surface the exact string that will be published (CAU defaults it to the GameObject name) and get explicit confirmation. A placeholder or persona-bearing name must not go public unnoticed — "a name is set" is vacuous (always true); the operator must see and approve the actual string.
 
-**A first upload is the only moment an upload can set a name**, and a re-upload silently republishes under the old one (`unity-tools.md` §Publish owns why). So the scene never tells you what is actually published: read it with `ReportAvatarRecord`. Asked to change a live avatar's name, description or tags, do not re-upload — that is `UpdateAvatarRecord`.
+**A first upload is the only moment an upload can set a name**, and a re-upload silently republishes under the old one (`unity-tools.md` §Publish owns why). So the scene never tells you what is actually published: read it with `ReportAvatarRecord`. Asked to change a live avatar's name, description, tags or thumbnail, do not re-upload — that is `UpdateAvatarRecord`.
+
+**The thumbnail an upload mints is CAU's own camera shot.** Neither CAU nor this door reads an external image, so a rendered one reaches a live avatar only through `UpdateAvatarRecord`'s `newImagePath`, as its own call after the upload — and until that call runs, CAU's shot is what is public.
 
 ### 5. Upload
 
