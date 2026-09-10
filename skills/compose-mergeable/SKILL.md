@@ -21,6 +21,7 @@ Owns: the cheap, non-destructive, **in-scene** work — drop, seam verification,
 - **Wrong-base mergeable** (armature seam doesn't resolve — see step 3) → a **refit**, not a compose. Route to `mochifit`. Do not try to force it.
 - **Mergeable missing a shape the base needs** (step 5 can't reconcile) → `own-mergeable` to bake it.
 - **Menu / animator / parameter coherence** → `author-menu` (step 7). Required, but out of scope here. Step 4's runtime-owned residue routes there too: flipping a shipped parameter default changes the avatar's menu defaults — the operator's call, never composed in silently.
+- **Row over a rank line** (the costume's unconditional garments hide body the build still ships, and the bake-mode `tris` misses the line) → `mark_coverage` (`blender.md`): a Blender measurement and a write into the shared base blend, never an in-scene edit. What returns here is one Delete row naming the carrier, placed per `outfits.md`.
 - **Gimmick/behavior module** → composed here whole, on the behavior-integrity gates of step 3. Editing its behavior — trim, param surgery, a with/without variant — is `own-gimmick`; grafting new behavior is `author-gimmick`. This skill places a finished module; it never re-authors one.
 
 ## The flow
