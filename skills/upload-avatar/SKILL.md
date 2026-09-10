@@ -55,29 +55,13 @@ The tool stops the batch on the first failure and classifies it (`transient` / `
 
 ## Optimizer pre-step
 
-An availability-driven menu: detect which optimizer/fix packages are installed and offer **only those**, opt-in. **Only ever ADD a component that is absent.** A pre-existing optimizer/fix component is left **untouched** — the operator placed and configured it deliberately; don't second-guess it. When you *add* one, set it to the profile below and **read the fields back to confirm** (a mistyped field is caught here, not shipped). All apply at build (`ApplyOnUpload`-style), so the on-disk prefab stays editable.
+An availability-driven menu: detect which optimizer packages are installed and offer **only those**, opt-in. **Only ever ADD a component that is absent.** A pre-existing optimizer component is left **untouched** — the operator placed and configured it deliberately; what each optimizer is for, and the profile a fresh d4rk gets, is `docs/optimization.md` §Division of labour. When you add one, set that profile and **read the fields back to confirm** (a mistyped field is caught here, not shipped); d4rk's fields sit on the nested `component.settings.X`, `MergeSkinnedMeshesWithShaderToggle` is an int (set `= 0`), and `OptimizeFXLayer` is OFF unconditionally. All apply at build (`ApplyOnUpload`-style), so the on-disk prefab stays editable.
 
-### d4rkAvatarOptimizer — package present, none already on the avatar
-
-Add it and set the empirically-safe profile (fields live on the nested `component.settings.X`; `MergeSkinnedMeshesWithShaderToggle` is an **int** — set `= 0`, not `false`):
-
-**OFF** (avatar-breakers): `OptimizeFXLayer`, `WritePropertiesAsStaticValues`, `MergeSameDimensionTextures`, `MergeMainTex`, `MergeDifferentPropertyMaterials`, `MergeSkinnedMeshesWithShaderToggle`, `CombineApproximateMotionTimeAnimations`, `NaNimationAllow3BoneSkinning`. `OptimizeFXLayer` is OFF **unconditionally** — too aggressive on its own, can change animator/toggle behavior; not contingent on VRCFury.
-
-**ON:** `ApplyOnUpload`, `MergeSkinnedMeshes`, `MergeSkinnedMeshesSeparatedByDefaultEnabledState`, `DisablePhysBonesWhenUnused`, `MergeSameRatioBlendShapes`, `DeleteUnusedComponents`.
-
-Leave the component defaults for the per-avatar-judgment fields (`DeleteUnusedGameObjects`, `UseRingFingerAsFootCollider`, `MergeStaticMeshesAsSkinned`, `MMDCompatibility`) — the operator tunes those.
-
-### Limitex Avatar Compressor (LAC) — package present, no TextureCompressor already on the avatar
-
-Add `dev.limitex.avatar.compressor.TextureCompressor`, set `Preset = CompressorPreset.HighQuality` (int 0), then call `ApplyPreset(CompressorPreset.HighQuality)` to cascade its concrete fields. The fields are flat on the component (no nested settings object), and setting `Preset` alone does **not** cascade — the `ApplyPreset` call (or a fresh add's `Reset`) is what writes them.
-
-### VRCFury optimizer features — VRCFury present
+Limitex present and no `TextureCompressor` on the avatar: add `dev.limitex.avatar.compressor.TextureCompressor` and call `ApplyPreset(CompressorPreset.HighQuality)` — setting `Preset` alone cascades nothing.
 
 `DirectTreeOptimizer` and `BlendshapeOptimizer` are safe to add if absent. **`FixWriteDefaults`:** VRCFury pops a blocking WD-mismatch dialog only when no `FixWriteDefaults` feature exists — so if none is present, add one in the **non-forcing `Disabled` mode** (`FixWriteDefaultsMode.Disabled` = int `3`): it silences the dialog and conforms only VRCFury's own layers, never force-changing the avatar's Write Defaults. The forcing modes (`ForceOff`=1 / `ForceOn`=2) change behavior and are an explicit expert-only opt-in. These are VRCFury `FeatureModel`s carried as `content` on the internal `VF.Model.VRCFury` component (one feature per component; reach the internal types by reflection).
 
-### AAO
-
-This step **notes — never force-removes** — a present-but-unplaced AAO component (AAO stays installed; d4rk is the standard). Coexistence is proven: d4rk with `OptimizeFXLayer` OFF alongside VRCFury's `DirectTreeOptimizer` is a shipped config.
+A present-but-unplaced AAO component is **noted, never force-removed** — AAO stays installed beside d4rk; the doc owns the split.
 
 ## Tools
 
