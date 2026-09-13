@@ -85,9 +85,9 @@ Reconciling a base edge onto a mergeable needs adjustments the base itself never
 
 ## Tools
 
-Reuse; this skill only sequences. Open each to learn its exact entry point, and refer to it by role.
+Reuse; this skill only sequences.
 
-- **`avatarprep` proportions engine + CLIs** — `apply_proportion_edge` applies one edge (`--whatif` validates it and reports the resulting geometry, saving nothing); a chain is sequential `apply_proportion_edge` calls.
-- **Humanoid-rig conformer** (avatar-tools package) — rebuilds the bind from current geometry; re-run it after every reproportion.
-- **Freshness assert** (avatar-tools package) — stored-bind vs. current-geometry guard, PASS/FAIL + named offender, run as an entry guard.
-- **Normal-preserving shapekey bake** (`avatarprep` core) — Approach 2's executor.
+- **`apply_proportion_edge`** (`avatarprep` proportions engine + CLIs) — the edge executor, contracted in the intro above.
+- **Humanoid-rig conformer** (avatar-tools) — the mandatory post-reshape re-rig (*The operation*, step 2).
+- **Freshness assert** (avatar-tools) — the stale-bind entry guard (*The operation*).
+- **`bake_shapekey`** (`avatarprep` core) — Approach 2's executor (*Realizing shapekeys*).
