@@ -95,9 +95,7 @@ The mechanical gate is the tool diagnostic: `OwnMaterial` PASS with a slot-prove
 
 ## Tools
 
-Reach by role; open each for its entry point.
-
-- **`OwnMaterial`** (avatar-tools) — the own/branch/augment copy mechanics above; `whatIf` first, slot-provenance table as the gate.
-- **`RemapMaterials`** (avatar-tools) — point a hierarchy's renderers at the owned materials once they exist (swap by asset path); also the whole of the "pick a colorway" case this skill routes out.
+- **`OwnMaterial`** (avatar-tools) — the copy mechanics (*The copy*). Contract in `unity-tools.md`.
+- **`RemapMaterials`** (avatar-tools) — point a hierarchy's renderers at the owned materials once they exist; also the whole of the "pick a colorway" case this skill routes out (*Scope*).
 - **Unity MCP `execute_code`** — slot inspection (`.mat` YAML or `Material` API), the Thry `Animated`-tag and lock/unlock calls, the lil→poi translator.
 - **Photoshop tree + operator** — the layered-source edit loop; the agent owns adoption, export wiring, and verification around it.

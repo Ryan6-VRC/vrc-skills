@@ -42,7 +42,7 @@ An expression **cannot be previewed**: it resolves against the *baked* controlle
 
 ## Pick the backdrop
 
-`bg` takes `#RRGGBB` or a vertical two-stop gradient `#TOP:#BOTTOM`; null is the default dark grey. Choose for **contrast, not taste** — a dark-haired avatar in a black outfit on the default backdrop loses its outline, and a VRChat thumbnail is read at menu size.
+`bg` takes a flat hex or a vertical two-stop gradient. Choose for **contrast, not taste** — a dark-haired avatar in a black outfit on the default backdrop loses its outline, and a VRChat thumbnail is read at menu size.
 
 **Nothing in the verdict measures contrast.** Pick against the avatar's dominant hair and outfit tone, and when the call is close, shoot it and show the operator — rendering is cheap, and a backdrop that fails is obvious in the image and invisible in a number.
 
@@ -75,31 +75,13 @@ Draw a **compatible set** rather than each independently — a demure pose under
 
 **Read at menu size, so the face has to dominate — default to `bust`.** Frame for what the pose puts in the shot, not the pose's category: reach for `half` only when the hands or a held gesture ARE the subject (a clasp, heart-hands), knowing it shrinks the face. `full` is almost never a thumbnail — a whole-body figure's face vanishes at menu size, and the bundled clips carry no root translation, so a standing pose hovers there anyway. None of this is gated: shoot it, open the PNG, re-crop tighter if the subject swims.
 
-**Edit** — one call per shot:
+**Edit** is one call per shot. **Play** is a session around the same vocabulary, and the ordering is the part no single call teaches: `Run` (refuses on an unsaved loaded scene), then `manage_editor play` — which blocks for minutes while the SDK build runs — then `Shoot` per candidate, polling `Status` (or `read_console` on the tag it returns) until it stops reporting settling, then `manage_editor stop` and `End`.
 
-```
-RenderThumbnail.Run(target, pose: <token>, expression: <slot>, framing: <paired>, bg: <hex>,
-                       fov: <deg>, yaw: <deg?>)
-```
-
-**Play** — a session around that same vocabulary:
-
-```
-RenderThumbnailPlay.Run(target)      → READY-TO-PLAY  (refuses if any loaded scene is unsaved)
-manage_editor play                   → blocks for minutes while the SDK build runs
-RenderThumbnailPlay.Shoot(pose, expression, framing, …)
-                                     → STARTED tag=RTP-xxxxxxxx
-   poll RenderThumbnailPlay.Status() (or read_console on the tag) until it stops reporting "still settling"
-   …repeat Shoot for the rest of the set — one Run serves many…
-manage_editor stop
-RenderThumbnailPlay.End()            → reopens the venue scene from disk
-```
-
-`End()` is **mandatory on every path, including failure.** `Run` overrode the operator's Enter-Play-Mode Options and deactivated the other avatars; only `End` restores them. Once `Run` returns READY the exit is `stop` → `End()`, whatever happened in between.
+`End()` is **mandatory on every path, including failure.** `Run` overrode the operator's Enter-Play-Mode Options and deactivated the other avatars; only `End` restores them. Once `Run` returns ready the exit is `stop` → `End()`, whatever happened in between.
 
 The venue is the **active scene**, lit by its own lights — not a generated one, and not edit's fixed rig. Two expression cases refuse in play and belong in edit: an avatar with **no FX controller**, and an FX slot holding an **override controller** the compositor cannot clone. Both fail loud and name edit mode.
 
-`fov` is vertical degrees (default ~30, [10,90]); distance is solved from it, so it changes the look, not the framing. `yaw` null is an automatic flattering oblique — a number is an **offset added to head tracking**, not an absolute heading (`yaw: 0` means "no oblique", not "frontal"), positive orbiting toward screen-left. An explicit `yaw` carries the composition with it: the subject shifts opposite the way the camera swung, to leave the gaze somewhere to go, and `yaw: 0` centres it. Both are taste dials: leave them alone unless the shot asks for it.
+Distance is solved from `fov`, so it changes the look, not the framing. `yaw` null is an automatic flattering oblique — a number is an **offset added to head tracking**, not an absolute heading (`yaw: 0` means "no oblique", not "frontal"), positive orbiting toward screen-left. An explicit `yaw` carries the composition with it: the subject shifts opposite the way the camera swung, to leave the gaze somewhere to go, and `yaw: 0` centres it. Both are taste dials: leave them alone unless the shot asks for it.
 
 **Serialize the calls** — the bake and play entry both drive global editor state, and the tool refuses a second session or an overlapping `Shoot` outright. Never two at once, never parallelized across subagents.
 
@@ -107,17 +89,13 @@ The venue is the **active scene**, lit by its own lights — not a generated one
 
 ## Read the verdict
 
-```
-... expression=Open (F_smile_1) framing=bust fov=30 headYaw=11.9 camYaw=24.9 head=(0.54,0.62) => OK | png=... | log=...
-```
+The summary names its own fields; what it cannot tell you is what to do with them:
 
-- **`(F_smile_1)`** — the clip the slot resolved to post-bake; the only place the drawn face is named. A VRCFury-merged FX prints it as `(Copied from <layer>/<clip>)` — same meaning, longer form.
-- **`headYaw`** — what the *pose* did, measured off the posed head. Zero on an unposed render.
-- **`camYaw`** — the *resolved* camera angle: `headYaw` plus the oblique, so it names the shot you got. The pair is what makes it decomposable — `camYaw − headYaw` is the offset to pass as `yaw` to reproduce the shot, and a gap wider than that offset means tracking saturated its ±60° clamp.
-- **`head=(x,y)`** — the view point in viewport coords, origin bottom-left, centre `(0.5,0.5)`. Reported, never gated; an off-centre head is something you can see in the PNG. A blank frame does fail loud, so an `OK` verdict means something was rendered.
-- **`| log=`** — the session RunLog, written by each verb but `Status` on a clean success (refusal and exception paths write none, so a missing log is not proof a door went undriven). `png=` stays ahead of it: that is the token you hand `UpdateAvatarRecord`'s `newImagePath` to publish the shot — an upload reads no external image — and a failed log write can never displace it.
-- A FAIL saying the expression *moved no blendshape* means the clip and the baked avatar disagree — usually a path/GUID escape hatch pointing at pre-bake shape names. Pass the slot instead.
-
-Play adds `settled=<N>f moving=[…]` — frames waited, and any chains still swinging at capture. Neither is a gate and neither is usually worth acting on: a named chain means the hair is still in motion, which in a portrait reads as life, not a defect. Raise `settleFrames` only if the operator wants it stiller.
+- **The resolved clip, parenthesized after the slot, is the only place the drawn face is named** — a VRCFury-merged FX prints the same fact in a longer `Copied from` form.
+- **The two yaws are decomposable, and that is their point.** `camYaw − headYaw` is the offset to pass back as `yaw` to reproduce a shot; a gap wider than that offset means head tracking saturated its ±60° clamp.
+- **The head position is reported, never gated** — an off-centre head is something you can see in the PNG. A blank frame does fail loud, so an OK verdict means something was rendered.
+- **A missing log is not proof a door went undriven** — refusal and exception paths write none, and `Status` writes none on a clean success. The PNG path never depends on the log: it is the token you hand `UpdateAvatarRecord`'s `newImagePath` to publish the shot, since an upload reads no external image, and a failed log write cannot displace it.
+- **A FAIL saying the expression moved no blendshape** means the clip and the baked avatar disagree — usually a path/GUID escape hatch pointing at pre-bake shape names. Pass the slot instead.
+- **Play's settle readout is not a gate**, and rarely worth acting on: a chain still swinging at capture reads as life in a portrait, not a defect. Raise `settleFrames` only if the operator wants it stiller.
 
 Name the mode, the drawn pose, and the expression when you show the PNG, so a re-roll is one sentence.

@@ -19,7 +19,7 @@ The last mile: a composed avatar from "works in play mode" to live on VRChat —
 
 ### 1. Readiness — `whatIf`
 
-Call `UploadAvatar` with `whatIf: true` on the batch. It runs every precondition and, per avatar, classifies `first-upload` vs `update` and surfaces the literal publish name — uploading nothing. There is no separate readiness ritual; this preflight is it. Surface the per-avatar would-do report. Alongside it, `ConformImportSettings.Run(<avatar root>, whatIf: true)` per avatar previews the SDK panel's importer errors with the paths the panel's own error text omits — read its `would conform:` row list (`none` is clean), not the verdict token. The SDK runs those validations inside the build too, so an offender left here is a multi-minute build spent to learn a `.meta` setting; conform it before the go (`docs/unity-tools.md` owns the door).
+Call `UploadAvatar` with `whatIf: true` on the batch. It runs every precondition and, per avatar, classifies first-upload vs update and surfaces the literal publish name — uploading nothing. There is no separate readiness ritual; this preflight is it. Surface the per-avatar would-do report. Alongside it, `ConformImportSettings.Run(<avatar root>, whatIf: true)` per avatar previews the SDK panel's importer errors with the paths the panel's own error text omits — **read its would-conform row list, not the verdict token.** The SDK runs those validations inside the build too, so an offender left here is a multi-minute build spent to learn a `.meta` setting; conform it before the go (`docs/unity-tools.md` owns the door).
 
 A **REFUSE** means the *environment* isn't ready, not that an avatar is bad — not in Play mode, not logged into the SDK, the Build Control Panel window closed, wrong build target, or **CAU absent**. Fix the named condition and re-run. CAU (`com.anatawa12.continuous-avatar-uploader`) is an optional dependency: absent, the tool can't self-drive → **fall back to a manual SDK-panel handoff** (hand the operator the avatar and the panel; the rest of this skill's judgment steps still apply to what they do).
 
@@ -43,7 +43,7 @@ After the list settles, require a **distinct, explicit "upload now"** before cal
 
 ### 5. Upload
 
-When the operator gives the go, call `UploadAvatar.Run` (no `whatIf`) on the confirmed batch. The upload is **async-driven**: `Run` fires the batch and returns immediately (`batch started; poll Status()`) — it does NOT block for the result (blocking would deadlock the editor). **Poll `UploadAvatar.Status()`** until it stops reporting `running…`; it then returns the final verdict + RunLog path. Expect the **build phase to make the editor briefly unresponsive** to MCP (an asset-bundle build is heavy main-thread work) — that is normal, not a hang; keep the editor window focused (a backgrounded editor throttles its update loop and stalls the pump) and keep polling. The governing rule:
+When the operator gives the go, call `UploadAvatar.Run` (no `whatIf`) on the confirmed batch. The upload is **async-driven**: `Run` fires the batch and returns immediately — it does NOT block for the result, since blocking would deadlock the editor — so **poll `UploadAvatar.Status()`** until it stops reporting a run in progress. Expect the **build phase to make the editor briefly unresponsive** to MCP (an asset-bundle build is heavy main-thread work) — that is normal, not a hang; keep the editor window focused (a backgrounded editor throttles its update loop and stalls the pump) and keep polling. The governing rule:
 
 > When asked to upload, upload. If a failure is transient (server / timeout), retry two or three
 > times; a rate-limit is not a transient — back off and inform, don't retry. Never loop, and never
@@ -65,5 +65,6 @@ A present-but-unplaced AAO component is **noted, never force-removed** — AAO s
 
 ## Tools
 
-- **`UploadAvatar`** (avatar-tools, via `execute_code`) — `Ryan6Vrc.AvatarTools.Editor.UploadAvatar.Run(GameObject[] avatars, bool whatIf = false)` + `UploadAvatar.Status()`. The CAU-driving door: `whatIf: true` is the synchronous readiness preflight (step 1); no `whatIf` fires the async upload (step 5) and returns `batch started; poll Status()` — then poll `Status()` (`running…` → final summary) until done. REFUSE = environment not ready; FAIL = a genuine upload rejection; PASS = uploaded. Verdicts and rows are ID-redacted. CAU absent → REFUSE → manual SDK-panel fallback.
-- **Unity MCP `execute_code`** — the optimizer pre-step: detect installed packages, write the optimizer-component fields, and read them back to assert the hard-OFF set (d4rk fields on nested `component.settings.X`).
+- **`UploadAvatar`** (avatar-tools, via `execute_code`) — the CAU-driving door: the readiness preflight (step 1) and the upload itself (step 5). Contract in `unity-tools.md` §Publish.
+- **`ReportAvatarRecord` / `UpdateAvatarRecord`** (avatar-tools) — the live-record reads and edits an upload cannot make (step 4).
+- **Unity MCP `execute_code`** — the optimizer pre-step: detect installed packages, write the fields, read them back.

@@ -31,12 +31,11 @@ Film your own session with ffmpeg, then cut it into a short showcase: chosen gra
 
 Dispatch a general-purpose subagent with exactly this contract — inputs `(manifest path, target seconds)`, returns `(cut path, one verify frame path, duration)`:
 
-1. Run `showcase.py beats --manifest <path>`. The stamped grabs, in offset order, are the take's timeline — the grab dir is shared across sessions, so use only those inside the recording window (beats flags the rest `[outside recording]`). Any RunLogs in the grab dirs caption the beats, but the stills alone carry the story (Unity `execute_code` work leaves none).
+1. Run `showcase.py beats --manifest <path>`. The stamped grabs, in offset order, are the take's timeline — the grab dir is shared across sessions, so use only those inside the recording window, which beats flags for you. Any RunLogs in the grab dirs caption the beats, but the stills alone carry the story (Unity `execute_code` work leaves none).
 2. Choose 2–3 stills that carry the story. Heuristics: a cluster of near-simultaneous grabs is one moment — keep the last; an isolated grab after a long gap earned its place. Read the candidates as images and keep only frames that visibly show something (a fit check, a working toggle) — visual judgment is yours, not the script's.
-3. `showcase.py cut --manifest <path> --target <s> --still <png> [--still <png> ...]` — the script does all clock math, splices each still as its own 1× segment, and ramps the footage between them uniformly to fit the target (clamped; its `note=` names any compromise).
-4. Read the `frames=` verify images and probe nothing by trust: a cut you haven't looked at is not verified. Return the paths.
+3. `showcase.py cut --manifest <path> --target <s>`, one `--still` per chosen frame — the script does all clock math, splices each still as its own 1× segment, and ramps the footage between them to fit the target. Clamped; it names any compromise.
+4. Read the verify images it returns and probe nothing by trust: a cut you haven't looked at is not verified. Return the paths.
 
 ## Failure discipline
 
-Every `showcase.py` line ends `=> OK | key=path` or `=> FAIL: reason (fix)` — a FAIL never
-carries a path to something not on disk. Trust the summary grammar; on FAIL do what the reason says, don't improvise around it. The one silent risk the script can't see is a wrong-but-valid monitor: only your Read of the check frame catches that, which is why step 2 is a gate.
+Every `showcase.py` line carries its own verdict and, on failure, its own fix — and a FAIL never carries a path to something not on disk. Trust that grammar; do what the reason says rather than improvising around it. The one silent risk the script can't see is a wrong-but-valid monitor: only your Read of the check frame catches that, which is why step 2 is a gate.

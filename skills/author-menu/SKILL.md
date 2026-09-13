@@ -65,5 +65,5 @@ A well-built gimmick ships its menu — *place* it (MA installer target, or VRCF
 - **`AgentInspector`** — generic JSON snapshot of any subtree (MA + VRCFury components included); the survey workhorse.
 - **`ReportController` / `ReportClip`** — animator/clip digests for step 1 and the vendor-clip dependency read.
 - **`ReportGimmick`** — gimmick subtree digest for step 5.
-- **`RenderAvatar`** — both-states visual check for dependency closure (NDMF preview resolves reactive components). Grab in a separate call from any edit — a same-call grab shows the pre-edit proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the same-call case.
+- **`RenderAvatar`** — both-states visual check for dependency closure (NDMF preview resolves reactive components). Grab in a separate call from any edit: a same-call grab shows the pre-edit proxy, and the in-flight-rebuild note the summary carries cannot catch that case.
 - **av3emulator** — drive the new controls live for step 6 via its runtime lists (`emulator.md` §Runtimes + §Drive / observe); Gesture Manager stays disabled per the play-entry gate.
