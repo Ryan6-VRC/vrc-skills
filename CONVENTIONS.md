@@ -11,7 +11,7 @@ In order; the exemplars are `compose-mergeable` (the fullest instance) and `own-
 3. **No-operator block.** Every operator-gated skill routes to the no-operator protocol (`workflow.md`) with the canonical `**No operator to ask?**` line — in the intro, or at the gate it governs where that reads better (`import-vendor-asset` and `shoot-thumbnail` place it at the gate, each with the skill's derivable default). A skill with no operator gate to route — one that runs unattended by design, or an authoring skill the agent runs inline — declares itself in the constants' `autonomous_skills` instead of carrying the block.
 4. **Scope** (only when the boundary needs stating). What this owns, and the boundary — out-of-scope intents arrow-routed to the sibling that owns them.
 5. **The sequence.** Ordered steps (`## The flow` with `### N.`, or `## Phase N — <name>`). **Gates are first-class**: every operator sign-off is bold at the step it gates and says what is being signed off on; every question that needs hardware or another client is a **named handoff** (`verify.md`'s discipline). Verify is the terminal step and is never omitted.
-6. **Tools**, when the skill drives tools that need routing to a contract doc: bold-backticked name + role gloss + the owning contract doc — roles, not contracts. Present, it is the terminal section; a tool-light skill cites its tools inline at the point of use and needs no such section (`import-vendor-asset`, `shoot-thumbnail`).
+6. **Tool routing, at first operational use.** When a tool needs routing to a contract doc, its first use gives the name, role, and owning doc. There is no terminal tool inventory.
 
 **Cite, don't restate.** A skill that depends on a doc's contract cites it; restating it manufactures the drift the workspace echo rules exist to prevent (`docs/tool-design.md` §Duplication owns the policy).
 
@@ -19,11 +19,11 @@ In order; the exemplars are `compose-mergeable` (the fullest instance) and `own-
 
 ## The gate
 
-`tools/validate_skills.py` is the repo-local gate: it lints skill anatomy against this contract, and needs Python plus `pyyaml` (`pip install pyyaml`) — it refuses to run without it rather than reading the constants below with a hand-rolled parser. The meta-workspace's `tools/check_prose.py` is the cross-repo pass — it invokes this gate, then resolves each skill's doc pointers and Tools-section names against the assembled workspace.
+`tools/validate_skills.py` is the repo-local gate: it lints skill anatomy against this contract, and needs Python plus `pyyaml` (`pip install pyyaml`) — it refuses to run without it rather than reading the constants below with a hand-rolled parser. The meta-workspace's `tools/check_prose.py` is the cross-repo pass — it invokes this gate, then resolves each skill's doc pointers against the assembled workspace.
 
 **The anatomy governs a consuming repo's project skills too**, not this repo's alone: `check_prose.py` names both `vrc-skills/skills/*` and the meta-repo's `.claude/skills/*` in one invocation, and a skill written into either enumeration owes the same shape. A project skill's relative links are bounded by *its* repo, which the gate derives per skill rather than from its own location — a project skill linking its own repo's docs is not an escape.
 
-Mechanical, load-bearing facts are errors: a skill that would not load, a name mismatching its directory, more than one H1, a dead link. Anatomy is warnings — the description prefix and length band, and the no-operator block every gated skill owes. Routing quality (does a description name its adjacent siblings?) and tool-citation adequacy are judgment the workspace prose-audit adjudicates, not this gate; whether an anatomy warning hardens into an error is workspace policy (`docs/tool-design.md` there).
+Mechanical, load-bearing facts are errors: a skill that would not load, a name mismatching its directory, more than one H1, a dead link. Anatomy is warnings — the description prefix and length band, and the no-operator block every gated skill owes. Routing quality (does a description name its adjacent siblings?) and tool-citation adequacy are judgment the workspace prose-audit adjudicates, not either mechanical gate; whether an anatomy warning hardens into an error is workspace policy (`docs/tool-design.md` there).
 
 Both linters read their constants from this block; the scripts embed no copies:
 
@@ -41,5 +41,4 @@ autonomous_skills:          # no operator gate by design: no no-operator block o
   - kickoff
   - write-for-agents
 required_no_operator_pointer: "workflow.md"
-terminal_section: "Tools"   # the Tools section's name (check_prose resolves its entries against TOOLS.md)
 ```

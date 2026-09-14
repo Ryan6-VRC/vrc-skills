@@ -5,7 +5,7 @@ description: Use when making our own owned copy of a mergeable's geometry — ou
 
 # Own a mergeable
 
-Build our own owned copy of a mergeable — an operator-chosen geometry subset (outfit, hair, ears+tail, accessory) — so it is **drop-in-equivalent** to the vendor's and composes onto a base with no special-casing. This mirrors `own-base`'s three-phase spine over the same tools, minus the body-only steps; the sequence and gates are fixed, the work inside each phase is judgment because you never know how a creator built the asset. Open each tool to learn its entry point.
+Build our own owned copy of a mergeable — an operator-chosen geometry subset (outfit, hair, ears+tail, accessory) — so it is **drop-in-equivalent** to the vendor's and composes onto a base with no special-casing. This mirrors `own-base`'s three-phase spine over the same tools, minus the body-only steps; the sequence and gates are fixed, the work inside each phase is judgment because you never know how a creator built the asset. Their contracts are `blender.md` for avatarprep and `unity-tools.md` for the Unity tools; open each tool to learn its entry point.
 
 **Own for a durable geometry change** (usually reproportioning to a custom base) **or to author/copy a seam the mergeable is missing.** A piece that needs neither — already seam-authored *and* geometrically fine, like a rigid accessory that just follows its bone — is not owned here; **compose the vendor prefab** (`compose-mergeable`).
 
@@ -91,9 +91,3 @@ Then convert to a **prefab variant** of the FBX — **never unpack the instance*
 
 **Zero the instance's root position and rotation before saving — unless the root carries a pose you established here.** Phase 1 replicated any vendor root delta into the geometry, so on an armature-merge piece the root holds nothing but staging offset, which bakes into the asset and surfaces later as a `CheckSeam` **NOT-PASS** carrying `maxOffset=`. The exception is a bone-proxy piece whose edit-time world pose against the target base you set here, at Phase 2B or 3. Decide it on the mode's **flags**, not its name: only `Unset` and `AsChildAtRoot` zero both localPosition and localRotation at build, so only there is the root's pose discardable — `AsChildKeepWorldPose`, `AsChildKeepPosition` and `AsChildKeepRotation` each preserve some of it. **Root scale is never zeroed by the build** unless `matchScale` is set, so leave an authored root scale alone in every mode. Record which case you have; `compose-mergeable`'s never-normalize rule protects a kept root downstream. Hand to `compose-mergeable` + the operator's playmode for the visual/behavioral bar. A `RenderAvatar` grab for that bar goes in a separate call from any edit — a same-call grab shows the pre-edit proxy; the summary's `note=` flags an in-flight rebuild but cannot catch the same-call case.
 
-## Tools
-
-- **`avatarprep`** (Blender) — Phase 1: `import_fbx` + observe, `stamp_base`, `prune_bones`, `merge_armatures` (superset case), `export_unity_fbx`; `apply_proportion_edge` is driven via `reproportion`. Contracts in `blender.md`.
-- **`com.ryan6vrc.avatar-tools`** (Unity) — Phase 2: the transplant kit (`CopyComponents` / `GraftHierarchy` / `MoveComponents`), materials-by-name + bounds/anchor. Contracts in `unity-tools.md`.
-- **`CheckSeam` / `CheckAvatar`** (agent-tools) — the Phase 3 gates.
-- **Modular Avatar / VRCFury** — the seam frameworks: copy their components (2B), or author one.

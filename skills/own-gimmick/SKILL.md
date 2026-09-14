@@ -25,6 +25,8 @@ In scope: extract a subsystem from a gimmick module, trim/de-cruft a module kept
 
 ## Phase 1 — Surgery
 
+`animator.md` owns the controller-tool contracts; `animator-schema.md` owns the compiled authoring language.
+
 Decompile to `CompileController` text and cut there — deterministic, reviewable, recompilable — not in scene-YAML or the animator window. The happy path never writes a vendor asset: Decompile reads without mutating, Compile emits fresh owned assets. **Expect refusals on vendor controllers** (they are the population Decompile refuses: Trigger params, duplicate sibling names, out-of-vocabulary constructs — `animator-schema.md` lists the classes). A refusal fix is the one pre-owned controller write, and it **never lands on the vendor asset** (`LAYOUT.md` read-only rule): duplicate the controller into the owned module folder, fix the duplicate (rename the duplicate-named sibling, convert the Trigger), decompile the duplicate. A genuinely out-of-vocabulary controller falls back to layer-level surgery via `CleanController` / `OwnControllerClips` (both write only owned assets), with this same checklist run manually.
 
 The cut checklist — every item is a defect class observed ≥2× across independent vendors; check each, name findings:
@@ -47,10 +49,3 @@ The cut checklist — every item is a defect class observed ≥2× across indepe
   - **Resurrect check** — in the emulator, drive every remaining control through its states and let the module sit through play entry (the default-active class fires bare at load): nothing removed comes back. Read through `emulator.md` §Drive / observe — removed params are checked against **post-build names** (VRCFury prefixes module params), and driver vs AAP values live in different channels (crossing them reads all-zero).
 - Cross-base moves re-verify contact/PB placement in world space (`gimmicks.md` §Contact patterns) — bone rolls differ per base.
 
-## Tools
-
-- **`DecompileController` / `CompileController`** — the surgery medium (`animator.md`; authoring language `animator-schema.md`).
-- **`ReportGimmick` / `ReportController` / `ReportPackage`** — the Phase 0 graph; liveness, typed drivers/behaviours, seam layout.
-- **`AgentInspector`** — MA Parameters + loose expression-params reads for the drift diff.
-- **`CleanController` / `OwnControllerClips` / `RepathClips`** — the no-decompile fallback layer and clip ownership (`animator.md`).
-- **`CheckAnimator` (basis=auto) / `Check*`** — post-surgery lint; **av3emulator** — the resurrect check (`emulator.md`).

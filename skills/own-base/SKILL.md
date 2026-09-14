@@ -5,7 +5,7 @@ description: Use when making our own owned, editable copy of a vendor VRChat ava
 
 # Own a vendor avatar base
 
-Build the operator's own normalized avatar from a vendor package: a clean, uploadable base body (+ underwear) with our naming, our renderer/descriptor conventions, and a fresh blueprint ID. Vendor packages are messy and each is different — the scripted tools handle the deterministic mechanics and emit PASS/FAIL diagnostics; this skill holds the judgment, the gates, and the sequencing. Open each tool to learn its exact entry point; the prose below only tells you which to reach for and when.
+Build the operator's own normalized avatar from a vendor package: a clean, uploadable base body (+ underwear) with our naming, our renderer/descriptor conventions, and a fresh blueprint ID. Vendor packages are messy and each is different — the scripted tools handle the deterministic mechanics and emit PASS/FAIL diagnostics; this skill holds the judgment, the gates, and the sequencing. Their contracts are `docs/blender.md` for avatarprep and `docs/unity-tools.md` for the Unity tools; open each tool to learn its exact entry point.
 
 The flow is three phases: graph-and-decide, Blender normalize, Unity rebuild. Don't skip ahead — each phase's gates feed the next.
 
@@ -103,7 +103,3 @@ Final cleanup: produce a **clean FX** (the **CleanController** tool). It keeps o
 
 **A clean FX is a blank slate, not a filter** — a dropped layer leaves independent statics wherever it was the only thing holding values in agreement, and the vendor FX (still on disk) stays the map for reconstructing any you still need. What a body-morph layer holds together, and how to bake one down instead of stranding it, is `outfits.md` §The FX controller.
 
-## Tools
-
-- **`com.ryan6vrc.avatar-tools`** (Unity, via `execute_code`) — the Phase-1 graph (`ReportPackage`) and the Phase-3 rebuild chain: `ConformImportSettings`, the rig conformer, the materials/bounds setter, the descriptor transplanter, the transplant kit (`CopyComponents` / `MoveComponents` / `GraftHierarchy`), `CleanController`. Contracts in `unity-tools.md`.
-- **`avatarprep`** (Blender) — Phase 2: import + observe, `compare_armatures` / `merge_armatures` for the superset case, `stamp_base`, `rename_objects`, the zero-weight prune, the CATS-recipe export. Contracts in `blender.md`.

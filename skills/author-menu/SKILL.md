@@ -46,7 +46,7 @@ A well-built gimmick ships its menu — *place* it (MA installer target, or VRCF
 
 ### 6. Verify
 
-**The play-entry gate is enforced** (`verify.md`): a mis-set scene is refused on entry, naming the offender and its fix — clear it and re-enter before trusting anything the session shows. **Play mode is the bake**: entering play runs the non-destructive build on the transient play copy (removed on exit), so one play session is both the baked read and the live drive — read the **baked** menu tree, params, and true synced-bit count from the play copy — asserting the control count of any shared category node, since a silent `More` split there is the only sign the cap was crossed — then drive each new control (in the emulator, `emulator.md`): param changes, mesh/blendshape response, dependency edges firing. All driving *and observation* happens inside the play session — `RenderAvatar` in play mode captures the driven state; after exit the scene reverts to authoring state, where a grab can verify only static baseline/clipping, never a toggle. `RenderAvatar` both states of any toggle whose dependency closure was uncertain — clipping in the off state means a missed edge. Authoring components are cheap to edit; loop until the baked result matches the plan.
+**The play-entry gate is enforced** (`verify.md`): a mis-set scene is refused on entry, naming the offender and its fix — clear it and re-enter before trusting anything the session shows. **Play mode is the bake**: entering play runs the non-destructive build on the transient play copy (removed on exit), so one play session is both the baked read and the live drive — read the **baked** menu tree, params, and true synced-bit count from the play copy — asserting the control count of any shared category node, since a silent `More` split there is the only sign the cap was crossed — then drive each new control (in the emulator, `emulator.md`): param changes, mesh/blendshape response, dependency edges firing. All driving *and observation* happens inside the play session — `RenderAvatar` in play mode captures the driven state; after exit the scene reverts to authoring state, where a grab can verify only static baseline/clipping, never a toggle. `RenderAvatar` both states of any toggle whose dependency closure was uncertain — clipping in the off state means a missed edge. Grab in a separate call from any edit: a same-call grab sees the pre-edit proxy, and the in-flight-rebuild note cannot catch that case. Authoring components are cheap to edit; loop until the baked result matches the plan.
 
 ## Traps
 
@@ -59,11 +59,3 @@ A well-built gimmick ships its menu — *place* it (MA installer target, or VRCF
 - Vendor menu assets serialize control types as ~100-offset ints — identify by shape (`menus.md` §Reading).
 - The pre-build parameter asset under-counts; only a bake shows the real bit total.
 
-## Tools
-
-- **Unity MCP `execute_code`** — all authoring and reading on the scene instance; MA components through `SerializedObject` (step 4 — the wrapper records the override, it is not an access workaround). No dedicated menu tool exists, deliberately — the deterministic slice is small and the formats are moving targets.
-- **`AgentInspector`** — generic JSON snapshot of any subtree (MA + VRCFury components included); the survey workhorse.
-- **`ReportController` / `ReportClip`** — animator/clip digests for step 1 and the vendor-clip dependency read.
-- **`ReportGimmick`** — gimmick subtree digest for step 5.
-- **`RenderAvatar`** — both-states visual check for dependency closure (NDMF preview resolves reactive components). Grab in a separate call from any edit: a same-call grab shows the pre-edit proxy, and the in-flight-rebuild note the summary carries cannot catch that case.
-- **av3emulator** — drive the new controls live for step 6 via its runtime lists (`emulator.md` §Runtimes + §Drive / observe); Gesture Manager stays disabled per the play-entry gate.

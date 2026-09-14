@@ -45,7 +45,7 @@ Follow the base-coupling authority order (`outfits.md` §The FX controller), rea
 
 **Reading a `ShapeChanger` raw:** prefer reflection over the `m_shapes` field (the serialized array is `m_shapes`, not `Shapes`) — it prints the `ShapeChangeType` by *name* (`Set`/`Delete`), which settles the mode outright. A SerializedProperty read gives the enum index instead — **Delete=0, Set=1** — so a bare `enum[0]` is *Delete* (geometry deletion), the more consequential mode, not the harmless-looking default; resolve the name before acting on it.
 
-**Vision is a check, not a source.** If the graph and the user leave an edge open, `RenderAvatar` confirms it only by **before/after comparison** — the shape worn vs. zeroed, the mesh on vs. off; read the *difference*, never a single capture. Vision confirms a hypothesis, it doesn't originate one.
+**Vision is a check, not a source.** If the graph and the user leave an edge open, `RenderAvatar` confirms it only by **before/after comparison** — the shape worn vs. zeroed, the mesh on vs. off; read the *difference*, never a single capture. Grab in a separate call from any edit: a same-call grab sees the pre-edit proxy. Vision confirms a hypothesis, it doesn't originate one.
 
 ### 3. Emit
 
@@ -122,11 +122,3 @@ The map's shared-morph edges are the one-value-per-morph obligation `compose-mer
 
 Emit the map as the answer, no mutation — the QA read of how an avatar's toggles and body shapes interrelate.
 
-## Tools
-
-- **Unity MCP `execute_code`** — inventory blendshapes, disable a mesh, set a weight.
-- **`SkinnedMeshRenderer.BakeMesh`** (via `execute_code`) — the pixel-independent geometry/penetration probe behind an occluded-shape override (§census); bake the NDMF preview proxy. Sanction and proxy attribution: `verify.md`.
-- **`ReportController` / `ReportClip`** (agent-tools, via `execute_code`) — the FX-graph read of step 2.
-- **`AgentInspector`** — MA/VRCFury reactions and the mesh/component layout.
-- **`ReportShapeOverlap`** (agent-tools, via `execute_code`) — the de-conflict census (§The census). A Report, not a verdict; you disposition each row. Contract: `unity-tools.md`.
-- **`RenderAvatar`** (agent-tools, via `execute_code`) — two doors: `Run` is visual confirmation (§2), `CaptureDiff` the differential the keep/hide calls are argued from (§Evidence). Grab in a separate call from any edit.
