@@ -34,7 +34,6 @@ CONSTS = {
     'exempt_skills': ['exempted'],
     'autonomous_skills': ['autonomous'],
     'required_no_operator_pointer': 'workflow.md',
-    'terminal_section': 'Tools',
 }
 GOOD_DESC = 'Use when the thing needs doing in a plausible way.'   # inside the 20-60 band
 NO_OP_BLOCK = 'No operator to ask? Follow `workflow.md` and proceed.\n'

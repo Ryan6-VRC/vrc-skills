@@ -63,8 +63,3 @@ Limitex present and no `TextureCompressor` on the avatar: add `dev.limitex.avata
 
 A present-but-unplaced AAO component is **noted, never force-removed** — AAO stays installed beside d4rk; the doc owns the split.
 
-## Tools
-
-- **`UploadAvatar`** (avatar-tools, via `execute_code`) — the CAU-driving door: the readiness preflight (step 1) and the upload itself (step 5). Contract in `unity-tools.md` §Publish.
-- **`ReportAvatarRecord` / `UpdateAvatarRecord`** (avatar-tools) — the live-record reads and edits an upload cannot make (step 4).
-- **Unity MCP `execute_code`** — the optimizer pre-step: detect installed packages, write the fields, read them back.
