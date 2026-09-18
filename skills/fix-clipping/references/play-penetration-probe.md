@@ -16,7 +16,7 @@ The pose set is scripted hip motion, not a real dance: rest, side bump left and 
 
 ## Snippet
 
-Run in one `execute_code` call; it arms an `EditorApplication.update` pump and returns at once. Poll `SessionState.GetString("penprobe")` in later calls until it starts with `done`. Fill the four placeholders.
+Run in one `execute_code` call; it arms an `EditorApplication.update` pump and returns at once. Poll `SessionState.GetString("penprobe")` in later calls until it starts with `done`. Fill every `<placeholder>`: avatar root, hips bone, toggle object, chain names, tip joint name, body mesh, garment meshes, and the height band.
 
 ```csharp
 var av = GameObject.Find("<AvatarRoot>");                 // gap: in play the emulator spawns clones; verify this is the local one
@@ -25,18 +25,19 @@ var rt = av.transform;
 var hips = av.GetComponentsInChildren<Transform>(true).First(t=>Base(t.name)=="<HipsBone>");
 var comp = av.GetComponentsInChildren<Component>(true).First(c=>c && Base(c.name)=="<ToggleObject>").gameObject;
 string[] chainNames = { <"Skirt_Front", "Skirt_1.L", ...> };
-var tips = chainNames.Select(cn=>av.GetComponentsInChildren<Transform>(true).First(t=>Base(t.name)==cn+".005")).ToArray(); // last joint of each chain
+var tips = chainNames.Select(cn=>av.GetComponentsInChildren<Transform>(true).First(t=>Base(t.name)==cn+"<.005 — the last joint's suffix on this rig>")).ToArray();
 var body = av.GetComponentsInChildren<SkinnedMeshRenderer>(true).First(s=>Base(s.name)=="<BodyMesh>");
 var garments = av.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(s=>s.gameObject.activeInHierarchy && new[]{<"Dress","SkirtOuter">}.Contains(Base(s.name))).ToArray();
 float yMin = 0.70f, yMax = 0.86f, band = 0.02f; int sectors = 24;          // region band in avatar space; adjust from ReportClearance's joint y column
 av.GetComponent<Animator>().enabled = false;
+comp.SetActive(false);                                    // baseline is captured with the component OFF, in the first rest sample below
 var restP = hips.localPosition; var restR = hips.localRotation;
-var restTips = tips.Select(t=>rt.InverseTransformPoint(t.position)).ToArray();
+Vector3[] restTips = null;
 List<Vector3> Bake(SkinnedMeshRenderer s){ var m=new Mesh(); s.BakeMesh(m,true); var l=m.vertices.Select(v=>rt.InverseTransformPoint(s.transform.TransformPoint(v))).ToList(); UnityEngine.Object.DestroyImmediate(m); return l; }
 float Depth(){
   int bands=(int)((yMax-yMin)/band); var bMax=new float[bands*sectors]; var gMin=new float[bands*sectors];
   for(int i=0;i<gMin.Length;i++){ gMin[i]=float.PositiveInfinity; bMax[i]=float.NegativeInfinity; }
-  int Bin(Vector3 p){ if(p.y<yMin||p.y>=yMax) return -1; int b=(int)((p.y-yMin)/band); int s=(int)((Mathf.Atan2(p.x,p.z)+Mathf.PI)/(2*Mathf.PI)*sectors)%sectors; return b*sectors+s; }
+  int Bin(Vector3 p){ if(p.y<yMin||p.y>=yMax) return -1; int b=(int)((p.y-yMin)/band); if(b<0||b>=bands) return -1; int s=(int)((Mathf.Atan2(p.x,p.z)+Mathf.PI)/(2*Mathf.PI)*sectors)%sectors; return b*sectors+s; }
   foreach(var p in Bake(body)){ int k=Bin(p); if(k>=0) bMax[k]=Mathf.Max(bMax[k], new Vector2(p.x,p.z).magnitude); }
   foreach(var g in garments) foreach(var p in Bake(g)){ int k=Bin(p); if(k>=0) gMin[k]=Mathf.Min(gMin[k], new Vector2(p.x,p.z).magnitude); }
   float worst=0; for(int i=0;i<gMin.Length;i++) if(!float.IsInfinity(gMin[i])&&!float.IsInfinity(bMax[i])) worst=Mathf.Max(worst, bMax[i]-gMin[i]);
@@ -44,13 +45,14 @@ float Depth(){
 }
 var poses = new (string, Vector3, Quaternion)[]{ ("rest",Vector3.zero,Quaternion.identity), ("bumpL",new Vector3(-0.05f,0,0),Quaternion.Euler(0,0,8)), ("bumpR",new Vector3(0.05f,0,0),Quaternion.Euler(0,0,-8)), ("thrust",new Vector3(0,0,0.04f),Quaternion.Euler(-10,0,0)) };
 var log = new System.Text.StringBuilder("stage | pose | depthCm | tipMoveCm(max)\n");
-int stage=0, pi=0, lf=-1; float st=Time.time; bool on=false; comp.SetActive(false);
+int stage=0, pi=0, lf=-1; float st=Time.time; bool on=false;
 EditorApplication.CallbackFunction cb=null;
 cb = () => {
   if(!EditorApplication.isPlaying){ EditorApplication.update-=cb; return; }
   if(Time.frameCount==lf) return; lf=Time.frameCount;             // one sample per rendered frame, whatever the fps
   if(Time.time-st<2.5f) return;                                    // gap: fixed hold, not a measured settle
-  var p=poses[pi]; float tipMax=tips.Select((t,i)=>(rt.InverseTransformPoint(t.position)-restTips[i]).magnitude).Max();
+  var p=poses[pi]; if(restTips==null) restTips=tips.Select(t=>rt.InverseTransformPoint(t.position)).ToArray(); // settled off|rest sample is the baseline
+  float tipMax=tips.Select((t,i)=>(rt.InverseTransformPoint(t.position)-restTips[i]).magnitude).Max();
   log.Append(on?"on":"off").Append(" | ").Append(p.Item1).Append(" | ").Append((Depth()*100).ToString("F1")).Append(" | ").Append((tipMax*100).ToString("F1")).Append('\n');
   SessionState.SetString("penprobe", "running\n"+log);
   hips.localPosition=restP; hips.localRotation=restR;
@@ -61,7 +63,7 @@ SessionState.SetString("penprobe","armed"); EditorApplication.update+=cb;
 return "armed: "+poses.Length+" poses x off/on; poll SessionState penprobe";
 ```
 
-The first `rest` row of the `on` stage is the rest-contact stage: tip movement there with the component on and the pelvis at rest is a collider touching a chain standing still. Prove that reading with a positive control once per rig: an oversized collider must move a tip in the same row.
+The `off | rest` row is the baseline (tip movement 0 by construction). The `on | rest` row is the rest-contact stage: tip movement there, with the component on and the pelvis at rest, is a collider touching a chain standing still. Prove that reading with a positive control once per rig: an oversized collider must move a tip in the same row.
 
 ## Known gaps, in the order they bite
 
