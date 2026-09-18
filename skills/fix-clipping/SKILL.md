@@ -31,7 +31,7 @@ Pin the venue and run `Ryan6Vrc.AgentTools.Editor.ReportClearance.Run(avatarRoot
 | Clips only at some slider value | Slider follow: `BlendshapeSync` by name with a remap curve (`outfits.md`) | `map-outfit-shapes` |
 | Garment through garment | Inner-garment shrink or Delete row authored on the outer piece; the body coverage carrier does not apply | `map-outfit-shapes`; a Blender shrink key is the user's |
 | Clips in game but not in the editor | FX state: read the driven state in play before believing the editor (`outfits.md` parameter-default rule) | this skill, diagnosis only |
-| Clips in a held pose, no chain involved; body and garment near the region ride different bones | Weight mismatch: garment weights differ from the body's | `own-mergeable`; weight transfer in Blender is user-run or user-approved |
+| Clips in a held pose, no chain involved; body and garment near the region ride different bones | Pose overlap: a shrink shape on the body under the garment often covers it and costs no round-trip; weight transfer only when the shrink cannot reach the pose | `map-outfit-shapes` first; `own-mergeable` for the weights, user-run or user-approved in Blender |
 | Clips while moving, a physbone chain involved | Dynamics: §The dynamics fix | this skill |
 | Skin permanently covered and the user wants the polygons gone | Occlusion deletion: `mark_coverage` carrier (`blender.md`) plus the Delete row declared on the costume prefab (`outfits.md`) | `own-mergeable` for the carrier, this skill for the row |
 
