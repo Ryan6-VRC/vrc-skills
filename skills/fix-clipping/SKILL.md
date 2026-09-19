@@ -39,6 +39,8 @@ Pin the venue and run `Ryan6Vrc.AgentTools.Editor.ReportClearance.Run(avatarRoot
 
 **Occlusion deletion is gated.** It is a Blender round-trip and a permanent cut, offered only after a reversible fix is ruled out and the operator has said to make it permanent. `mark_coverage` measures rest-pose cone coverage with a kin rule and reports its residue; it does not certify "never visible in any pose".
 
+**A texture-mask cut is the reversible alternative**: an MA `MeshCutter` carrying `Vertex Filter - By Mask` components deletes the triangles an exact-black (or exact-white) mask region covers, at build, with no Blender round-trip. Set each filter's selection mode to `AllVertices`; its default `AnyVertex` takes every triangle with one vertex in the region, visible edge triangles included. A filter reads one material slot and the cutter's default `VertexIntersection` ANDs its filters per slot, so filters on different slots cut nothing: intersect only filters on one slot, one per material that can occupy it. The cutter runs before VRCFury (`nondestructive.md`), so a material a VRCFury swap puts in the slot needs its own filter, or the cut follows the bound material's mask and removes triangles the swapped one shows.
+
 ## The dynamics fix
 
 0. **Audit the existing collider set** from the report's collider table. A region chain in a collider's `notReferencing` list is often the whole bug; so is a radius nobody sized. Fix the wiring before sizing anything.
