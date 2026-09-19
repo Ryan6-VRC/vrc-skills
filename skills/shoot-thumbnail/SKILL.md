@@ -67,13 +67,15 @@ Both front-ends run the **full SDK bake** — that is the constant, not the diff
 
 Draw a **compatible set** rather than each independently — a demure pose under a manic grin is two good choices pairing badly, and a pastel backdrop behind a gothic avatar is three.
 
-**With an operator present, shoot a set and let them pick.** The shortlist draw already produced N candidates; rendering one and discarding the rest throws the selection work away. Present them together, each labelled with its drawn pose, expression, and backdrop, so the pick is one word.
+**With an operator present, shoot a set and let them pick.** The shortlist draw already produced N candidates; rendering one and discarding the rest throws the selection work away. Present them together, each labelled with its drawn pose, expression, backdrop, and camera archetype, so the pick is one word.
 
 - **Play defaults to a set** — 2–3 across the shortlist, unprompted. One build serves them all, so this is where the mode earns its cost; a single play-mode frame leaves the amortization unspent.
 - **Edit offers a set** — the same 2–3, but each one re-bakes, so name that cost rather than assuming it.
 - **No operator ⇒ one shot.** A set nobody picks from is just N bakes.
 
-**Read at menu size, so the face has to dominate — default to `bust`.** Frame for what the pose puts in the shot, not the pose's category: reach for `half` only when the hands or a held gesture ARE the subject (a clasp, heart-hands), knowing it shrinks the face. `full` is almost never a thumbnail — a whole-body figure's face vanishes at menu size, and the bundled clips carry no root translation, so a standing pose hovers there anyway. None of this is gated: shoot it, open the PNG, re-crop tighter if the subject swims.
+**Read at menu size, so the face has to dominate — default to `bust`.** `framing` picks the subject and `zoom` varies the crop within it, so never lower `zoom` to imitate `half`. Frame for what the pose puts in the shot, not the pose's category: reach for `half` only when the hands or a held gesture ARE the subject (a clasp, heart-hands), knowing it shrinks the face. `full` is almost never a thumbnail — a whole-body figure's face vanishes at menu size, and the bundled clips carry no root translation, so a standing pose hovers there anyway. A cropped crown or ear tips read as deliberate at menu size, not as a defect — don't widen to clear them. None of this is gated: shoot it, open the PNG, re-shoot if the subject swims.
+
+**A prop over the head** (a halo, a floating label) gets `headroom` raised and `zoom` dropped a notch; accept it partly in frame, because widening until it all fits leaves the face unreadable. `headroom` stays out of the camera draw. A prop only a VRCFury toggle turns on (`defaultOn` false) is written off by every bake, so edit mode cannot show it — shoot it in play with the toggle's parameter set.
 
 **Edit** is one call per shot. **Play** is a session around the same vocabulary, and the ordering is the part no single call teaches: `Run` (refuses on an unsaved loaded scene), then `manage_editor play` — which blocks for minutes while the SDK build runs — then `Shoot` per candidate, polling `Status` (or `read_console` on the tag it returns) until it stops reporting settling, then `manage_editor stop` and `End`.
 
@@ -81,7 +83,17 @@ Draw a **compatible set** rather than each independently — a demure pose under
 
 The venue is the **active scene**, lit by its own lights — not a generated one, and not edit's fixed rig. Two expression cases refuse in play and belong in edit: an avatar with **no FX controller**, and an FX slot holding an **override controller** the compositor cannot clone. Both fail loud and name edit mode.
 
-Distance is solved from `fov`, so it changes the look, not the framing. `yaw` null is an automatic flattering oblique — a number is an **offset added to head tracking**, not an absolute heading (`yaw: 0` means "no oblique", not "frontal"), positive orbiting toward screen-left. An explicit `yaw` carries the composition with it: the subject shifts opposite the way the camera swung, to leave the gaze somewhere to go, and `yaw: 0` centres it. Both are taste dials: leave them alone unless the shot asks for it.
+**Draw the camera too**, or every thumbnail shares one angle and distance — the defaults are a single fixed shot. `yaw` is an **offset added to head tracking**, not an absolute heading (`yaw: 0` means "no oblique", not "frontal"), positive orbiting toward screen-left, and the subject shifts opposite the swing to leave the gaze somewhere to go. `pitch` is likewise an offset on the head-follow elevation, positive raising the camera. `zoom` scales the framing's span and leaves perspective to `fov`, which solves distance rather than changing coverage. Draw one archetype with `Get-Random`, then each value uniformly inside its band, and the sign of `yaw` separately:
+
+| archetype | `zoom` | `pitch` | \|`yaw`\| | `fov` |
+|---|---|---|---|---|
+| tight three-quarter | 1.15–1.3 | 2–8 | 20–30 | 28–34 |
+| soft near-frontal | 0.95–1.1 | 0–5 | 6–12 | 30–36 |
+| high, looking down | 1.0–1.2 | 8–14 | 12–25 | 26–32 |
+| loose, room to breathe | 0.85–0.95 | −3–3 | 15–30 | 24–30 |
+| level strong oblique | 1.0–1.15 | −4–2 | 28–35 | 30–36 |
+
+The bands sit well inside what the tool accepts, on purpose: past about 35° of yaw a flat anime face turns away, and from below the eyeline it is a nostril shot. Two pairings go bad — a chin-up pose already lifts the camera through head-follow, so a high archetype stacks onto it; and a tight archetype crops the hands off a pose whose hands are the subject.
 
 **Serialize the calls** — the bake and play entry both drive global editor state, and the tool refuses a second session or an overlapping `Shoot` outright. Never two at once, never parallelized across subagents.
 
@@ -92,10 +104,10 @@ Distance is solved from `fov`, so it changes the look, not the framing. `yaw` nu
 The summary names its own fields; what it cannot tell you is what to do with them:
 
 - **The resolved clip, parenthesized after the slot, is the only place the drawn face is named** — a VRCFury-merged FX prints the same fact in a longer `Copied from` form.
-- **The two yaws are decomposable, and that is their point.** `camYaw − headYaw` is the offset to pass back as `yaw` to reproduce a shot; a gap wider than that offset means head tracking saturated its ±60° clamp.
-- **The head position is reported, never gated** — an off-centre head is something you can see in the PNG. A blank frame does fail loud, so an OK verdict means something was rendered.
+- **The two yaws are decomposable, and that is their point.** `camYaw − headYaw` is the offset to pass back as `yaw` to reproduce a shot; a gap wider than that offset means head tracking saturated its ±60° clamp. `camPitch` is the camera's resulting elevation, head-follow plus `pitch`, so beside `headPitch` it says whether a steep shot came from the pose or the draw.
+- **The head position is reported, never gated** — an off-centre head is something you can see in the PNG. A blank frame fails loud, and so does one carrying the flat `#00FFFF` shader-compile placeholder, so an OK verdict means something rendered with its shaders compiled.
 - **A missing log is not proof a door went undriven** — refusal and exception paths write none, and `Status` writes none on a clean success. The PNG path never depends on the log: it is the token you hand `UpdateAvatarRecord`'s `newImagePath` to publish the shot, since an upload reads no external image, and a failed log write cannot displace it.
 - **A FAIL saying the expression moved no blendshape** means the clip and the baked avatar disagree — usually a path/GUID escape hatch pointing at pre-bake shape names. Pass the slot instead.
 - **Play's settle readout is not a gate**, and rarely worth acting on: a chain still swinging at capture reads as life in a portrait, not a defect. Raise `settleFrames` only if the operator wants it stiller.
 
-Name the mode, the drawn pose, and the expression when you show the PNG, so a re-roll is one sentence.
+Name the mode, the drawn pose, the expression, and the camera archetype when you show the PNG, so a re-roll is one sentence.
