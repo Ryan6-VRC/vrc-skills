@@ -87,11 +87,11 @@ The venue is the **active scene**, lit by its own lights — not a generated one
 
 | archetype | `zoom` | `pitch` | \|`yaw`\| | `fov` |
 |---|---|---|---|---|
-| tight three-quarter | 1.15–1.3 | 2–8 | 20–30 | 28–34 |
-| soft near-frontal | 0.95–1.1 | 0–5 | 6–12 | 30–36 |
-| high, looking down | 1.0–1.2 | 8–14 | 12–25 | 26–32 |
-| loose, room to breathe | 0.85–0.95 | −3–3 | 15–30 | 24–30 |
-| level strong oblique | 1.0–1.15 | −4–2 | 28–35 | 30–36 |
+| tight three-quarter | 1.15 to 1.3 | 2 to 8 | 20 to 30 | 28 to 34 |
+| soft near-frontal | 0.95 to 1.1 | 0 to 5 | 6 to 12 | 30 to 36 |
+| high, looking down | 1.0 to 1.2 | 8 to 14 | 12 to 25 | 26 to 32 |
+| loose, room to breathe | 0.85 to 0.95 | -3 to 3 | 15 to 30 | 24 to 30 |
+| level strong oblique | 1.0 to 1.15 | -4 to 2 | 28 to 35 | 30 to 36 |
 
 The bands sit well inside what the tool accepts, on purpose: past about 35° of yaw a flat anime face turns away, and from below the eyeline it is a nostril shot. Two pairings go bad — a chin-up pose already lifts the camera through head-follow, so a high archetype stacks onto it; and a tight archetype crops the hands off a pose whose hands are the subject.
 
