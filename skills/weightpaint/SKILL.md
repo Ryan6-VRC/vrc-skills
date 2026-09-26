@@ -30,11 +30,11 @@ Two rules, as stated: "We are not deleting skin under cloth except as an absolut
 
 ## The flow
 
-Every door writes `--report`, and the fit doors `--render`, only when passed: pass paths under `test-output/weightpaint/<asset>/`.
+Every door writes `--report`, and `report_fit`/`compare_fit` also `--render`, only when passed: pass paths under `test-output/weightpaint/<asset>/`.
 
 ### 1. State the row and the spot
 
-On the `fix-clipping` entrance, inherit its answers: where, when, whether it is new, what is off limits. On a direct ask, take the operator's word for which meshes and where. The working file is the costume blend in the venue's `Blender/` mirror, with the body linked; read the venue's record for it first, since the constraints a previous pass left (which meshes follow the leg, which take no leg skin, what was pushed) bind this one. Read the row's prefab for its Set rows, unconditional Deletes and index-addressed `m_BlendShapeWeights` overrides, and carry them as `--shape` and `--cut-shape` on every door; `blender.md`'s `report_fit` paragraph has the reading rules.
+On the `fix-clipping` entrance, inherit its answers: where, when, whether it is new, what is off limits. On a direct ask, take the operator's word for which meshes and where. The working file is the costume blend in the venue's `Blender/` mirror, with the body linked; read the venue's record for it first, since the constraints a previous pass left (which meshes follow the leg, which take no leg skin, what was pushed) bind this one. Read the row's prefab for its Set rows, unconditional Deletes and index-addressed `m_BlendShapeWeights` overrides, and carry them as `--shape` on `transfer_weights` and the fit doors (`report_fit`, `compare_fit`, `push_garment`), and `--cut-shape` on the fit doors only — `fold_bones` takes neither; `blender.md`'s `report_fit` paragraph has the reading rules.
 
 ### 2. Locate and classify
 
