@@ -1,6 +1,6 @@
 ---
 name: fix-clipping
-description: Use when a user reports clipping on a built avatar and wants it fixed — "my model clips", "the skirt kicks through the hips when I dance", "physbones go through the body", "legs poke through the dress when I sit", "hair clips through the shoulders" — and for the triage that decides which mechanism owns the fix. Owns the dynamics fix (colliders, chain settings) outright; routes static and slider clipping to map-outfit-shapes, weights and coverage deletion to own-mergeable, and whole-outfit fit mismatch to reproportion or mochifit. Not measuring coverage for a new costume, not the shape map on its own.
+description: Use when a user reports clipping on a built avatar and wants it fixed — "my model clips", "the skirt kicks through the hips when I dance", "physbones go through the body", "legs poke through the dress when I sit", "hair clips through the shoulders" — and for the triage that decides which mechanism owns the fix. Owns the dynamics fix (colliders, chain settings) outright; routes static and slider clipping to map-outfit-shapes, weights and skin-poke push to weightpaint, coverage deletion to own-mergeable, and whole-outfit fit mismatch to reproportion or mochifit. Not measuring coverage for a new costume, not the shape map on its own.
 ---
 
 # Fix clipping
@@ -31,9 +31,12 @@ Pin the venue and run `Ryan6Vrc.AgentTools.Editor.ReportClearance.Run(avatarRoot
 | Clips only at some slider value | Slider follow: `BlendshapeSync` by name with a remap curve (`outfits.md`) | `map-outfit-shapes` |
 | Garment through garment | Inner-garment shrink or Delete row authored on the outer piece; the body coverage carrier does not apply | `map-outfit-shapes`; a Blender shrink key is the user's |
 | Clips in game but not in the editor | FX state: read the driven state in play before believing the editor (`outfits.md` parameter-default rule) | this skill, diagnosis only |
-| Clips in a held pose, no chain involved; body and garment near the region ride different bones | Pose overlap: a shrink shape on the body under the garment often covers it and costs no round-trip; weight transfer only when the shrink cannot reach the pose | `map-outfit-shapes` first; `own-mergeable` for the weights, user-run or user-approved in Blender |
+| Clips in a held pose or through a joint's range of motion, no chain involved; body and garment near the region ride different bones | Pose overlap: `weightpaint`, whose bone-sweep measurement tells a weights defect from a shape one and replaces the shrink-first heuristic. Shrink-first survives as a lean: a body shrink shape costs no round-trip, so where the measurement says shape it is still the cheaper fix | `weightpaint`; a shape it finds goes to `map-outfit-shapes` |
+| Skin pokes through a skin-tight garment between its vertices as a joint bends, no chain involved | Skin poke: a push of the garment off the body by a millimetre or less where the sweep shows skin coming through, after any weight fix | `weightpaint` |
 | Clips while moving, a physbone chain involved | Dynamics: §The dynamics fix | this skill |
 | Skin permanently covered and the user wants the polygons gone | Occlusion deletion: `mark_coverage` carrier (`blender.md`) plus the Delete row declared on the costume prefab (`outfits.md`) | `own-mergeable` for the carrier, this skill for the row |
+
+**A pose-overlap or skin-poke row hands to `weightpaint` with Turn 1's answers** and comes back after its verify; the watch list below stays here. Whether a residual intersection is acceptable is the user's eye, never a threshold (`blender.md` §Measuring mesh clipping).
 
 **Rest overlap goes first.** A chain the report shows inside the body at rest (`insideBodyAtRest` above zero) cannot be fixed by a collider, and a dynamics fix measured over a rest overlap reports a fake improvement. Take the cheapest reversible fix first and name the root cause you did not fix; the task stays here across a handoff, and re-running the report is how you re-enter the dynamics branch.
 
