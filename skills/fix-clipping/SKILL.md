@@ -59,6 +59,20 @@ Pin the venue and run `Ryan6Vrc.AgentTools.Editor.ReportClearance.Run(avatarRoot
 5. **Verify.** Re-run `ReportClearance`: every chain the collider should cover prints a `restContactCm=` token rather than `—`, and none reads a major deflection (a dash is an unmeasured chain, not a clean one). Then the motion number: a `DrivePhysBones` drive over the motion that reproduced it, with `bodyMesh` and `garments` set, before the write and again after, on the same poses (contract: `unity-tools.md`). In between, `WriteDynamics`' live collider rows try one candidate size after another in a single play session; only the chosen fit is written in step 4. Read each drive's penetration by body region and chain, each pose against its own drive's `rest` row, never raw counts across drives. Pass: the regions the user named are lower at every motion pose after the write, and no other region has risen to take their place, since a fix moves penetration between regions as readily as it removes it. Read each bucket's standoff beside it: a chain held off the body is weighed against the garment's tolerance (the sizing quotes in step 3), never scored as a pass. Report the residual as a number, not as "fixed".
 6. **Record** the collider in the venue's costume README as the standing constraint on the next edit, never as the readings (`VENUE.md`).
 
+## Fitting a collider set by penetration
+
+The method for any chain the body passes through, hair and skirt alike, on top of step 5's drive-before-and-after:
+
+- **The poses are held tilts of Hips**, each until the chain settles: face down (the pose that exposes the back and butt), each side, a forward bow, face up as a control. A jitter still falling at the end of a hold is a slow chain settling, not an oscillation, so hold longer before calling it unstable.
+- **Read penetration per body region and per chain, never as one total**, and pass `groups` where the door's default grouping by physbone root would lump chains together. A fix that clears one region moves the total by a fraction of its effect.
+- **Read the standoff beside it**: each region's mean gap, how far the chain near the body rides off it. Zero penetration with strands riding centimetres off the skin is the forcefield the operator rejects.
+- **Sweep live, then write once**, through `WriteDynamics`' live collider row; the collider's `position` is in its own frame, so read the collider's rotation before moving it.
+- **A collider's rear surface is placed against the chain's joint radius** (`runtime.md` §PhysBones): a chain with a large tip radius fits a collider sunk into the body, and one with a small radius needs the surface on the skin. The same collider does not transfer between chains whose radii differ.
+- **Widen by radius with the rearmost point held**: a larger radius with the centre moved forward by the same amount covers the flanks without pushing the chain off the back.
+- **Capsules overlap.** A strand slides through the seam where one capsule's cap ends and the next begins, and its joints land inside the torso.
+- **Fixes couple, so re-read every region after every change.** Holding a heavy chain off the shoulders lays it along the back to the butt; closing a waist seam from above pushes the strand onto the thighs. Stop when each step only moves penetration from one region to another, and put the last two fits to the operator.
+- **A physbone change moves the fit.** An endpoint or joint-radius change on the chain changes where it rests, so the colliders are re-read after one.
+
 ## Hand off with a watch list
 
 The user's in-client test is the final verification, and "dance and watch" is not enough instruction. Emit the rows for the branch you took:
