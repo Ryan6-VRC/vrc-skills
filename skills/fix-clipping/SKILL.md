@@ -28,7 +28,7 @@ Pin the venue and run `Ryan6Vrc.AgentTools.Editor.ReportClearance.Run(avatarRoot
 |---|---|---|
 | Everything clips a little, everywhere, after a base change or on a cross-base outfit | Fit mismatch: decline here | `reproportion` / `mochifit`; `CheckSeam` is the gate |
 | Clips standing still, no slider involved | Static overlap: shrink shapes, Delete-mode `ShapeChanger`, `MeshCutter` | `map-outfit-shapes` |
-| Clips only at some slider value | Slider follow: `BlendshapeSync` by name with a remap curve (`outfits.md`) | `map-outfit-shapes` |
+| Clips only at some slider value | Slider follow: `BlendshapeSync` by name at matching polarity (`outfits.md`) | `map-outfit-shapes` |
 | Garment through garment | Inner-garment shrink or Delete row authored on the outer piece; the body coverage carrier does not apply | `map-outfit-shapes`; a Blender shrink key is the user's |
 | Clips in game but not in the editor | FX state: read the driven state in play before believing the editor (`outfits.md` parameter-default rule) | this skill, diagnosis only |
 | Clips in a held pose or through a joint's range of motion, no chain involved; body and garment near the region ride different bones | Pose overlap: `weightpaint`, whose bone-sweep measurement tells a weights defect from a shape one and replaces the shrink-first heuristic. Shrink-first survives as a lean: a body shrink shape costs no round-trip, so where the measurement says shape it is still the cheaper fix | `weightpaint`; a shape it finds goes to `map-outfit-shapes` |
