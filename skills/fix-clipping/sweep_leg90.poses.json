@@ -1,0 +1,630 @@
+{
+ "poses": [
+  {
+   "name": "settle1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.5,
+   "sample": "none"
+  },
+  {
+   "name": "L901",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lslow1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -50
+    }
+   ],
+   "ramp": 2.5,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lout501",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -50
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lslow2",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 5,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lin351",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lslow3",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -50
+    }
+   ],
+   "ramp": 3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lfast1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 0.6,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lfast2",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -50
+    }
+   ],
+   "ramp": 0.6,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lfast3",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 0.6,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lin35f1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lwhip1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -50
+    }
+   ],
+   "ramp": 0.3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lwhip2",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 0.3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lwhip3",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -50
+    }
+   ],
+   "ramp": 0.3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lwhip4",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 0.3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lin35w1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lfast4",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 20
+    }
+   ],
+   "ramp": 0.4,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lin201",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 20
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lwide1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -90
+    }
+   ],
+   "ramp": 3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lout901",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -90
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lwide2",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 1,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "settle2",
+   "ops": [],
+   "ramp": 1,
+   "hold": 2,
+   "sample": "none"
+  },
+  {
+   "name": "settle3",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.5,
+   "sample": "none"
+  },
+  {
+   "name": "R901",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Rslow1",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 50
+    }
+   ],
+   "ramp": 2.5,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rout501",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 50
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Rslow2",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    }
+   ],
+   "ramp": 5,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rin351",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Rslow3",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 50
+    }
+   ],
+   "ramp": 3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rfast1",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    }
+   ],
+   "ramp": 0.6,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rfast2",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 50
+    }
+   ],
+   "ramp": 0.6,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rfast3",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    }
+   ],
+   "ramp": 0.6,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rin35f1",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Rwhip1",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 50
+    }
+   ],
+   "ramp": 0.3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rwhip2",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    }
+   ],
+   "ramp": 0.3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rwhip3",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 50
+    }
+   ],
+   "ramp": 0.3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rwhip4",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    }
+   ],
+   "ramp": 0.3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rin35w1",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Rfast4",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -20
+    }
+   ],
+   "ramp": 0.4,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rin201",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -20
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Rwide1",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 90
+    }
+   ],
+   "ramp": 3,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Rout901",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 90
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Rwide2",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 1,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "settle4",
+   "ops": [],
+   "ramp": 1,
+   "hold": 2,
+   "sample": "none"
+  },
+  {
+   "name": "settle5",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90
+    }
+   ],
+   "ramp": 1,
+   "hold": 2,
+   "sample": "none"
+  },
+  {
+   "name": "sit1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90
+    }
+   ],
+   "ramp": 0,
+   "hold": 2,
+   "sample": "every"
+  },
+  {
+   "name": "settle6",
+   "ops": [],
+   "ramp": 1,
+   "hold": 2,
+   "sample": "none"
+  },
+  {
+   "name": "restEnd1",
+   "ops": [],
+   "ramp": 0,
+   "hold": 1,
+   "sample": "every"
+  }
+ ]
+}
