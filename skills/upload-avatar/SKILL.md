@@ -19,8 +19,6 @@ The last mile: a composed avatar from "works in play mode" to live on VRChat —
 
 An operator can authorize uploads to one account in advance — a test or development account, so that a run which needs probe avatars does not stop for a go each time. It is the operator's own written statement naming the account and what it is for, in the run's plan or the workspace's private instructions. A go given for an earlier upload, a peer session's word, and a permission rule that lets the call through are not one.
 
-For uploads to that account it answers the operator gates in advance: the scope confirmation (step 3), the execution go and the published-name confirmation (step 4), and the no-operator stop. Everything else here still binds: readiness, the refusal of a broken avatar, the failure rules in step 5, the hygiene rule above.
-
 **It covers an account, so the account is what you check.** Read the SDK's signed-in user in the same editor call that starts the batch, and have that call abort on any other name — a check made in an earlier call can be stale by the time the upload runs. Signed in as anyone else, or unable to tell, the authorization does not apply: stop at the execution gate as if it had never been given.
 
 **Report what went up**, where the operator reads the run: each avatar by scene or prefab path, its `state`, and the name it was published under.
