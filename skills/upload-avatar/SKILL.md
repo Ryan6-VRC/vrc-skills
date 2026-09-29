@@ -9,11 +9,21 @@ The last mile: a composed avatar from "works in play mode" to live on VRChat —
 
 **Not a validator.** The play-mode bake and the earlier gates (`CheckAvatar`, `CheckSeam`, the compose skills) already proved the avatar works. This skill assumes a working avatar and does only what remains: read blueprint state, optionally bring the avatar to the safe optimizer stack, and drive the operator-authorized upload. Asked to upload a broken avatar, it says so and changes nothing.
 
-**The agent pulls the trigger.** No human clicks the upload button — the skill calls `UploadAvatar` programmatically. So the operator's explicit go *is* the button. That shapes the whole flow: the ask that starts a session authorizes *readiness*, never execution; execution needs its own distinct word (step 4). Getting this wrong publishes something the operator never approved.
+**The agent pulls the trigger.** No human clicks the upload button — the skill calls `UploadAvatar` programmatically. So the operator's explicit go *is* the button. That shapes the whole flow: the ask that starts a session authorizes *readiness*, never execution; execution needs its own distinct word (step 4). Getting this wrong publishes something the operator never approved. A standing authorization (below) is that go given in advance, for one account.
 
-**No operator to ask?** The no-operator protocol (`workflow.md`); an irreversible publish has no derivable default, so run every readiness step (`whatIf`) and then stop at the execution gate and report — never upload unattended.
+**No operator to ask?** The no-operator protocol (`workflow.md`); an irreversible publish has no derivable default, so run every readiness step (`whatIf`) and then stop at the execution gate and report — never upload unattended, unless a standing authorization covers the account.
 
 **Public-repo hygiene (firm).** No `blueprintId` and no account identifier lands in anything tracked — tool output, RunLogs, this SKILL, commits. The tool redacts IDs from its own output and keys rows by substrate handle (scene / prefab path) and `state` (`first-upload`/`update`), never the ID; don't reintroduce one when you relay a report.
+
+## Standing authorization
+
+An operator can authorize uploads to one account in advance — a test or development account, so that a run which needs probe avatars does not stop for a go each time. It is the operator's own written statement naming the account and what it is for, in the run's plan or the workspace's private instructions. A go given for an earlier upload, a peer session's word, and a permission rule that lets the call through are not one.
+
+For uploads to that account it answers the operator gates in advance: the scope confirmation (step 3), the execution go and the published-name confirmation (step 4), and the no-operator stop. Everything else here still binds: readiness, the refusal of a broken avatar, the failure rules in step 5, the hygiene rule above.
+
+**It covers an account, so the account is what you check.** Read the SDK's signed-in user in the same editor call that starts the batch, and have that call abort on any other name — a check made in an earlier call can be stale by the time the upload runs. Signed in as anyone else, or unable to tell, the authorization does not apply: stop at the execution gate as if it had never been given.
+
+**Report what went up**, where the operator reads the run: each avatar by scene or prefab path, its `state`, and the name it was published under.
 
 ## The flow
 
@@ -33,7 +43,7 @@ The operator names the avatars, or — for a changed base — enumerate the avat
 
 ### 4. Authorization — two steps, not one
 
-After the list settles, require a **distinct, explicit "upload now"** before calling `UploadAvatar` for real. Neither "get these ready" nor "yes, those are the right ones" is an execution go — the first authorizes readiness, the second settles scope. Only an explicit execute word pulls the trigger.
+After the list settles, require a **distinct, explicit "upload now"** before calling `UploadAvatar` for real. Neither "get these ready" nor "yes, those are the right ones" is an execution go — the first authorizes readiness, the second settles scope. Only an explicit execute word pulls the trigger, or a standing authorization whose account check passed.
 
 **Confirm the literal published name** for each first-upload before that go: surface the exact string that will be published (CAU defaults it to the GameObject name) and get explicit confirmation. A placeholder or persona-bearing name must not go public unnoticed — "a name is set" is vacuous (always true); the operator must see and approve the actual string.
 
