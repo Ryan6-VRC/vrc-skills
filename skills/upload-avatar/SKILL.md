@@ -7,7 +7,7 @@ description: Use when driving a VRChat upload — "upload this avatar", "re-uplo
 
 The last mile: a composed avatar from "works in play mode" to live on VRChat — a first upload (mint blueprint ID, name, thumbnail) or a re-upload of already-live avatars, the batch case being the point (change one base prefab that 10+ avatars inherit → all need re-uploading).
 
-**Not a validator.** The play-mode bake and the earlier gates (`CheckAvatar`, `CheckSeam`, the compose skills) already proved the avatar works. This skill assumes a working avatar and does only what remains: read blueprint state, optionally bring the avatar to the safe optimizer stack, and drive the operator-authorized upload. Asked to upload a broken avatar, it says so and changes nothing.
+**Not a validator.** The play-mode bake and the earlier gates (`CheckAvatar`, `CheckSeam`, the compose skills) already proved the avatar works. This skill assumes a working avatar and does only what remains: read blueprint state, optionally bring the avatar to the safe optimizer stack, drive the operator-authorized upload, and request an impostor for what went up. Asked to upload a broken avatar, it says so and changes nothing.
 
 **The agent pulls the trigger.** No human clicks the upload button — the skill calls `UploadAvatar` programmatically. So the operator's explicit go *is* the button. That shapes the whole flow: the ask that starts a session authorizes *readiness*, never execution; execution needs its own distinct word (step 4). Getting this wrong publishes something the operator never approved. A standing authorization (below) is that go given in advance, for one account.
 
@@ -21,7 +21,7 @@ An operator can authorize uploads to one account in advance — a test or develo
 
 **It covers an account, so the account is what you check.** Read the SDK's signed-in user in the same editor call that starts the batch, and have that call abort on any other name — a check made in an earlier call can be stale by the time the upload runs. Signed in as anyone else, or unable to tell, the authorization does not apply: stop at the execution gate as if it had never been given.
 
-**Report what went up**, where the operator reads the run: each avatar by scene or prefab path, its `state`, and the name it was published under.
+**Report what went up**, where the operator reads the run: each avatar by scene or prefab path, its `state`, the name it was published under, and whether its impostor request was queued (step 6).
 
 ## The flow
 
@@ -60,6 +60,12 @@ When the operator gives the go, call `UploadAvatar.Run` (no `whatIf`) on the con
 The tool stops the batch on the first failure and classifies it (`transient` / `rate-limit` / `real`). On a retry, **re-feed the failed avatar AND every avatar the batch left `not-attempted`** (the RunLog rows mark them) — not just the one failed handle, or the tail of the batch is silently dropped. A `reserved-no-bundle` result means a record was minted but no bundle uploaded — relay it, don't hide it.
 
 **Optimization is never a post-failure remedy.** A "bundle too large" (or any failure) does **not** trigger an optimize. Optimization is only a fresh, operator-initiated pre-step (step 2) *before* a new upload attempt — the same capability pointed the allowed direction. A failed upload ends the attempt; re-optimizing is a new, separately-authorized session.
+
+### 6. Impostors
+
+Once the batch settles, call `RequestImpostor.Run` on every avatar whose row reads `uploaded`, and poll `RequestImpostor.Status()`; `unity-tools.md` §Publish owns the door. The go that sent the upload covers this request, whether it was the operator's "upload now" or a standing authorization, so do not ask again. Skip it only when the operator said no impostor for this batch. Skip the `failed`, `not-attempted` and `reserved-no-bundle` rows, since nothing new went up for them.
+
+A `rate-limit` here gets the same rule as the upload's: do not retry. Relay the unsent avatars so the operator can request them later. A failed request leaves the upload itself standing, so report the upload and the impostor request as separate results.
 
 ## Optimizer pre-step
 
