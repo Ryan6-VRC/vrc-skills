@@ -1,7 +1,7 @@
 {
  "poses": [
   {
-   "name": "settle1",
+   "name": "L90",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -10,24 +10,11 @@
     }
    ],
    "ramp": 1,
-   "hold": 1.5,
-   "sample": "none"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "L901",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": 0
-    }
-   ],
-   "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
-  },
-  {
-   "name": "Lslow1",
+   "name": "Lout50",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -35,64 +22,25 @@
      "yaw": -50
     }
    ],
-   "ramp": 2.5,
-   "hold": 0,
-   "sample": "every"
+   "ramp": 1.5,
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Lout501",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": -50
-    }
-   ],
-   "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
-  },
-  {
-   "name": "Lslow2",
+   "name": "LslowIn",
    "ops": [
     {
      "bone": "LeftUpperLeg",
      "pitch": 90,
      "yaw": 35
-    }
-   ],
-   "ramp": 5,
-   "hold": 0,
-   "sample": "every"
-  },
-  {
-   "name": "Lin351",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": 35
-    }
-   ],
-   "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
-  },
-  {
-   "name": "Lslow3",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": -50
     }
    ],
    "ramp": 3,
    "hold": 0,
-   "sample": "every"
+   "sample": "every:3"
   },
   {
-   "name": "Lfast1",
+   "name": "Lin35",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -100,12 +48,12 @@
      "yaw": 35
     }
    ],
-   "ramp": 0.6,
-   "hold": 0,
-   "sample": "every"
+   "ramp": 0,
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Lfast2",
+   "name": "LfastOut",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -118,7 +66,7 @@
    "sample": "every"
   },
   {
-   "name": "Lfast3",
+   "name": "LfastIn",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -131,7 +79,7 @@
    "sample": "every"
   },
   {
-   "name": "Lin35f1",
+   "name": "Lin35f",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -140,11 +88,11 @@
     }
    ],
    "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Lwhip1",
+   "name": "LwhipOut",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -157,7 +105,7 @@
    "sample": "every"
   },
   {
-   "name": "Lwhip2",
+   "name": "LwhipIn",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -170,33 +118,7 @@
    "sample": "every"
   },
   {
-   "name": "Lwhip3",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": -50
-    }
-   ],
-   "ramp": 0.3,
-   "hold": 0,
-   "sample": "every"
-  },
-  {
-   "name": "Lwhip4",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": 35
-    }
-   ],
-   "ramp": 0.3,
-   "hold": 0,
-   "sample": "every"
-  },
-  {
-   "name": "Lin35w1",
+   "name": "Lin35w",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -205,37 +127,11 @@
     }
    ],
    "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Lfast4",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": 20
-    }
-   ],
-   "ramp": 0.4,
-   "hold": 0,
-   "sample": "every"
-  },
-  {
-   "name": "Lin201",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": 20
-    }
-   ],
-   "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
-  },
-  {
-   "name": "Lwide1",
+   "name": "LwideOut",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -243,12 +139,12 @@
      "yaw": -90
     }
    ],
-   "ramp": 3,
+   "ramp": 2,
    "hold": 0,
-   "sample": "every"
+   "sample": "none"
   },
   {
-   "name": "Lout901",
+   "name": "Lout90",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -257,11 +153,11 @@
     }
    ],
    "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Lwide2",
+   "name": "LwideBack",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -274,14 +170,14 @@
    "sample": "every"
   },
   {
-   "name": "settle2",
+   "name": "Ldown",
    "ops": [],
    "ramp": 1,
-   "hold": 2,
-   "sample": "none"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "settle3",
+   "name": "R90",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -290,24 +186,11 @@
     }
    ],
    "ramp": 1,
-   "hold": 1.5,
-   "sample": "none"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "R901",
-   "ops": [
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": 0
-    }
-   ],
-   "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
-  },
-  {
-   "name": "Rslow1",
+   "name": "Rout50",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -315,64 +198,25 @@
      "yaw": 50
     }
    ],
-   "ramp": 2.5,
-   "hold": 0,
-   "sample": "every"
+   "ramp": 1.5,
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Rout501",
-   "ops": [
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": 50
-    }
-   ],
-   "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
-  },
-  {
-   "name": "Rslow2",
+   "name": "RslowIn",
    "ops": [
     {
      "bone": "RightUpperLeg",
      "pitch": 90,
      "yaw": -35
-    }
-   ],
-   "ramp": 5,
-   "hold": 0,
-   "sample": "every"
-  },
-  {
-   "name": "Rin351",
-   "ops": [
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": -35
-    }
-   ],
-   "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
-  },
-  {
-   "name": "Rslow3",
-   "ops": [
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": 50
     }
    ],
    "ramp": 3,
    "hold": 0,
-   "sample": "every"
+   "sample": "every:3"
   },
   {
-   "name": "Rfast1",
+   "name": "Rin35",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -380,12 +224,12 @@
      "yaw": -35
     }
    ],
-   "ramp": 0.6,
-   "hold": 0,
-   "sample": "every"
+   "ramp": 0,
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Rfast2",
+   "name": "RfastOut",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -398,7 +242,7 @@
    "sample": "every"
   },
   {
-   "name": "Rfast3",
+   "name": "RfastIn",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -411,7 +255,7 @@
    "sample": "every"
   },
   {
-   "name": "Rin35f1",
+   "name": "Rin35f",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -420,11 +264,11 @@
     }
    ],
    "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Rwhip1",
+   "name": "RwhipOut",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -437,7 +281,7 @@
    "sample": "every"
   },
   {
-   "name": "Rwhip2",
+   "name": "RwhipIn",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -450,33 +294,7 @@
    "sample": "every"
   },
   {
-   "name": "Rwhip3",
-   "ops": [
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": 50
-    }
-   ],
-   "ramp": 0.3,
-   "hold": 0,
-   "sample": "every"
-  },
-  {
-   "name": "Rwhip4",
-   "ops": [
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": -35
-    }
-   ],
-   "ramp": 0.3,
-   "hold": 0,
-   "sample": "every"
-  },
-  {
-   "name": "Rin35w1",
+   "name": "Rin35w",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -485,37 +303,11 @@
     }
    ],
    "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Rfast4",
-   "ops": [
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": -20
-    }
-   ],
-   "ramp": 0.4,
-   "hold": 0,
-   "sample": "every"
-  },
-  {
-   "name": "Rin201",
-   "ops": [
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": -20
-    }
-   ],
-   "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
-  },
-  {
-   "name": "Rwide1",
+   "name": "RwideOut",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -523,12 +315,12 @@
      "yaw": 90
     }
    ],
-   "ramp": 3,
+   "ramp": 2,
    "hold": 0,
-   "sample": "every"
+   "sample": "none"
   },
   {
-   "name": "Rout901",
+   "name": "Rout90",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -537,11 +329,11 @@
     }
    ],
    "ramp": 0,
-   "hold": 1.5,
-   "sample": "every"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "Rwide2",
+   "name": "RwideBack",
    "ops": [
     {
      "bone": "RightUpperLeg",
@@ -554,14 +346,14 @@
    "sample": "every"
   },
   {
-   "name": "settle4",
+   "name": "Rdown",
    "ops": [],
    "ramp": 1,
-   "hold": 2,
-   "sample": "none"
+   "hold": 0.5,
+   "sample": "end"
   },
   {
-   "name": "settle5",
+   "name": "sit",
    "ops": [
     {
      "bone": "LeftUpperLeg",
@@ -583,48 +375,15 @@
     }
    ],
    "ramp": 1,
-   "hold": 2,
-   "sample": "none"
-  },
-  {
-   "name": "sit1",
-   "ops": [
-    {
-     "bone": "LeftUpperLeg",
-     "pitch": 90,
-     "yaw": 0
-    },
-    {
-     "bone": "RightUpperLeg",
-     "pitch": 90,
-     "yaw": 0
-    },
-    {
-     "bone": "LeftLowerLeg",
-     "pitch": -90
-    },
-    {
-     "bone": "RightLowerLeg",
-     "pitch": -90
-    }
-   ],
-   "ramp": 0,
-   "hold": 2,
-   "sample": "every"
-  },
-  {
-   "name": "settle6",
-   "ops": [],
-   "ramp": 1,
-   "hold": 2,
-   "sample": "none"
-  },
-  {
-   "name": "restEnd1",
-   "ops": [],
-   "ramp": 0,
    "hold": 1,
-   "sample": "every"
+   "sample": "end"
+  },
+  {
+   "name": "stand",
+   "ops": [],
+   "ramp": 1,
+   "hold": 0.5,
+   "sample": "end"
   }
  ]
 }
