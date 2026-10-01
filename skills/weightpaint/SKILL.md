@@ -76,7 +76,7 @@ In the venue's record for the blend, as the asset is (`VENUE.md`): each door's `
 
 ### 7. Verify
 
-`report_fit` on the promoted blend with the same flags reads as the picked variant did. Then `export_unity_fbx` to the venue's `Models/` exactly as the blend's own export runs, `ConformImportSettings` on the folder (`unity-tools.md`), and the re-import diff (`blender.md`), where a weights-only change moves no vertex and a push moves each by at most its amount. The emulator or full-body-tracking pass through the joints the defect named is the operator's, a named handoff. On the `fix-clipping` entrance, hand back: its watch list and terminal handoff stay there.
+`report_fit` on the promoted blend with the same flags reads as the picked variant did. Then `export_unity_fbx` to the venue's `Models/` exactly as the blend's own export runs, `ConformImportSettings` on the exported FBX (`unity-tools.md`), and the re-import diff (`blender.md`), where a weights-only change moves no vertex and a push moves each by at most its amount. The emulator or full-body-tracking pass through the joints the defect named is the operator's, a named handoff. On the `fix-clipping` entrance, hand back: its watch list and terminal handoff stay there.
 
 ## Bone-fold branch
 
