@@ -9,7 +9,7 @@ How the operator compares weight variants on the composed row in the Editor. A d
 
 ## 2. Save the scene first
 
-Edit mode, the row's scene active, saved before the first copy is made. The teardown reopens the scene from disk and discards every unsaved change in it, so the save is what makes that reopen lose nothing; `isDirty` cannot tell unsaved work from a bake's residue, so save regardless of what it reads.
+Edit mode, the row's scene active, and every loaded scene saved before the first copy is made. The teardown's `Single` open replaces every loaded scene with its file, so the save is what makes that reopen lose nothing; `isDirty` cannot tell unsaved work from a bake's residue, so save regardless of what it reads.
 
 ## 3. Match each variant's import to the live mesh
 
