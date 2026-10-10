@@ -37,7 +37,7 @@ Offer before the batch settles, or skip entirely. Never after a failure (step 4)
 
 ### 3. Batch composition — confirm the *scope*
 
-The operator names the avatars, or — for a changed base — enumerate the avatars that inherit it (prefab-variant / nested-prefab references) and propose the list. The operator confirms the scope. v1 is a manual list plus a best-effort "dependents I found"; say which avatars you found by inheritance and which you're unsure of, and let the operator close the set. Confirming this list is a **scope** judgment — it is *not* permission to upload.
+The operator names the avatars, or — for a changed base — enumerate the scene instances that inherit it (prefab-variant / nested-prefab references, and children added in the scene) and propose the list. The operator confirms the scope. v1 is a manual list plus a best-effort "dependents I found"; say which avatars you found by inheritance and which you're unsure of, and let the operator close the set. Confirming this list is a **scope** judgment — it is *not* permission to upload.
 
 ### 4. Authorization — two steps, not one
 
