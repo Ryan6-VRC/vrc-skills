@@ -27,7 +27,11 @@ An operator can authorize uploads to one account in advance — a test or develo
 
 ### 1. Readiness — `whatIf`
 
-Call `UploadAvatar` with `whatIf: true` on the batch. It runs every precondition and, per avatar, classifies first-upload vs update and surfaces the literal publish name — uploading nothing. There is no separate readiness ritual; this preflight is it. Surface the per-avatar would-do report. Alongside it, `ConformImportSettings.Run(<avatar root>, whatIf: true)` per avatar previews the SDK panel's importer errors with the paths the panel's own error text omits — **read its would-conform row list, not the verdict token.** The SDK runs those validations inside the build too, so an offender left here is a multi-minute build spent to learn a `.meta` setting; conform it before the go (`docs/unity-tools.md` owns the door).
+Call `UploadAvatar` with `whatIf: true` on the batch and poll `UploadAvatar.Status()`. It runs every precondition and, per avatar, reads the live record under the signed-in account — uploading nothing. The state it prints is what the upload will do, and `publishName` is the name it will publish under: the live one on an update, the scene object's on a first upload. There is no separate readiness ritual; this preflight is it. Surface the per-avatar would-do report.
+
+A row whose id names a record this account does not own fails the preflight, and the real batch stops on it before uploading anything. Relay that row and its fix to the operator; **do not clear the id yourself**, because the next upload then publishes a new avatar nobody named.
+
+A nonzero `importOffenders` on a row is an importer setting the SDK validates inside the build, so an offender left here is a multi-minute build spent to learn a `.meta` setting. `ConformImportSettings.Run(<avatar root>, whatIf: true)` names the paths the panel's own error text omits — **read its would-conform row list, not the verdict token** — and conform before the go (`docs/unity-tools.md` owns the door).
 
 A **REFUSE** means the *environment* isn't ready, not that an avatar is bad — not in Play mode, not logged into the SDK, the Build Control Panel window closed, wrong build target, or **CAU absent**. Fix the named condition and re-run. CAU (`com.anatawa12.continuous-avatar-uploader`) is an optional dependency: absent, the tool can't self-drive → **fall back to a manual SDK-panel handoff** (hand the operator the avatar and the panel; the rest of this skill's judgment steps still apply to what they do).
 
@@ -45,7 +49,7 @@ After the list settles, require a **distinct, explicit "upload now"** before cal
 
 **Confirm the literal published name** for each first-upload before that go: surface the exact string that will be published (CAU defaults it to the GameObject name) and get explicit confirmation. A placeholder or persona-bearing name must not go public unnoticed — "a name is set" is vacuous (always true); the operator must see and approve the actual string.
 
-**A first upload is the only moment an upload can set a name**, and a re-upload silently republishes under the old one (`unity-tools.md` §Publish owns why). So the scene never tells you what is actually published: read it with `ReportAvatarRecord`. Asked to change a live avatar's name, description, tags or thumbnail, do not re-upload — that is `UpdateAvatarRecord`.
+**A first upload is the only moment an upload can set a name**, and a re-upload silently republishes under the old one (`unity-tools.md` §Publish owns why). So the scene never tells you what is actually published: step 1's `publishName` does, and `ReportAvatarRecord` reads the rest of one record. Asked to change a live avatar's name, description, tags or thumbnail, do not re-upload — that is `UpdateAvatarRecord`.
 
 **The thumbnail an upload mints is CAU's own camera shot.** Neither CAU nor this door reads an external image, so a rendered one reaches a live avatar only through `UpdateAvatarRecord`'s `newImagePath`, as its own call after the upload — and until that call runs, CAU's shot is what is public.
 
@@ -57,7 +61,7 @@ When the operator gives the go, call `UploadAvatar.Run` (no `whatIf`) on the con
 > times; a rate-limit is not a transient — back off and inform, don't retry. Never loop, and never
 > edit the avatar to work around a failure — a broken avatar is reported broken, not fixed.
 
-The tool stops the batch on the first failure and classifies it (`transient` / `rate-limit` / `real`). On a retry, **re-feed the failed avatar AND every avatar the batch left `not-attempted`** (the RunLog rows mark them) — not just the one failed handle, or the tail of the batch is silently dropped. A `reserved-no-bundle` result means a record was minted but no bundle uploaded — relay it, don't hide it.
+The tool stops the batch on the first failure and classifies it (`transient` / `rate-limit` / `real`); a batch its preflight stops uploads nothing, so rows ahead of the failed one read `not-attempted` too. On a retry, **re-feed the failed avatar AND every avatar the batch left `not-attempted`** (the RunLog rows mark them) — not just the one failed handle, or the tail of the batch is silently dropped. A `reserved-no-bundle` result means a record was minted but no bundle uploaded — relay it, don't hide it.
 
 **Optimization is never a post-failure remedy.** A "bundle too large" (or any failure) does **not** trigger an optimize. Optimization is only a fresh, operator-initiated pre-step (step 2) *before* a new upload attempt — the same capability pointed the allowed direction. A failed upload ends the attempt; re-optimizing is a new, separately-authorized session.
 
