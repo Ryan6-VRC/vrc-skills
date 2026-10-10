@@ -7,9 +7,9 @@ How the operator compares weight variants on the composed row in the Editor. A d
 - Each variant is `<stem>_ab_<tag>.blend` beside the venue blend, written from it by the doors' `--out`, so the linked body still resolves and the `recipe:` lines are the whole record of what differs. Record the venue blend's sha256 before building the first.
 - Export each with `export_unity_fbx`, scoped as the venue blend's own export is (`--armature`), to `Assets/Agent/Scratch/<task>/<stem>_ab_<tag>.fbx`, then `refresh_unity`. Scratch is disposable, and nothing durable may reference it (`LAYOUT.md`).
 
-## 2. Confirm the scene can be thrown away
+## 2. Save the scene first
 
-Edit mode, the row's scene active, and `SceneManager.GetActiveScene().isDirty` false. The teardown reopens the scene from disk and discards every unsaved change in it. A dirty scene holds either someone's unsaved work or a bake's residue, since `AvatarBake` (a bake-mode `ReportComposition`) dirties the scene with no intended change, and the flag cannot tell the two apart: ask the operator before building over one.
+Edit mode, the row's scene active, and every loaded scene saved before the first copy is made. The teardown's `Single` open replaces every loaded scene with its file, so the save is what makes that reopen lose nothing; `isDirty` cannot tell unsaved work from a bake's residue, so save regardless of what it reads.
 
 ## 3. Match each variant's import to the live mesh
 
@@ -29,7 +29,7 @@ A fold variant has fewer bones than an unfolded live mesh and fails the bone-ord
 
 The copy is not the target of the row's Modular Avatar reactions (a Delete, a Set, a toggle), which reference the original renderer: it shows geometry the row cuts and misses shapes the row drives. Tell the operator what to disregard.
 
-**Never save the scene.** It does not read dirty for the copies, and a save stores them anyway.
+**No save between here and teardown.** The copies do not dirty the scene, and a save would store them anyway; the teardown's reopen is what drops them.
 
 ## 5. Present
 
@@ -37,7 +37,7 @@ Per renderer: each object, which one is active, and one line on what its weights
 
 ## 6. Tear down
 
-`EditorSceneManager.OpenScene(<the scene's own path>, OpenSceneMode.Single)` drops the copies, the swaps and whatever a bake dirtied; confirm `isDirty` false and no `AB_` object left. Delete the scratch folder with `AssetDatabase.DeleteAsset`, and every `_ab_` blend except the pick.
+`EditorSceneManager.OpenScene(<the scene's own path>, OpenSceneMode.Single)` drops the copies, the swaps and whatever a bake dirtied; confirm no `AB_` object is left. Delete the scratch folder with `AssetDatabase.DeleteAsset`, and every `_ab_` blend except the pick.
 
 ## 7. Promote the pick
 

@@ -77,7 +77,7 @@ Draw a **compatible set** rather than each independently — a demure pose under
 
 **A prop over the head** (a halo, a floating label) gets `headroom` raised and `zoom` dropped a notch; accept it partly in frame, because widening until it all fits leaves the face unreadable. `headroom` stays out of the camera draw. A prop only a VRCFury toggle turns on (`defaultOn` false) is written off by every bake, so edit mode cannot show it — shoot it in play with the toggle's parameter set.
 
-**Edit** is one call per shot. **Play** is a session around the same vocabulary, and the ordering is the part no single call teaches: `Run` (refuses on an unsaved loaded scene), then `manage_editor play` — which blocks for minutes while the SDK build runs — then `Shoot` per candidate, polling `Status` (or `read_console` on the tag it returns) until it stops reporting settling, then `manage_editor stop` and `End`.
+**Edit** is one call per shot. **Play** is a session around the same vocabulary, and the ordering is the part no single call teaches: `Run` (saves every loaded `Assets/` scene first, refusing on one with no disk path or one it could not save), then `manage_editor play` — which blocks for minutes while the SDK build runs — then `Shoot` per candidate, polling `Status` (or `read_console` on the tag it returns) until it stops reporting settling, then `manage_editor stop` and `End`.
 
 `End()` is **mandatory on every path, including failure.** `Run` overrode the operator's Enter-Play-Mode Options and deactivated the other avatars; only `End` restores them. Once `Run` returns ready the exit is `stop` → `End()`, whatever happened in between.
 
