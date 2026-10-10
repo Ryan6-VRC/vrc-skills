@@ -61,7 +61,7 @@ When the operator gives the go, call `UploadAvatar.Run` (no `whatIf`) on the con
 > times; a rate-limit is not a transient — back off and inform, don't retry. Never loop, and never
 > edit the avatar to work around a failure — a broken avatar is reported broken, not fixed.
 
-The tool stops the batch on the first failure and classifies it (`transient` / `rate-limit` / `real`). On a retry, **re-feed the failed avatar AND every avatar the batch left `not-attempted`** (the RunLog rows mark them) — not just the one failed handle, or the tail of the batch is silently dropped. A `reserved-no-bundle` result means a record was minted but no bundle uploaded — relay it, don't hide it.
+The tool stops the batch on the first failure and classifies it (`transient` / `rate-limit` / `real`); a batch its preflight stops uploads nothing, so rows ahead of the failed one read `not-attempted` too. On a retry, **re-feed the failed avatar AND every avatar the batch left `not-attempted`** (the RunLog rows mark them) — not just the one failed handle, or the tail of the batch is silently dropped. A `reserved-no-bundle` result means a record was minted but no bundle uploaded — relay it, don't hide it.
 
 **Optimization is never a post-failure remedy.** A "bundle too large" (or any failure) does **not** trigger an optimize. Optimization is only a fresh, operator-initiated pre-step (step 2) *before* a new upload attempt — the same capability pointed the allowed direction. A failed upload ends the attempt; re-optimizing is a new, separately-authorized session.
 
