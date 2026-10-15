@@ -1,0 +1,197 @@
+{
+ "poses": [
+  {
+   "name": "L90",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "L90out",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -45
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "L90in",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 30
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "R90",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "R90out",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 45
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "R90in",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -30
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "Lext",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": -30,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "Rext",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": -30,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "sit",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "hipsFwd",
+   "ops": [
+    {
+     "bone": "Hips",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "hipsBack",
+   "ops": [
+    {
+     "bone": "Hips",
+     "pitch": -90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "hipsRollR",
+   "ops": [
+    {
+     "bone": "Hips",
+     "pitch": 0,
+     "yaw": 0,
+     "roll": 90
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "hipsRollL",
+   "ops": [
+    {
+     "bone": "Hips",
+     "pitch": 0,
+     "yaw": 0,
+     "roll": -90
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "close",
+   "ops": [],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  }
+ ]
+}

@@ -1,0 +1,82 @@
+{
+ "poses": [
+  {
+   "name": "settle1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.5,
+   "sample": "none"
+  },
+  {
+   "name": "L901",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lslow1",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -50
+    }
+   ],
+   "ramp": 2.5,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lout501",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -50
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  },
+  {
+   "name": "Lslow2",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 5,
+   "hold": 0,
+   "sample": "every"
+  },
+  {
+   "name": "Lin351",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    }
+   ],
+   "ramp": 0,
+   "hold": 1.5,
+   "sample": "every"
+  }
+ ]
+}
