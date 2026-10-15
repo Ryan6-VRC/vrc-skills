@@ -66,7 +66,7 @@ Find the overlap set by **coverage reasoning**: a base garment is in the set whe
 
 Where the graph is silent on whether the outfit covers a region, settle it with the **coverage question, not an occlusion one**: turn the base piece *off* and check whether the outfit leaves that region **exposed or gapped** (`RenderAvatar` before/after, §2). Exposure → the outfit doesn't cover it (keep it, or ask); clean coverage → the base piece is a hidden overlap (strip it). Asking "is the base garment still visible?" is the trap — an over-layered garment is visible *because* it is the thing to remove.
 
-Then, per overlapped garment: **disable the mesh** (never delete) and **set its coupled body shapes to their off values** from the map. A limb that **vanishes** when a base garment goes is a coupled shape left worn — the reconcile below, not a clipping call. **A garment sharing its mesh with a piece you keep cannot be disabled**, only cut by a Delete or Hide carrier key in a Blender pass: `mark_parts` (`vrc-blender-tools`) authors the carrier from a region selection; the record carries its line.
+Then, per overlapped garment: **disable the mesh** (never delete) and **set its coupled body shapes to their off values** from the map. A limb that **vanishes** when a base garment goes is a coupled shape left worn — the reconcile below, not a clipping call.
 
 **"No coupling" is a conclusion, not a default** — it holds only when the reaction read *and* the FX read both come up empty; a 0-weight audit over a driven mesh is residue to name, never absence.
 

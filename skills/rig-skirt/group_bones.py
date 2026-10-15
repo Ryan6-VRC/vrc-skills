@@ -1,7 +1,7 @@
 """Grouping pass for rig-skirt §Grouping: add one unweighted top bone per group and reparent the group's members under it.
 
     blender -b --factory-startup --python group_bones.py -- --in <in.blend> --group NAME=B1,B2[,...] [--group ...]
-        [--armature OBJ] [--max-spread DEG] (--whatif | --out <out.blend>)
+        [--sources NAME=S1,S2 ...] [--armature OBJ] [--max-spread DEG] (--whatif | --out <out.blend>)
 
 Each group bone is parented where its members were (they must share one parent), takes its head at the mean of the members' heads, its length
 at their mean length, and its frame from the normalised quaternion mean of their rest rotations; a one-member group doubles that bone's top
@@ -10,9 +10,9 @@ blend, where the record keeps one), never on a derived one, then follow the reco
 
 Refuses, writing nothing: an armature or its data linked from a library; a group name that is already a bone; a member that is missing, in two
 groups, or not sharing its group's parent; a bone constraint on a member or any bone below one, since reparenting changes the space it
-evaluates in; a mesh vertex group named for a group bone; and a mean frame more than --max-spread degrees (default 60) from any member's,
-which is what a mirror-rolled pair yields (two frames near 180 degrees apart average to a frame that matches neither, and the group top's
-constraint offsets then read the frame trap rig-skirt §Deriving the table names); unify the rolls or group the pair apart.
+evaluates in; a mesh vertex group named for a group bone; and a mean frame more than --max-spread degrees (default 60) from any member's.
+Opposed bone rolls put two members' frames near 180 degrees apart, so each sits about 90 degrees off their mean and the group top matches
+neither; members of one group on a real ring sat under 14 degrees off, and 60 sits between. Every refusal names its fix.
 
 Before saving it asserts that no existing bone moved (rotation 1e-3 degrees, head and tail 1e-6 m), every member has its planned parent, and
 every group bone landed on its planned frame. X-mirror editing is held off for the edit, since it would rewrite each mirror twin as its
@@ -22,9 +22,15 @@ Prints PATH lines, every bone whose hierarchy path changes (members and everythi
 reparent re-mints those bones' Unity fileIDs and drops every prefab-variant component on them (docs/unity.md §Geometry-change reconcile), so
 list the components on exactly these paths before the re-export. GROUP lines give each group's head, azimuth (armature space read as Unity
 avatar space: 0 front, negative the avatar's left, -Y taken as forward), length, frame error and each member's angle to the new frame.
+--sources NAME=S1,S2 (repeatable, optional) names the bones a group top's constraint will source (its ring neighbours' second bones, a leg
+proxy's bone); SOURCES lines print the group frame against their mean rest frame and against each, the frame trap read before export: a mean
+offset under about 20 degrees is matched, near 90 is the trap.
 
 --whatif runs every step and assert and saves nothing. A real run saves to --out (never --in) with relative paths remapped and the input's
-compression. Exit 0 on => OK, 1 on => FAIL (a refusal or a failed assert), 2 on bad arguments or a file that will not open cleanly."""
+compression.
+
+Exit codes: 0 => OK; 1 => FAIL, a refusal or a failed assert, nothing saved; 2 => FAIL on bad arguments, a file that will not open
+cleanly, or a crash before a verdict (the traceback precedes it)."""
 import sys, os, math, argparse
 
 TOOL = 'group_bones'
@@ -49,6 +55,7 @@ def parse_args():
     p = _Parser(prog=TOOL)
     p.add_argument('--in', dest='in_path', required=True)
     p.add_argument('--group', action='append', required=True, metavar='NAME=B1,B2')
+    p.add_argument('--sources', action='append', default=[], metavar='NAME=S1,S2')
     p.add_argument('--armature', default=None, help='armature object; default the only local one')
     p.add_argument('--max-spread', type=float, default=60.0, help='largest member-to-mean frame angle, degrees')
     mode = p.add_mutually_exclusive_group(required=True)
@@ -60,9 +67,17 @@ def parse_args():
         name, sep, members = spec.partition('=')
         name = name.strip(); mem = [m.strip() for m in members.split(',') if m.strip()]
         if not sep or not name or not mem: fail('--group %r: want NAME=B1,B2' % spec, 2)
-        if name in groups: fail('--group %s given twice' % name, 2)
-        if len(set(mem)) != len(mem): fail('--group %s names a member twice' % name, 2)
+        if name in groups: fail('--group %s given twice; list every member in one --group' % name, 2)
+        if len(set(mem)) != len(mem): fail('--group %s names a member twice; list it once' % name, 2)
         groups[name] = mem
+    sources = {}
+    for spec in a.sources:
+        name, sep, srcs = spec.partition('=')
+        name = name.strip(); src = [x.strip() for x in srcs.split(',') if x.strip()]
+        if not sep or not src: fail('--sources %r: want NAME=S1,S2' % spec, 2)
+        if name not in groups: fail('--sources %s names no --group; give the group first' % name, 2)
+        sources[name] = src
+    a.sources_map = sources
     if a.out_path and os.path.abspath(a.out_path) == os.path.abspath(a.in_path):
         fail('--out is --in; write beside the input so it stays the rollback', 2)
     return a, groups
@@ -114,7 +129,7 @@ def main():
 
     if a.armature:
         arm = bpy.data.objects.get(a.armature)
-        if arm is None or arm.type != 'ARMATURE': fail('--armature %s is not an armature object' % a.armature, 2)
+        if arm is None or arm.type != 'ARMATURE': fail('--armature %s is not an armature object; name the armature object, not its data or a mesh' % a.armature, 2)
     else:
         arms = [o for o in bpy.data.objects if o.type == 'ARMATURE' and o.library is None]
         if len(arms) != 1: fail('%d local armatures %s; pass --armature' % (len(arms), [o.name for o in arms]), 2)
@@ -126,14 +141,14 @@ def main():
     # refusals before any edit
     owner = {}
     for g, mem in GROUPS.items():
-        if g in bones: fail('group bone %s already exists; this pass runs on an ungrouped rig' % g)
+        if g in bones: fail('group bone %s already exists; run on the ungrouped source blend the costume record names, or pick another name' % g)
         for m in mem:
-            if m not in bones: fail('group %s: no bone %s' % (g, m))
-            if m in owner: fail('bone %s is in groups %s and %s' % (m, owner[m], g))
+            if m not in bones: fail('group %s: no bone %s; check the name against the armature' % (g, m))
+            if m in owner: fail('bone %s is in groups %s and %s; put it in one' % (m, owner[m], g))
             owner[m] = g
         parents = {bones[m].parent.name if bones[m].parent else None for m in mem}
         if len(parents) != 1 or None in parents:
-            fail('group %s: members must share one parent bone, have %s' % (g, sorted(str(p) for p in parents)))
+            fail('group %s: members have parents %s; group by parent, one group per shared parent' % (g, sorted(str(p) for p in parents)))
     constrained = []
     for m in owner:
         for b in [bones[m]] + list(bones[m].children_recursive):
@@ -143,8 +158,12 @@ def main():
     for o in bpy.data.objects:
         if o.type == 'MESH' and o.library is None:
             clash = [vg.name for vg in o.vertex_groups if vg.name in GROUPS]
-            if clash: fail('mesh %s already has vertex groups %s; a group bone of that name would skin it' % (o.name, clash))
+            if clash: fail('mesh %s already has vertex groups %s, which a group bone of that name would skin; rename the vertex group or the group' % (o.name, clash))
 
+    for g, src in a.sources_map.items():
+        for x in src:
+            if x not in bones: fail('--sources %s: no bone %s; check the name against the armature' % (g, x))
+            if x in GROUPS: fail('--sources %s: %s is a group bone; name the bones the constraint will source' % (g, x))
     before = {b.name: (b.matrix_local.copy(), b.head_local.copy(), b.tail_local.copy(), b.parent.name if b.parent else None) for b in bones}
     restq = {n: v[0].to_quaternion() for n, v in before.items()}
     old_paths = {b.name: path_of(b) for b in bones}
@@ -154,8 +173,8 @@ def main():
         q, norm = qmean([restq[m] for m in mem])
         spread = max(ang(restq[m], q) for m in mem)
         if spread > a.max_spread or norm < 1e-3:
-            fail('group %s: mean frame sits %.1f deg from a member (bar %.0f); a mirror-rolled pair averages to a frame matching neither: '
-                 'unify the rolls in Blender or group them apart' % (g, spread, a.max_spread))
+            fail('group %s: mean frame sits %.1f deg from a member (bar %.0f), the opposed-roll signature: '
+                 "unify the members' rolls in Blender or group them apart" % (g, spread, a.max_spread))
         head = sum((bones[m].head_local for m in mem), Vector()) / len(mem)
         length = sum(bones[m].length for m in mem) / len(mem)
         plan[g] = (head, q, length, bones[mem[0]].parent.name)
@@ -177,7 +196,7 @@ def main():
             for m in mem: eb[m].use_connect = False; eb[m].parent = eb[g]
         for g in GROUPS:
             e = ang(eb[g].matrix.to_quaternion(), plan[g][1])
-            if e > 1e-3: fail('edit frame of %s is %.5f deg off plan' % (g, e))
+            if e > 1e-3: fail('edit frame of %s is %.5f deg off plan; nothing saved: report the rig, the pass does not fit it' % (g, e))
     finally:
         bpy.ops.object.mode_set(mode='OBJECT')
         arm.data.use_mirror_x = mirror
@@ -194,7 +213,7 @@ def main():
     for g in GROUPS:
         e = ang(bones[g].matrix_local.to_quaternion(), plan[g][1])
         if e > 1e-3: bad.append('object frame of %s is %.5f deg off plan' % (g, e))
-    if bad: fail('DRIFT %s' % bad[:10])
+    if bad: fail('DRIFT %s; nothing saved: check those bones for a connected child or a driver before rerunning' % bad[:10])
     out('DRIFT_ASSERT ok: %d existing bones; worst rotation %.6f deg, head %.3g m, tail %.3g m; parents as planned' % (len(before), *worst))
 
     changed = [(old_paths[n], path_of(bones[n])) for n in old_paths if path_of(bones[n]) != old_paths[n]]
@@ -207,6 +226,9 @@ def main():
             g, parent, h.x, h.y, h.z, az, L, ang(bones[g].matrix_local.to_quaternion(), q),
             ', '.join('%s %.2f' % (m, ang(restq[m], q)) for m in mem)))
 
+    for g, src in a.sources_map.items():
+        gq = bones[g].matrix_local.to_quaternion(); sq, _ = qmean([restq[x] for x in src])
+        out('SOURCES %s mean-offset %.2f deg, each %s' % (g, ang(gq, sq), ', '.join('%s %.1f' % (x, ang(gq, restq[x])) for x in src)))
     if a.whatif:
         out('WHATIF: nothing saved => OK')
         return
