@@ -1,0 +1,66 @@
+// merge_sibling_chains: the free component cut (rig-skirt §The free component cut). execute_code body, edit mode, on a prefab. For each named
+// parent whose children each carry their own VRCPhysBone with identical settings, and which carries neither a physbone nor a constraint itself,
+// one component moves onto the parent with multiChildType Ignore and the children's components go. Under Ignore every child is its own chain
+// root as before, so grab, colliders and checks are unchanged; each chain sits one depth deeper under the parent, so any keyed curve resamples
+// at shifted positions (docs/optimization.md §PhysBones) and this body does not re-key it. componentCount falls by children-minus-one per parent
+// and transformCount rises by one. Refuses a parent whose children's settings differ in any serialized field, whose children carry no physbone
+// or are rooted elsewhere, which already carries a physbone or a constraint, or whose children differ in depth under a curved field: the merged
+// chain normalises every curve over its deepest strand, so the shallower strands remap. Any refusal aborts the run with nothing saved; drop
+// that parent from PARENTS and run again. WHAT_IF = true first. A lock generated over the children's chains is stale afterwards: regenerate it.
+// ---- parameters: edit every one ----
+bool WHAT_IF = true;
+string PREFAB = "Assets/<owning prefab>.prefab";                    // the prefab that owns the sibling chains
+string[] PARENTS = { "<SiblingParent_A>", "<SiblingParent_B>" };    // bare names, unique in the prefab, each the parent of two or more chain roots
+// ---- end parameters ----
+if (PREFAB.Contains("<") || PARENTS.Any(n => n.Contains("<"))) return "REFUSE: edit the parameters first";
+if (EditorApplication.isPlaying) return "REFUSE: edit mode only";
+var root = PrefabUtility.LoadPrefabContents(PREFAB);
+var sb = new System.Text.StringBuilder((WHAT_IF ? "WHAT-IF " : "") + "prefab=" + PREFAB + "\n");
+try {
+  var all = root.GetComponentsInChildren<Transform>(true);
+  Func<Transform, string> P = t => { var parts = new List<string>(); var x = t; while (x != null && x != root.transform) { parts.Add(x.name); x = x.parent; } parts.Reverse(); return string.Join("/", parts); };
+  // settings signature: every serialized field except the root transform and the object header
+  Func<VRC.SDK3.Dynamics.PhysBone.Components.VRCPhysBone, string> Sig = pb => { var so = new SerializedObject(pb); var it = so.GetIterator(); var s = new System.Text.StringBuilder(); bool enter = true;
+    while (it.NextVisible(enter)) { enter = false; if (it.propertyPath.StartsWith("m_") || it.propertyPath == "rootTransform") continue;
+      switch (it.propertyType) { case SerializedPropertyType.ObjectReference: s.Append(it.propertyPath + "=" + (it.objectReferenceValue ? it.objectReferenceValue.GetInstanceID().ToString() : "null") + ";"); break;
+        case SerializedPropertyType.AnimationCurve: s.Append(it.propertyPath + "=" + string.Join(",", it.animationCurveValue.keys.Select(k => k.time.ToString("F4") + ":" + k.value.ToString("F4"))) + ";"); break;
+        case SerializedPropertyType.Generic: { var c = it.Copy(); var end = c.GetEndProperty(); bool e2 = true; while (c.NextVisible(e2) && !SerializedProperty.EqualContents(c, end)) { e2 = false; if (c.propertyType == SerializedPropertyType.ObjectReference) s.Append(c.propertyPath + "=" + (c.objectReferenceValue ? c.objectReferenceValue.GetInstanceID().ToString() : "null") + ";"); else if (c.propertyType != SerializedPropertyType.Generic) s.Append(c.propertyPath + "=" + c.boxedValue + ";"); } break; }
+        default: s.Append(it.propertyPath + "=" + it.boxedValue + ";"); break; } }
+    return s.ToString(); };
+  // the keyed curve fields that are not flat
+  Func<VRC.SDK3.Dynamics.PhysBone.Components.VRCPhysBone, List<string>> Curved = pb => { var so = new SerializedObject(pb); var it = so.GetIterator(); var l = new List<string>(); bool enter = true;
+    while (it.NextVisible(enter)) { enter = false; if (it.propertyType != SerializedPropertyType.AnimationCurve) continue; var cv = it.animationCurveValue; if (cv == null) continue; var ks = cv.keys;
+      if (ks.Length > 1 && ks.Any(k => Mathf.Abs(k.value - ks[0].value) > 1e-5f || Mathf.Abs(k.inTangent) > 1e-5f || Mathf.Abs(k.outTangent) > 1e-5f)) l.Add(it.propertyPath); }
+    return l; };
+  // a child's depth is its longest transform path, since any child transform of a chain bone joins the chain
+  Func<Transform, int> Depth = null; Depth = t => { int d = 0; foreach (Transform c in t) d = Math.Max(d, 1 + Depth(c)); return d; };
+  var notes = new System.Text.StringBuilder();
+  int removed = 0, added = 0;
+  foreach (var name in PARENTS) {
+    var cands = all.Where(t => t.name == name).ToArray(); if (cands.Length != 1) throw new Exception("parent " + name + " matched " + cands.Length);
+    var r = cands[0];
+    if (r.GetComponent<VRC.SDK3.Dynamics.PhysBone.Components.VRCPhysBone>() != null) throw new Exception(name + " already carries a physbone");
+    if (r.GetComponent<VRC.Dynamics.VRCConstraintBase>() != null) throw new Exception(name + " carries a constraint; a constrained node cannot also be a physbone root");
+    var kids = new List<Transform>(); foreach (Transform k in r) kids.Add(k);
+    var pbs = kids.Select(k => k.GetComponent<VRC.SDK3.Dynamics.PhysBone.Components.VRCPhysBone>()).ToArray();
+    if (pbs.Any(p => p == null)) throw new Exception(name + ": child without a physbone: " + string.Join(",", kids.Where((k, i) => pbs[i] == null).Select(k => k.name)));
+    if (pbs.Any(p => p.rootTransform != null && p.rootTransform != p.transform)) throw new Exception(name + ": a child's physbone is rooted elsewhere");
+    var sigs = pbs.Select(Sig).Distinct().ToList(); if (sigs.Count != 1) throw new Exception(name + ": children's settings differ (" + sigs.Count + " distinct); not a free merge");
+    if (kids.Count < 2) throw new Exception(name + ": fewer than two children; nothing to merge");
+    var depths = kids.Select(Depth).Distinct().OrderBy(d => d).ToList(); var curved = Curved(pbs[0]);
+    if (curved.Count > 0 && depths.Count > 1) throw new Exception(name + ": curved " + string.Join(",", curved) + " over strands of depths " + string.Join("/", depths) + "; the merge normalises them over the deepest, so the shallower strands remap: not a free merge");
+    if (curved.Count > 0) notes.Append(P(r) + ": curved " + string.Join(",", curved) + " resample one depth deeper; re-key them (rig-skirt §Curves after grouping)\n");
+    var merged = r.gameObject.AddComponent<VRC.SDK3.Dynamics.PhysBone.Components.VRCPhysBone>();
+    EditorUtility.CopySerialized(pbs[0], merged); merged.rootTransform = null; merged.multiChildType = VRC.Dynamics.VRCPhysBoneBase.MultiChildType.Ignore;
+    int before = 0; foreach (var p in pbs) { try { p.InitTransforms(true); before += p.bones.Count; } catch { } }
+    foreach (var p in pbs) UnityEngine.Object.DestroyImmediate(p);
+    int after = 0; try { merged.InitTransforms(true); after = merged.bones.Count; } catch { }
+    removed += pbs.Length; added++;
+    sb.Append(P(r) + ": " + pbs.Length + " components -> 1; transforms " + before + " -> " + after + "\n");
+  }
+  sb.Append(notes.ToString());
+  sb.Append("components " + (-removed + added) + " net; re-run the venue's lock mechanism if one covers a merged chain\n");
+  if (!WHAT_IF) { PrefabUtility.SaveAsPrefabAsset(root, PREFAB); AssetDatabase.SaveAssets(); sb.Append("SAVED " + PREFAB + "\n"); } else sb.Append("what-if: nothing saved\n");
+} catch (Exception e) { sb.Append("FAIL " + e.GetType().Name + ": " + e.Message + "\n" + e.StackTrace.Split('\n').FirstOrDefault()); }
+finally { PrefabUtility.UnloadPrefabContents(root); }
+return sb.ToString();

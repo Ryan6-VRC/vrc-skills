@@ -1,6 +1,6 @@
 ---
 name: fix-clipping
-description: Use when a user reports clipping on a built avatar and wants it fixed — "my model clips", "the skirt kicks through the hips when I dance", "physbones go through the body", "legs poke through the dress when I sit", "hair clips through the shoulders" — and for the triage that decides which mechanism owns the fix. Owns the dynamics fix (colliders, chain settings) outright; routes static and slider clipping to map-outfit-shapes, weights and skin-poke push to weightpaint, coverage deletion to own-mergeable, and whole-outfit fit mismatch to reproportion or mochifit. Not measuring coverage for a new costume, not the shape map on its own.
+description: Use when a user reports clipping on a built avatar and wants it fixed — "my model clips", "the skirt kicks through the hips when I dance", "physbones go through the body", "legs poke through the dress when I sit", "hair clips through the shoulders" — and for the triage that decides which mechanism owns the fix. Owns the dynamics fix (colliders, chain settings) outright; routes static and slider clipping to map-outfit-shapes, weights and skin-poke push to weightpaint, coverage deletion to own-mergeable, and whole-outfit fit mismatch to reproportion or mochifit. Not measuring coverage for a new costume, not the shape map on its own, not redoing a skirt's rig (rig-skirt).
 ---
 
 # Fix clipping
