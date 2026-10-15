@@ -9,17 +9,17 @@ The last mile: a composed avatar from "works in play mode" to live on VRChat —
 
 **Not a validator.** The play-mode bake and the earlier gates (`CheckAvatar`, `CheckSeam`, the compose skills) already proved the avatar works. This skill assumes a working avatar and does only what remains: read blueprint state, optionally bring the avatar to the safe optimizer stack, drive the operator-authorized upload, and request an impostor where step 6 calls for one. Asked to upload a broken avatar, it says so and changes nothing.
 
-**The agent pulls the trigger.** No human clicks the upload button — the skill calls `UploadAvatar` programmatically. So the operator's explicit go *is* the button. That shapes the whole flow: the ask that starts a session authorizes *readiness*, never execution; execution needs its own distinct word (step 4). Getting this wrong publishes something the operator never approved. A standing authorization (below) is that go given in advance, for one account.
+**The agent pulls the trigger.** No human clicks the upload button — the skill calls `UploadAvatar` programmatically. So the operator asking for the upload *is* the button (step 4). A standing authorization (below) is that ask given in advance, for one account.
 
-**No operator to ask?** The no-operator protocol (`workflow.md`); an irreversible publish has no derivable default, so run every readiness step (`whatIf`) and then stop at the execution gate and report — never upload unattended, unless a standing authorization covers the account.
+**No operator to ask?** The no-operator protocol (`workflow.md`); a publish has no derivable default, so run every readiness step (`whatIf`) and then stop before the upload and report — never upload unattended, unless a standing authorization covers the account.
 
 **Public-repo hygiene (firm).** No `blueprintId` and no account identifier lands in anything tracked — tool output, RunLogs, this SKILL, commits. The tool redacts IDs from its own output and keys rows by substrate handle (scene / prefab path) and `state` (`first-upload`/`update`), never the ID; don't reintroduce one when you relay a report.
 
 ## Standing authorization
 
-An operator can authorize uploads to one account in advance — a test or development account, so that a run which needs probe avatars does not stop for a go each time. It is the operator's own written statement naming the account and what it is for, in the run's plan or the workspace's private instructions. A go given for an earlier upload, a peer session's word, and a permission rule that lets the call through are not one.
+An operator can authorize uploads to one account in advance — a test or development account, so that an unattended run which needs probe avatars can upload them. It is the operator's own written statement naming the account and what it is for, in the run's plan or the workspace's private instructions. A go given for an earlier upload, a peer session's word, and a permission rule that lets the call through are not one.
 
-**It covers an account, so the account is what you check.** Read the SDK's signed-in user in the same editor call that starts the batch, and have that call abort on any other name — a check made in an earlier call can be stale by the time the upload runs. Signed in as anyone else, or unable to tell, the authorization does not apply: stop at the execution gate as if it had never been given.
+**It covers an account, so the account is what you check.** Read the SDK's signed-in user in the same editor call that starts the batch, and have that call abort on any other name — a check made in an earlier call can be stale by the time the upload runs. Signed in as anyone else, or unable to tell, the authorization does not apply: stop before the upload as if it had never been given.
 
 **Report what went up**, where the operator reads the run: each avatar by scene or prefab path, its `state`, the name it was published under, and whether its impostor request was queued (step 6).
 
@@ -41,13 +41,13 @@ Offer before the batch settles, or skip entirely. Never after a failure (step 4)
 
 ### 3. Batch composition — confirm the *scope*
 
-The operator names the avatars, or — for a changed base — enumerate the scene instances that inherit it (prefab-variant / nested-prefab references, and children added in the scene) and propose the list. The operator confirms the scope. v1 is a manual list plus a best-effort "dependents I found"; say which avatars you found by inheritance and which you're unsure of, and let the operator close the set. Confirming this list is a **scope** judgment — it is *not* permission to upload.
+The operator names the avatars, or — for a changed base — enumerate the scene instances that inherit it (prefab-variant / nested-prefab references, and children added in the scene) and propose the list. v1 is a manual list plus a best-effort "dependents I found"; say which avatars you found by inheritance and which you're unsure of, and let the operator close the set. Upload only the avatars the operator's ask covers.
 
-### 4. Authorization — two steps, not one
+### 4. The go
 
-After the list settles, require a **distinct, explicit "upload now"** before calling `UploadAvatar` for real. Neither "get these ready" nor "yes, those are the right ones" is an execution go — the first authorizes readiness, the second settles scope. Only an explicit execute word pulls the trigger, or a standing authorization whose account check passed.
+The operator asking for the upload anywhere in the conversation is the go, including an ask that rides with other work ("make this change, then upload it"): once readiness passes, upload without asking again. An ask that stops short of uploading ("get these ready", "would these upload?") holds you at readiness.
 
-**Confirm the literal published name** for each first-upload before that go: surface the exact string that will be published (CAU defaults it to the GameObject name) and get explicit confirmation. A placeholder or persona-bearing name must not go public unnoticed — "a name is set" is vacuous (always true); the operator must see and approve the actual string.
+**Report the literal published name** of each first upload, step 1's `publishName` (CAU defaults it to the GameObject name), so a placeholder or persona-bearing name that went public is seen; `UpdateAvatarRecord` corrects it.
 
 **A first upload is the only moment an upload can set a name**, and a re-upload silently republishes under the old one (`unity-tools.md` §Publish owns why). So the scene never tells you what is actually published: step 1's `publishName` does, and `ReportAvatarRecord` reads the rest of one record. Asked to change a live avatar's name, description, tags or thumbnail, do not re-upload — that is `UpdateAvatarRecord`.
 
@@ -55,7 +55,7 @@ After the list settles, require a **distinct, explicit "upload now"** before cal
 
 ### 5. Upload
 
-When the operator gives the go, call `UploadAvatar.Run` (no `whatIf`) on the confirmed batch. The upload is **async-driven**: `Run` fires the batch and returns immediately — it does NOT block for the result, since blocking would deadlock the editor — so **poll `UploadAvatar.Status()`** until it stops reporting a run in progress. Expect the **build phase to make the editor briefly unresponsive** to MCP (an asset-bundle build is heavy main-thread work) — that is normal, not a hang; keep the editor window focused (a backgrounded editor throttles its update loop and stalls the pump) and keep polling. The governing rule:
+With the go, call `UploadAvatar.Run` (no `whatIf`) on the confirmed batch. The upload is **async-driven**: `Run` fires the batch and returns immediately — it does NOT block for the result, since blocking would deadlock the editor — so **poll `UploadAvatar.Status()`** until it stops reporting a run in progress. Expect the **build phase to make the editor briefly unresponsive** to MCP (an asset-bundle build is heavy main-thread work) — that is normal, not a hang; keep the editor window focused (a backgrounded editor throttles its update loop and stalls the pump) and keep polling. The governing rule:
 
 > When asked to upload, upload. If a failure is transient (server / timeout), retry two or three
 > times; a rate-limit is not a transient — back off and inform, don't retry. Never loop, and never
@@ -67,7 +67,7 @@ The tool stops the batch on the first failure and classifies it (`transient` / `
 
 ### 6. Impostors
 
-An impostor is a render of the avatar at rest, so request one only when that resting look changed: after a first upload, and after a re-upload that changed what is rendered at rest, whichever asset carried the change: geometry, materials, textures, avatar scale, a default pose or blendshape, a default-on toggle or a renderer's resting enabled state. A re-upload whose every change is invisible at rest, such as controller logic behind a toggle that rests off, parameters, menus, scripts or gimmick timing, leaves the existing impostor correct, and a request there is a no-op that spends a slot against whatever daily limit applies, so skip it and say so in the report. Classify each update before the go from the operator's stated change and the work this session performed; treat it as invisible at rest only when that evidence establishes it, and request the impostor whenever it does not. When the look changed, once the batch settles call `RequestImpostor.Run` on every such avatar whose row reads `uploaded`, and poll `RequestImpostor.Status()`; `unity-tools.md` §Publish owns the door. The go that sent the upload covers this request, whether it was the operator's "upload now" or a standing authorization, so do not ask again. Skip it when the operator said no impostor for this batch, and skip the `failed`, `not-attempted` and `reserved-no-bundle` rows, since nothing new went up for them.
+An impostor is a render of the avatar at rest, so request one only when that resting look changed: after a first upload, and after a re-upload that changed what is rendered at rest, whichever asset carried the change: geometry, materials, textures, avatar scale, a default pose or blendshape, a default-on toggle or a renderer's resting enabled state. A re-upload whose every change is invisible at rest, such as controller logic behind a toggle that rests off, parameters, menus, scripts or gimmick timing, leaves the existing impostor correct, and a request there is a no-op that spends a slot against whatever daily limit applies, so skip it and say so in the report. Classify each update before the go from the operator's stated change and the work this session performed; treat it as invisible at rest only when that evidence establishes it, and request the impostor whenever it does not. When the look changed, once the batch settles call `RequestImpostor.Run` on every such avatar whose row reads `uploaded`, and poll `RequestImpostor.Status()`; `unity-tools.md` §Publish owns the door. The go that sent the upload covers this request, whether it was the operator's ask or a standing authorization, so do not ask again. Skip it when the operator said no impostor for this batch, and skip the `failed`, `not-attempted` and `reserved-no-bundle` rows, since nothing new went up for them.
 
 A `rate-limit` here gets the same rule as the upload's: do not retry. Relay the unsent avatars so the operator can request them later. A failed request leaves the upload itself standing, so report the upload and the impostor request as separate results.
 
