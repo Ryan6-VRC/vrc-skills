@@ -187,6 +187,236 @@
    "sample": "end"
   },
   {
+   "name": "sitCrossLR",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 85,
+     "yaw": 35
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 5
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "sitCrossRL",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -5
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 85,
+     "yaw": -35
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "sitWide",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -35
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 35
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "sitTogether",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 12
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -12
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "sitPivotR",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": 25
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": 25
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "sitPivotL",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": 90,
+     "yaw": -25
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": 90,
+     "yaw": -25
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -90,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "Lback45",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": -45,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "Rback45",
+   "ops": [
+    {
+     "bone": "RightUpperLeg",
+     "pitch": -45,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "bothBack30",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": -30,
+     "yaw": 0
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": -30,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
+   "name": "bothBack45",
+   "ops": [
+    {
+     "bone": "LeftUpperLeg",
+     "pitch": -45,
+     "yaw": 0
+    },
+    {
+     "bone": "RightUpperLeg",
+     "pitch": -45,
+     "yaw": 0
+    }
+   ],
+   "ramp": 0,
+   "hold": 2.5,
+   "sample": "end"
+  },
+  {
    "name": "close",
    "ops": [],
    "ramp": 0,
