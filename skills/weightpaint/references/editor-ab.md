@@ -1,6 +1,6 @@
 # Editor A/B of weight variants
 
-How the operator compares weight variants on the composed row in the Editor. A documented procedure over `execute_code`, not a door; promote it to a Unity door when a second case needs one. One agent drives the Editor, pinned before the first call (CLAUDE.md rule 9).
+How the operator compares weight variants on the composed row in the Editor. A documented procedure over `execute_code`, not a door; promote it to a Unity door when a second case needs one. One agent drives the Editor, pinned before the first call (CLAUDE.md rule 7).
 
 ## 1. Build and export the variants
 
