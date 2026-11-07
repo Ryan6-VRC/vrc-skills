@@ -21,7 +21,7 @@
     }
    ],
    "ramp": 1,
-   "hold": 1.5,
+   "hold": 1.0,
    "sample": "end"
   },
   {
@@ -45,7 +45,7 @@
     }
    ],
    "ramp": 1,
-   "hold": 1.5,
+   "hold": 1.0,
    "sample": "end"
   },
   {
@@ -69,7 +69,7 @@
     }
    ],
    "ramp": 1,
-   "hold": 1.5,
+   "hold": 1.0,
    "sample": "end"
   },
   {
@@ -93,7 +93,7 @@
     }
    ],
    "ramp": 1,
-   "hold": 1.5,
+   "hold": 1.0,
    "sample": "end"
   },
   {
@@ -118,7 +118,7 @@
    ],
    "ramp": 1.2,
    "hold": 0,
-   "sample": "every"
+   "sample": "every:6"
   },
   {
    "name": "swayToL",
@@ -142,7 +142,7 @@
    ],
    "ramp": 1.2,
    "hold": 0,
-   "sample": "every"
+   "sample": "every:6"
   },
   {
    "name": "swayToR2",
@@ -166,7 +166,7 @@
    ],
    "ramp": 0.6,
    "hold": 0,
-   "sample": "every"
+   "sample": "every:6"
   },
   {
    "name": "swayLevel",
@@ -201,7 +201,7 @@
     }
    ],
    "ramp": 1,
-   "hold": 1.5,
+   "hold": 1.0,
    "sample": "end"
   },
   {
@@ -230,7 +230,7 @@
     }
    ],
    "ramp": 1,
-   "hold": 1.5,
+   "hold": 1.0,
    "sample": "end"
   },
   {
