@@ -63,6 +63,7 @@ The layered source (`.psd`; `.clip` is archival, keep beside it) lives in
 
 The ecosystem baseline — vendor texture sets (shadow/rim/outline/emission masks, matcaps) are authored to lilToon's slots. An owned lilToon copy is inert and safe:
 
+- **A custom shader family built on lilToon's `.lilcontainer` mechanism is lilToon.** lilToon's own build check treats any shader whose asset path holds a `.lilcontainer` as its own, so the no-fork rule and the clip scan below apply to such a family unchanged; it is not a third family.
 - **Presets are one-time copies** — applying one writes property values with no back-link, so a copied material carries no live coupling to any preset asset. Don't use presets or the rendering-mode switch as an "inheritance" mechanism; both batch-rewrite linked properties (stencil/blend/queue/keywords) in one action.
 - **Build-time optimization rewrites shader files, not your `.mat`** — and resets them after. It scans the clips reachable through the avatar descriptor's animator layers and keeps every clip-driven uniform live, which is why mechanism (c) needs no fork — but a clip *not* reachable there at build time (added by a later build step, or driven outside the descriptor) can get its property baked. The one `.mat`-write exception: a **lilToonMulti** material can get keywords enabled *and saved* during a build. Expected churn on an owned Multi material, not corruption; on a vendor one, the reason (c) excepts Multi.
 
