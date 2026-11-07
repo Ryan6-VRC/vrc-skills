@@ -1,0 +1,244 @@
+{
+ "poses": [
+  {
+   "name": "hipRollR8",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": 8
+    },
+    {
+     "bone": "Spine",
+     "roll": -8
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": -8
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": -8
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.0,
+   "sample": "end"
+  },
+  {
+   "name": "hipRollL8",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": -8
+    },
+    {
+     "bone": "Spine",
+     "roll": 8
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": 8
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": 8
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.0,
+   "sample": "end"
+  },
+  {
+   "name": "hipRollR15",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": 15
+    },
+    {
+     "bone": "Spine",
+     "roll": -15
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": -15
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": -15
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.0,
+   "sample": "end"
+  },
+  {
+   "name": "hipRollL15",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": -15
+    },
+    {
+     "bone": "Spine",
+     "roll": 15
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": 15
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": 15
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.0,
+   "sample": "end"
+  },
+  {
+   "name": "swayToR",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": 12
+    },
+    {
+     "bone": "Spine",
+     "roll": -12
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": -12
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": -12
+    }
+   ],
+   "ramp": 1.2,
+   "hold": 0,
+   "sample": "every:6"
+  },
+  {
+   "name": "swayToL",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": -12
+    },
+    {
+     "bone": "Spine",
+     "roll": 12
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": 12
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": 12
+    }
+   ],
+   "ramp": 1.2,
+   "hold": 0,
+   "sample": "every:6"
+  },
+  {
+   "name": "swayToR2",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": 12
+    },
+    {
+     "bone": "Spine",
+     "roll": -12
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": -12
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": -12
+    }
+   ],
+   "ramp": 0.6,
+   "hold": 0,
+   "sample": "every:6"
+  },
+  {
+   "name": "swayLevel",
+   "ops": [],
+   "ramp": 1,
+   "hold": 1,
+   "sample": "end"
+  },
+  {
+   "name": "contraR",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": 8,
+     "move": "0.03,0,0"
+    },
+    {
+     "bone": "Spine",
+     "roll": -8
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": -8
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": -8
+    },
+    {
+     "bone": "LeftLowerLeg",
+     "pitch": -15
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.0,
+   "sample": "end"
+  },
+  {
+   "name": "contraL",
+   "ops": [
+    {
+     "bone": "Hips",
+     "roll": -8,
+     "move": "-0.03,0,0"
+    },
+    {
+     "bone": "Spine",
+     "roll": 8
+    },
+    {
+     "bone": "LeftUpperLeg",
+     "roll": 8
+    },
+    {
+     "bone": "RightUpperLeg",
+     "roll": 8
+    },
+    {
+     "bone": "RightLowerLeg",
+     "pitch": -15
+    }
+   ],
+   "ramp": 1,
+   "hold": 1.0,
+   "sample": "end"
+  },
+  {
+   "name": "close",
+   "ops": [],
+   "ramp": 1,
+   "hold": 1.5,
+   "sample": "end"
+  }
+ ]
+}
