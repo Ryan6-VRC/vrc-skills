@@ -118,7 +118,7 @@
    ],
    "ramp": 1.2,
    "hold": 0,
-   "sample": "every:3"
+   "sample": "every"
   },
   {
    "name": "swayToL",
@@ -142,7 +142,7 @@
    ],
    "ramp": 1.2,
    "hold": 0,
-   "sample": "every:3"
+   "sample": "every"
   },
   {
    "name": "swayToR2",
@@ -166,7 +166,7 @@
    ],
    "ramp": 0.6,
    "hold": 0,
-   "sample": "every:3"
+   "sample": "every"
   },
   {
    "name": "swayLevel",
