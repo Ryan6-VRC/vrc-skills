@@ -107,6 +107,8 @@ A small leg feed can ride on the leg colliders alone when the skirt has margin: 
 
 Where the hinge policy makes the hinged form an escalation, its evidence is a drive of a built leg-fed form whose both-legs-back poses (`bothBack30`, `bothBack45`) pull the front through the hips, the torso regions rising over the drive's own `rest` row. That is the operator's rule: both legs back, or leaning back with the feet planted, put both legs' pull on the front at once, where one leg back does not. Offer it then, priced by its components.
 
+**In a sit, a hinged form's front panel rests on whichever is higher: the swing line its hinge's forward-only limit allows, or the leg colliders its front strands list.** The colliders hold it above the thigh by the strand joint radius plus however far the capsule stands proud of the thigh surface, so that standoff is the sit's lever and the battery's sit rows are its gate. Sized for kicks, it floats the hem off the thighs in a sit; shrunk until the capsule no longer reaches the strands, the swing line alone places the panel and it grazes the thigh in kicks. Opening the hinge limit below the swing line, with gravity on, sinks the panel into the thigh instead.
+
 ## Deriving the table
 
 **Donor or derivation.** Where step 0 names a donor prefab for your form, read it before writing the first table and copy field values off it rather than from this file. Absent a donor, derive the strand and hinge fields from the vendor rig as below and state each value in the offer. Step 0's policies hold whatever a donor reads, and a strand physbone is always multi-child Ignore. The node names below are suggested names.

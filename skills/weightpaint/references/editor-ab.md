@@ -25,6 +25,8 @@ Against the live renderer each variant stands in for, resolved by path under the
 
 Then `Object.Instantiate` the live renderer's GameObject under the same parent, name it `AB_<renderer>_<tag>`, `SetActive(false)`, and set its `sharedMesh` to the variant mesh and its `bones` to the live renderer's. Materials and the live blendshape weights come with the copy.
 
+The copy compares in edit mode only. It does not survive play entry, where the optimizers strip an inactive renderer and d4rk rebuilds the live mesh on a pruned, reordered bone list, so a variant's weights cannot be laid onto the play mesh without re-deriving its bind poses either. Compare variants that differ only under motion by swapping the costume FBX and re-importing between `DrivePhysBones` drives.
+
 A fold variant has fewer bones than an unfolded live mesh and fails the bone-order check: bind its bones by name from the live rig instead, which works only while every variant bone exists there.
 
 The copy is not the target of the row's Modular Avatar reactions (a Delete, a Set, a toggle), which reference the original renderer: it shows geometry the row cuts and misses shapes the row drives. Tell the operator what to disregard.
